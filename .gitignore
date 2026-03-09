@@ -1,0 +1,11 @@
+*.log
+*.out
+tmp.s
+st.asm
+st.all.asm
+before.txt
+after.txt
+artifacts/
+asm/
+__pycache__/
+*.pyc
