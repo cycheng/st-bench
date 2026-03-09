@@ -9,7 +9,7 @@ This project is extracted from an internal ticket workflow and cleaned up for re
 
 ## Project layout
 
-- `scripts/run-yaml.sh`: run one YAML inside a docker container.
+- `scripts/run-single-yaml.sh`: run one YAML inside a docker container.
 - `scripts/run-all-yaml.sh`: batch-run YAML files from one config file.
 - `scripts/diff-asm.sh`: compare `orig` vs `st` ASM folders.
 - `scripts/parse_timing.py`: parse compile timing log and print top-k + distributions.
@@ -32,7 +32,7 @@ cd st-codegen-test
 chmod +x scripts/*.sh
 
 # Run a single YAML
-scripts/run-yaml.sh \
+scripts/run-single-yaml.sh \
   --yaml examples/sample.yaml \
   --build-dir /path/to/tensile/build \
   --container my-dev-container \
@@ -106,6 +106,6 @@ This prints:
 
 ## Notes
 
-- `run-yaml.sh` can auto-start the container. Use `--no-start` if container lifecycle is managed elsewhere.
+- `run-single-yaml.sh` can auto-start the container. Use `--no-start` if container lifecycle is managed elsewhere.
 - By default, container `<yaml-base>.out` is deleted after run. Use `--keep-container-out` to preserve it.
 - `run-all-yaml.sh` expands variables in list entries (for example `${rocm_libraries_path}`).

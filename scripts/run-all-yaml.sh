@@ -115,7 +115,7 @@ if [[ ${#LIST_FILES[@]} -eq 0 ]]; then
 fi
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-RUN_ONE_SCRIPT="${SCRIPT_DIR}/run-yaml.sh"
+RUN_ONE_SCRIPT="${SCRIPT_DIR}/run-single-yaml.sh"
 
 if [[ ! -x "${RUN_ONE_SCRIPT}" ]]; then
   echo "Cannot execute ${RUN_ONE_SCRIPT}" >&2

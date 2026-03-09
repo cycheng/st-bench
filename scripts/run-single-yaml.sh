@@ -7,13 +7,15 @@ usage() {
 Run one Tensile YAML inside a docker container.
 
 Usage:
-  scripts/run-yaml.sh --yaml <file> --build-dir <dir> [options]
+  scripts/run-single-yaml.sh <config-file> <yaml-file>
+  scripts/run-single-yaml.sh --yaml <file> --build-dir <dir> [options]
 
 Required:
   --yaml <file>          YAML file to run.
   --build-dir <dir>      Build directory that contains Tensile.sh.
 
 Optional:
+  --config <file>        Config file path.
   --container <name>     Docker container name (default: stinkytofu-dev).
   --workdir <dir>        Working directory inside container (default: current directory).
   --client <path>        Prebuilt client path (default: <build-dir>/tensilelite/client/tensilelite-client).
@@ -25,7 +27,9 @@ Optional:
   -h, --help             Show help.
 
 Examples:
-  scripts/run-yaml.sh \
+  scripts/run-single-yaml.sh examples/test.cfg examples/sample.yaml
+
+  scripts/run-single-yaml.sh \
     --yaml examples/sample.yaml \
     --build-dir /work/hipblaslt/tensilelite/new_dbg_build_anydocker \
     --container my-dev-container \
@@ -36,6 +40,7 @@ EOF
 
 YAML_FILE=""
 BUILD_DIR=""
+CONFIG_FILE=""
 CONTAINER_NAME="${DOCKER_CONTAINER:-stinkytofu-dev}"
 WORKDIR="$(pwd)"
 CLIENT_PATH=""
@@ -45,8 +50,75 @@ KEEP_CONTAINER_OUT=0
 EXTRA_ENVS=()
 ENV_FILES=()
 
+parse_bool() {
+  local raw="$1"
+  local lower="${raw,,}"
+  case "${lower}" in
+    1|true|yes|on) echo 1 ;;
+    0|false|no|off) echo 0 ;;
+    *)
+      echo "Invalid boolean value: ${raw}" >&2
+      exit 1
+      ;;
+  esac
+}
+
+parse_config_file() {
+  local cfg="$1"
+  local line key value
+
+  if [[ ! -f "${cfg}" ]]; then
+    echo "Config file not found: ${cfg}" >&2
+    exit 1
+  fi
+
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "${line}" || "${line}" == \#* ]] && continue
+
+    if [[ "${line}" != *=* ]]; then
+      echo "Invalid config line (expected key=value): ${line}" >&2
+      exit 1
+    fi
+
+    key="${line%%=*}"
+    value="${line#*=}"
+    key="${key#"${key%%[![:space:]]*}"}"
+    key="${key%"${key##*[![:space:]]}"}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+
+    case "${key}" in
+      build_dir) BUILD_DIR="${value}" ;;
+      container) CONTAINER_NAME="${value}" ;;
+      workdir) WORKDIR="${value}" ;;
+      client) CLIENT_PATH="${value}" ;;
+      output_root) OUTPUT_ROOT="${value}" ;;
+      env) EXTRA_ENVS+=("${value}") ;;
+      env_file) ENV_FILES+=("${value}") ;;
+      no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
+      keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      *)
+        echo "Unknown config key: ${key}" >&2
+        exit 1
+        ;;
+    esac
+  done < "${cfg}"
+}
+
+if [[ $# -ge 2 && "$1" != -* ]]; then
+  CONFIG_FILE="$1"
+  YAML_FILE="$2"
+  shift 2
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --config)
+      CONFIG_FILE="$2"
+      shift 2
+      ;;
     --yaml)
       YAML_FILE="$2"
       shift 2
@@ -99,8 +171,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -n "${CONFIG_FILE}" ]]; then
+  parse_config_file "${CONFIG_FILE}"
+fi
+
 if [[ -z "${YAML_FILE}" || -z "${BUILD_DIR}" ]]; then
-  echo "--yaml and --build-dir are required." >&2
+  echo "YAML and build_dir are required." >&2
   usage
   exit 1
 fi
