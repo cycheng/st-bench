@@ -4,15 +4,16 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Run YAMLs from config + list files.
+Run tasks from config.
 
 Usage:
   scripts/run-all-yaml.sh <config-file>
   scripts/run-all-yaml.sh <config-file> <list-file>
 
 Config file format (key=value):
+  task_type=yaml|hipblaslt_install     # optional, default: yaml
   build_dir=/path/to/build
-  list_file=./test-lists/gfx1250.list   # repeatable, required
+  list_file=./test-lists/gfx1250.list   # repeatable, required for task_type=yaml
   rocm_libraries_path=/data0/cycheng2/rocm-libraries
   container=my-dev-container
   workdir=/workspace/st-codegen-test
@@ -21,6 +22,10 @@ Config file format (key=value):
   env_file=./my-env.list                # repeatable
   docker_auto_start=true
   keep_container_out=false
+  hipblaslt_repo_path=${rocm_libraries_path}/projects/hipblaslt
+  hipblaslt_install_flags=-idc -a gfx1250 --logic-yaml-filter gfx1250/GridBased/* --skip_rocroller
+  hipblaslt_build_type=debug|release    # for task_type=hipblaslt_install
+  hipblaslt_symlink_name=hipblaslt-test-asm
 
 List file format:
   - skip blank lines and # comments
@@ -38,6 +43,11 @@ EXTRA_ENVS=()
 ENV_FILES=()
 DOCKER_AUTO_START=1
 KEEP_CONTAINER_OUT=0
+TASK_TYPE="yaml"
+HIPBLASLT_REPO_PATH=""
+HIPBLASLT_INSTALL_FLAGS=""
+HIPBLASLT_BUILD_TYPE="debug"
+HIPBLASLT_SYMLINK_NAME="hipblaslt-test-asm"
 
 parse_bool() {
   local raw="$1"
@@ -79,6 +89,7 @@ parse_config_file() {
     value="${value%"${value##*[![:space:]]}"}"
 
     case "${key}" in
+      task_type) TASK_TYPE="${value}" ;;
       build_dir) BUILD_DIR="${value}" ;;
       list_file) LIST_FILES+=("${value}") ;;
       rocm_libraries_path) ROCM_LIBRARIES_PATH="${value}" ;;
@@ -90,6 +101,10 @@ parse_config_file() {
       docker_auto_start) DOCKER_AUTO_START="$(parse_bool "${value}")" ;;
       no_start) DOCKER_AUTO_START="$((1 - $(parse_bool "${value}")))" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      hipblaslt_repo_path) HIPBLASLT_REPO_PATH="${value}" ;;
+      hipblaslt_install_flags) HIPBLASLT_INSTALL_FLAGS="${value}" ;;
+      hipblaslt_build_type) HIPBLASLT_BUILD_TYPE="${value}" ;;
+      hipblaslt_symlink_name) HIPBLASLT_SYMLINK_NAME="${value}" ;;
       *)
         echo "Unknown config key: ${key}" >&2
         exit 1
@@ -111,6 +126,10 @@ CONFIG_FILE="$1"
 parse_config_file "${CONFIG_FILE}"
 
 if [[ $# -eq 2 ]]; then
+  if [[ "${TASK_TYPE}" != "yaml" ]]; then
+    echo "The <list-file> override argument is only supported for task_type=yaml." >&2
+    exit 1
+  fi
   override_list_file="$2"
   config_dir="$(cd -- "$(dirname -- "${CONFIG_FILE}")" && pwd)"
   if [[ "${override_list_file}" = /* ]]; then
@@ -122,22 +141,8 @@ if [[ $# -eq 2 ]]; then
   fi
 fi
 
-if [[ -z "${BUILD_DIR}" ]]; then
-  echo "build_dir is required in config." >&2
-  exit 1
-fi
-if [[ ${#LIST_FILES[@]} -eq 0 ]]; then
-  echo "At least one list_file is required in config." >&2
-  exit 1
-fi
-
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 RUN_ONE_SCRIPT="${SCRIPT_DIR}/run-single-yaml.sh"
-
-if [[ ! -x "${RUN_ONE_SCRIPT}" ]]; then
-  echo "Cannot execute ${RUN_ONE_SCRIPT}" >&2
-  exit 1
-fi
 
 expand_vars() {
   local raw="$1"
@@ -149,6 +154,26 @@ expand_vars() {
   expanded="$(eval "echo \"${raw}\"")"
   set -u
   echo "${expanded}"
+}
+
+build_docker_env_args() {
+  DOCKER_ENV_ARGS=()
+  local env_file line
+  for kv in "${EXTRA_ENVS[@]}"; do
+    DOCKER_ENV_ARGS+=("-e" "${kv}")
+  done
+  for env_file in "${ENV_FILES[@]}"; do
+    if [[ ! -f "${env_file}" ]]; then
+      echo "Env file not found: ${env_file}" >&2
+      exit 1
+    fi
+    while IFS= read -r line || [[ -n "${line}" ]]; do
+      line="${line#"${line%%[![:space:]]*}"}"
+      line="${line%"${line##*[![:space:]]}"}"
+      [[ -z "${line}" || "${line}" == \#* ]] && continue
+      DOCKER_ENV_ARGS+=("-e" "${line}")
+    done < "${env_file}"
+  done
 }
 
 run_yaml() {
@@ -172,6 +197,64 @@ run_yaml() {
   done
 
   "${RUN_ONE_SCRIPT}" "${args[@]}"
+}
+
+normalize_build_type() {
+  local lower="${1,,}"
+  case "${lower}" in
+    debug|dbg) echo "debug" ;;
+    release|rel) echo "release" ;;
+    *)
+      echo "Invalid hipblaslt_build_type: ${1}. Use debug or release." >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_hipblaslt_install() {
+  local repo_path install_flags build_type cmpasm_path
+  local output_root symlink_name symlink_path cmd
+
+  if [[ -z "${CONTAINER_NAME}" ]]; then
+    echo "container is required for task_type=hipblaslt_install." >&2
+    exit 1
+  fi
+  if [[ -z "${WORKDIR}" ]]; then
+    echo "workdir is required for task_type=hipblaslt_install." >&2
+    exit 1
+  fi
+  if [[ -z "${HIPBLASLT_REPO_PATH}" ]]; then
+    echo "hipblaslt_repo_path is required for task_type=hipblaslt_install." >&2
+    exit 1
+  fi
+
+  repo_path="$(expand_vars "${HIPBLASLT_REPO_PATH}")"
+  install_flags="$(expand_vars "${HIPBLASLT_INSTALL_FLAGS}")"
+  build_type="$(normalize_build_type "${HIPBLASLT_BUILD_TYPE}")"
+  cmpasm_path="${repo_path}/build/${build_type}/device-library/cmpasm"
+  output_root="${OUTPUT_ROOT:-./artifacts}"
+  symlink_name="${HIPBLASLT_SYMLINK_NAME:-hipblaslt-test-asm}"
+  symlink_path="${output_root%/}/${symlink_name}"
+
+  build_docker_env_args
+
+  if [[ ${DOCKER_AUTO_START} -eq 1 ]]; then
+    docker start "${CONTAINER_NAME}" >/dev/null
+  fi
+
+  printf -v cmd "cd %q && ./install.sh %s" "${repo_path}" "${install_flags}"
+
+  echo "=========================================="
+  echo "Task: hipblaslt_install"
+  echo "Container: ${CONTAINER_NAME}"
+  echo "Repo: ${repo_path}"
+  echo "Install flags: ${install_flags}"
+  echo "=========================================="
+  docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc "${cmd}"
+
+  mkdir -p "${output_root}"
+  ln -sfn "${cmpasm_path}" "${symlink_path}"
+  echo "cmpasm symlink: ${symlink_path} -> ${cmpasm_path}"
 }
 
 declare -A seen_yamls=()
@@ -229,24 +312,44 @@ collect_and_run_from_target() {
   done
 }
 
-for list_file in "${LIST_FILES[@]}"; do
-  if [[ ! -f "${list_file}" ]]; then
-    echo "List file not found: ${list_file}" >&2
+if [[ "${TASK_TYPE}" == "yaml" ]]; then
+  if [[ ! -x "${RUN_ONE_SCRIPT}" ]]; then
+    echo "Cannot execute ${RUN_ONE_SCRIPT}" >&2
     exit 1
   fi
+  if [[ -z "${BUILD_DIR}" ]]; then
+    echo "build_dir is required in config for task_type=yaml." >&2
+    exit 1
+  fi
+  if [[ ${#LIST_FILES[@]} -eq 0 ]]; then
+    echo "At least one list_file is required in config for task_type=yaml." >&2
+    exit 1
+  fi
+  for list_file in "${LIST_FILES[@]}"; do
+    if [[ ! -f "${list_file}" ]]; then
+      echo "List file not found: ${list_file}" >&2
+      exit 1
+    fi
 
-  echo "Using list file: ${list_file}"
-  while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
-    line="${raw_line#"${raw_line%%[![:space:]]*}"}"
-    line="${line%"${line##*[![:space:]]}"}"
-    [[ -z "${line}" || "${line}" == \#* ]] && continue
-    collect_and_run_from_target "${list_file}" "${line}"
-  done < "${list_file}"
-done
+    echo "Using list file: ${list_file}"
+    while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
+      line="${raw_line#"${raw_line%%[![:space:]]*}"}"
+      line="${line%"${line##*[![:space:]]}"}"
+      [[ -z "${line}" || "${line}" == \#* ]] && continue
+      collect_and_run_from_target "${list_file}" "${line}"
+    done < "${list_file}"
+  done
 
-if [[ ${total_runs} -eq 0 ]]; then
-  echo "No YAML files were selected by list files." >&2
+  if [[ ${total_runs} -eq 0 ]]; then
+    echo "No YAML files were selected by list files." >&2
+    exit 1
+  fi
+  echo "Batch run complete. Total YAML runs: ${total_runs}"
+elif [[ "${TASK_TYPE}" == "hipblaslt_install" ]]; then
+  run_hipblaslt_install
+  echo "Batch run complete. Total hipblaslt install runs: 1"
+else
+  echo "Unknown task_type: ${TASK_TYPE}" >&2
+  echo "Supported task_type values: yaml, hipblaslt_install" >&2
   exit 1
 fi
-
-echo "Batch run complete. Total YAML runs: ${total_runs}"

@@ -30,6 +30,10 @@ scripts/run-all-yaml.sh examples/test.cfg
 
 This is the recommended flow: put all options in config, then run with one argument.
 
+`run-all-yaml.sh` supports two task types via `task_type` in config:
+- `yaml` (default): run YAMLs from `list_file`
+- `hipblaslt_install`: run `hipblaslt/install.sh` and symlink generated `cmpasm`
+
 List files support comments and one target per line:
 
 ```text
@@ -47,6 +51,44 @@ ROCM_PATH=/opt/rocm
 TARGET_ARCH=gfx1250
 ENABLE_DEBUG_STINKYTOFU_ASM=1
 ```
+
+## hipblaslt install task
+
+Use this mode for tests that are not YAML-driven.
+
+Example config:
+
+```text
+task_type=hipblaslt_install
+rocm_libraries_path=/data0/cycheng2/rocm-libraries
+container=cy_mi450
+workdir=/data0/cycheng2/tickets/st-codegen-test
+output_root=./asm
+
+# shared runtime envs (same format as YAML mode)
+env=ROCM_PATH=/opt/rocm
+env=TARGET_ARCH=gfx1250
+env=ENABLE_DEBUG_STINKYTOFU_ASM=1
+
+hipblaslt_repo_path=${rocm_libraries_path}/projects/hipblaslt
+hipblaslt_install_flags=-idc -a gfx1250 --logic-yaml-filter gfx1250/GridBased/* --skip_rocroller
+hipblaslt_build_type=debug
+hipblaslt_symlink_name=hipblaslt-test-asm
+```
+
+Run:
+
+```bash
+scripts/run-all-yaml.sh examples/test.cfg
+```
+
+This runs:
+- `docker exec ... ./install.sh <hipblaslt_install_flags>`
+- creates symlink:
+  - `${output_root}/hipblaslt-test-asm` (or custom `hipblaslt_symlink_name`)
+- points to:
+  - debug: `${hipblaslt_repo_path}/build/debug/library/src/amd_detail/rocblaslt/src/cmpasm`
+  - release: `${hipblaslt_repo_path}/build/release/library/src/amd_detail/rocblaslt/src/cmpasm`
 
 ## ASM diff
 
