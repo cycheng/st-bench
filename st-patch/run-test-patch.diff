@@ -1,0 +1,168 @@
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+index 854aa268967..916e20ad942 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+@@ -261,10 +261,11 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+     Raises:
+         Exception if both tools fail to detect ISA.
+     """
+-    result = _detectGlobalCurrentISA(enumerator, deviceId)
+-    if not isinstance(result, IsaVersion):
+-        raise Exception("Failed to detect currect ISA")
+-    return result
++    # result = _detectGlobalCurrentISA(enumerator, deviceId)
++    # if not isinstance(result, IsaVersion):
++    #     raise Exception("Failed to detect currect ISA")
++    # return result
++    return IsaVersion(12, 5, 0)
+ 
+ 
+ class ArchInfo(NamedTuple):
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+index 1dafb695f6c..c5b2fee52e5 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+@@ -114,7 +114,7 @@ globalParameters["ShowProgressBar"] = (
+ globalParameters["SolutionSelectionAlg"] = (
+     1  # algorithm to determine which solutions to keep. 0=removeLeastImportantSolutions, 1=keepWinnerSolutions (faster)
+ )
+-globalParameters["GenerateSourcesAndExit"] = False  # Exit after kernel source generation.
++globalParameters["GenerateSourcesAndExit"] = True  # Exit after kernel source generation.
+ globalParameters["ExitOnFails"] = (
+     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
+ )
+diff --git a/projects/hipblaslt/tensilelite/rocisa/rocisa/include/instruction/common.hpp b/projects/hipblaslt/tensilelite/rocisa/rocisa/include/instruction/common.hpp
+index 420e6bbf0ae..509582b9ffe 100644
+--- a/projects/hipblaslt/tensilelite/rocisa/rocisa/include/instruction/common.hpp
++++ b/projects/hipblaslt/tensilelite/rocisa/rocisa/include/instruction/common.hpp
+@@ -1138,15 +1138,10 @@ namespace rocisa
+     struct SFlbitI32B32 : public CommonInstruction
+     {
+         SFlbitI32B32(const std::shared_ptr<Container>& dst,
+-                const InstructionInput&           src,
+-                const std::string&                comment = "")
+-            : CommonInstruction(InstType::INST_B32,
+-                                dst,
+-                                {src},
+-                                std::nullopt,
+-                                std::nullopt,
+-                                std::nullopt,
+-                                comment)
++                     const InstructionInput&           src,
++                     const std::string&                comment = "")
++            : CommonInstruction(
++                InstType::INST_B32, dst, {src}, std::nullopt, std::nullopt, std::nullopt, comment)
+         {
+             setInst("s_flbit_i32_b32");
+         }
+@@ -1460,6 +1455,8 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
+             return formatWithComment(instStr + " " + std::to_string(waitState));
+         }
+ 
+@@ -1504,6 +1501,8 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
+             std::string resultStr = "";
+             for(int i = 0; i < count; i++)
+             {
+@@ -1882,6 +1881,9 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
++
+             int maxStorecnt = getAsmCaps()["MaxStorecnt"];
+             return formatWithComment("s_wait_storecnt "
+                                      + std::to_string(std::min(storecnt, maxStorecnt)));
+@@ -1932,6 +1934,8 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
+             int maxLoadcnt = getAsmCaps()["MaxLoadcnt"];
+             return formatWithComment("s_wait_loadcnt "
+                                      + std::to_string(std::min(loadcnt, maxLoadcnt)));
+@@ -1987,6 +1991,9 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
++
+             int maxKmcnt = getAsmCaps()["MaxKmcnt"];
+             return formatWithComment("s_wait_kmcnt " + std::to_string(std::min(kmcnt, maxKmcnt)));
+         }
+@@ -2031,6 +2038,9 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
++
+             int maxDscnt = getAsmCaps()["MaxDscnt"];
+             return formatWithComment("s_wait_dscnt " + std::to_string(std::min(dscnt, maxDscnt)));
+         }
+@@ -2227,6 +2237,9 @@ namespace rocisa
+ 
+         std::string toString() const override
+         {
++            std::string kStr;
++            setMsb(kStr, {}, nullptr);
++
+             return formatWithComment("s_wait_tensorcnt " + std::to_string(tensorcnt));
+         }
+ 
+@@ -5290,11 +5303,16 @@ namespace rocisa
+     struct VReadlaneB32 : public CommonInstruction
+     {
+         VReadlaneB32(const std::shared_ptr<Container>& dst,
+-                          const InstructionInput&           src0,
+-                          const InstructionInput&           src1,
+-                          const std::string&                comment = "")
+-            : CommonInstruction(
+-                                InstType::INST_B32, dst, {src0, src1}, std::nullopt, std::nullopt, std::nullopt, comment)
++                     const InstructionInput&           src0,
++                     const InstructionInput&           src1,
++                     const std::string&                comment = "")
++            : CommonInstruction(InstType::INST_B32,
++                                dst,
++                                {src0, src1},
++                                std::nullopt,
++                                std::nullopt,
++                                std::nullopt,
++                                comment)
+         {
+             setInst("v_readlane_b32");
+         }
+@@ -5313,11 +5331,16 @@ namespace rocisa
+     struct VWritelaneB32 : public CommonInstruction
+     {
+         VWritelaneB32(const std::shared_ptr<Container>& dst,
+-                          const InstructionInput&           src0,
+-                          const InstructionInput&           src1,
+-                          const std::string&                comment = "")
+-            : CommonInstruction(
+-                                InstType::INST_B32, dst, {src0, src1}, std::nullopt, std::nullopt, std::nullopt, comment)
++                      const InstructionInput&           src0,
++                      const InstructionInput&           src1,
++                      const std::string&                comment = "")
++            : CommonInstruction(InstType::INST_B32,
++                                dst,
++                                {src0, src1},
++                                std::nullopt,
++                                std::nullopt,
++                                std::nullopt,
++                                comment)
+         {
+             setInst("v_writelane_b32");
+         }
