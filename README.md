@@ -2,21 +2,6 @@
 
 Portable helper scripts for running Tensile YAML workloads in Docker, collecting ASM artifacts, comparing generated assembly, and parsing StinkyTofu timing logs.
 
-This project is extracted from an internal ticket workflow and cleaned up for reuse:
-- no MI450-specific script names
-- no hardcoded user paths
-- no fixed container/build directory names
-
-## Project layout
-
-- `scripts/run-single-yaml.sh`: run one YAML inside a docker container.
-- `scripts/run-all-yaml.sh`: batch-run YAML files from one config file.
-- `scripts/diff-asm.sh`: compare `orig` vs `st` ASM folders.
-- `scripts/parse_timing.py`: parse compile timing log and print top-k + distributions.
-- `examples/sample.yaml`: sample input YAML.
-- `test-lists/`: test target list files (`*.list`).
-- `examples/test.cfg`: example config.
-
 ## Requirements
 
 - Linux with `bash`, `python3`, `docker`
@@ -31,12 +16,8 @@ This project is extracted from an internal ticket workflow and cleaned up for re
 cd st-codegen-test
 chmod +x scripts/*.sh
 
-# Run a single YAML
-scripts/run-single-yaml.sh \
-  --yaml examples/sample.yaml \
-  --build-dir /path/to/tensile/build \
-  --container my-dev-container \
-  --workdir /workspace/st-codegen-test
+# Run a single YAML with config
+scripts/run-single-yaml.sh examples/test.cfg examples/sample.yaml
 ```
 
 Output artifacts are saved to `artifacts/<yaml-base>/` by default.
@@ -109,3 +90,4 @@ This prints:
 - `run-single-yaml.sh` can auto-start the container. Use `--no-start` if container lifecycle is managed elsewhere.
 - By default, container `<yaml-base>.out` is deleted after run. Use `--keep-container-out` to preserve it.
 - `run-all-yaml.sh` expands variables in list entries (for example `${rocm_libraries_path}`).
+- In config files, use `docker_auto_start=true|false` to control automatic `docker start`.

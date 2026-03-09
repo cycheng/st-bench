@@ -5,7 +5,8 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Compare asm folder pairs:
-  <root>/<case>/orig  vs  <root>/<case>/st
+  1) <root>/orig vs <root>/st
+  2) <root>/<case>/orig vs <root>/<case>/st
 
 Usage:
   scripts/diff-asm.sh [--asm-root <dir>] [--side-by-side]
@@ -48,27 +49,29 @@ diff_folder_list=()
 no_diff_folder_list=()
 skipped_folder_list=()
 
-for folder in "${ASM_ROOT}"/*/; do
-  [[ -d "${folder}" ]] || continue
-  folder="${folder%/}"
-  folder_name="$(basename "${folder}")"
-  orig_dir="${folder}/orig"
-  st_dir="${folder}/st"
+process_case_folder() {
+  local folder="$1"
+  local folder_name="$2"
+  local orig_dir="${folder}/orig"
+  local st_dir="${folder}/st"
+  local missing
 
   if [[ ! -d "${orig_dir}" || ! -d "${st_dir}" ]]; then
-    ((skipped_folders++))
     if [[ ! -d "${orig_dir}" && ! -d "${st_dir}" ]]; then
-      skipped_folder_list+=("${folder_name} (missing orig and st)")
+      missing="orig and st directories not found"
     elif [[ ! -d "${orig_dir}" ]]; then
-      skipped_folder_list+=("${folder_name} (missing orig)")
+      missing="orig directory not found"
     else
-      skipped_folder_list+=("${folder_name} (missing st)")
+      missing="st directory not found"
     fi
-    continue
+    echo "Skipping ${folder_name}: ${missing}"
+    echo
+    ((skipped_folders+=1))
+    skipped_folder_list+=("${folder_name} (${missing})")
+    return
   fi
 
-  ((total_folders++))
-
+  ((total_folders+=1))
   orig_count=$(find "${orig_dir}" -type f \( -name "*.s" -o -name "*.asm" \) | wc -l)
   st_count=$(find "${st_dir}" -type f \( -name "*.s" -o -name "*.asm" \) | wc -l)
   total_asm_files=$((total_asm_files + orig_count + st_count))
@@ -80,7 +83,7 @@ for folder in "${ASM_ROOT}"/*/; do
 
   set +e
   if [[ ${SIDE_BY_SIDE} -eq 1 ]]; then
-    diff -y --suppress-common-lines -W 200 -b "${orig_dir}" "${st_dir}"
+    (cd "${folder}" && diff -y --suppress-common-lines -W 200 -b orig st)
   else
     diff -qr -b "${orig_dir}" "${st_dir}"
   fi
@@ -88,16 +91,29 @@ for folder in "${ASM_ROOT}"/*/; do
   set -e
 
   if [[ ${diff_status} -eq 0 ]]; then
-    ((no_diff_folders++))
+    echo "No differences found in ${folder_name}"
+    ((no_diff_folders+=1))
     no_diff_folder_list+=("${folder_name}")
   elif [[ ${diff_status} -eq 1 ]]; then
-    ((diff_folders++))
+    echo "Differences found in ${folder_name}"
+    ((diff_folders+=1))
     diff_folder_list+=("${folder_name}")
   else
     echo "Error while diffing ${folder_name}"
   fi
-
   echo
+}
+
+if [[ -d "${ASM_ROOT}/orig" || -d "${ASM_ROOT}/st" ]]; then
+  process_case_folder "${ASM_ROOT}" "$(basename "${ASM_ROOT}")"
+fi
+
+for folder in "${ASM_ROOT}"/*/; do
+  [[ -d "${folder}" ]] || continue
+  folder="${folder%/}"
+  folder_name="$(basename "${folder}")"
+  [[ "${folder_name}" == "orig" || "${folder_name}" == "st" ]] && continue
+  process_case_folder "${folder}" "${folder_name}"
 done
 
 echo "=========================================="
@@ -112,3 +128,4 @@ echo
 echo "Folders with differences: ${diff_folder_list[*]:-(none)}"
 echo "Folders with no differences: ${no_diff_folder_list[*]:-(none)}"
 echo "Skipped folders: ${skipped_folder_list[*]:-(none)}"
+echo "Diff comparison completed."

@@ -97,6 +97,7 @@ parse_config_file() {
       output_root) OUTPUT_ROOT="${value}" ;;
       env) EXTRA_ENVS+=("${value}") ;;
       env_file) ENV_FILES+=("${value}") ;;
+      docker_auto_start) AUTO_START="$(parse_bool "${value}")" ;;
       no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       *)

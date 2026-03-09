@@ -17,7 +17,7 @@ Config file format (key=value):
   output_root=./artifacts
   env=TARGET_ARCH=gfx1250               # repeatable
   env_file=./my-env.list                # repeatable
-  no_start=true
+  docker_auto_start=true
   keep_container_out=false
 
 List file format:
@@ -33,7 +33,7 @@ WORKDIR=""
 OUTPUT_ROOT=""
 EXTRA_ENVS=()
 ENV_FILES=()
-NO_START=0
+DOCKER_AUTO_START=1
 KEEP_CONTAINER_OUT=0
 
 parse_bool() {
@@ -83,7 +83,8 @@ parse_config_file() {
       output_root) OUTPUT_ROOT="${value}" ;;
       env) EXTRA_ENVS+=("${value}") ;;
       env_file) ENV_FILES+=("${value}") ;;
-      no_start) NO_START="$(parse_bool "${value}")" ;;
+      docker_auto_start) DOCKER_AUTO_START="$(parse_bool "${value}")" ;;
+      no_start) DOCKER_AUTO_START="$((1 - $(parse_bool "${value}")))" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       *)
         echo "Unknown config key: ${key}" >&2
@@ -124,7 +125,11 @@ fi
 
 expand_vars() {
   local raw="$1"
-  eval "echo \"${raw}\""
+  local expanded
+  set +u
+  expanded="$(eval "echo \"${raw}\"")"
+  set -u
+  echo "${expanded}"
 }
 
 run_yaml() {
@@ -137,7 +142,7 @@ run_yaml() {
   [[ -n "${CONTAINER_NAME}" ]] && args+=(--container "${CONTAINER_NAME}")
   [[ -n "${WORKDIR}" ]] && args+=(--workdir "${WORKDIR}")
   [[ -n "${OUTPUT_ROOT}" ]] && args+=(--output-root "${OUTPUT_ROOT}")
-  [[ ${NO_START} -eq 1 ]] && args+=(--no-start)
+  [[ ${DOCKER_AUTO_START} -eq 0 ]] && args+=(--no-start)
   [[ ${KEEP_CONTAINER_OUT} -eq 1 ]] && args+=(--keep-container-out)
 
   for kv in "${EXTRA_ENVS[@]}"; do
