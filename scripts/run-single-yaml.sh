@@ -239,6 +239,7 @@ if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
 fi
 
 if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm'"; then
+  rm -rf "${HOST_OUTPUT_DIR}/cmpasm"
   docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm" "${HOST_OUTPUT_DIR}/cmpasm"
 fi
 

@@ -8,6 +8,7 @@ Run YAMLs from config + list files.
 
 Usage:
   scripts/run-all-yaml.sh <config-file>
+  scripts/run-all-yaml.sh <config-file> <list-file>
 
 Config file format (key=value):
   build_dir=/path/to/build
@@ -94,17 +95,29 @@ parse_config_file() {
   done < "${cfg}"
 }
 
-if [[ $# -eq 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
+if [[ $# -ge 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
   usage
   exit 0
 fi
-if [[ $# -ne 1 ]]; then
+if [[ $# -lt 1 || $# -gt 2 ]]; then
   usage
   exit 1
 fi
 
 CONFIG_FILE="$1"
 parse_config_file "${CONFIG_FILE}"
+
+if [[ $# -eq 2 ]]; then
+  override_list_file="$2"
+  config_dir="$(cd -- "$(dirname -- "${CONFIG_FILE}")" && pwd)"
+  if [[ "${override_list_file}" = /* ]]; then
+    LIST_FILES=("${override_list_file}")
+  elif [[ -f "${override_list_file}" ]]; then
+    LIST_FILES=("${override_list_file}")
+  else
+    LIST_FILES=("${config_dir}/${override_list_file}")
+  fi
+fi
 
 if [[ -z "${BUILD_DIR}" ]]; then
   echo "build_dir is required in config." >&2
