@@ -243,6 +243,9 @@ if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm'"; 
   docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm" "${HOST_OUTPUT_DIR}/cmpasm"
 fi
 
+# Keep workspace clean after artifact copy.
+docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
+
 cp "${ABS_YAML}" "${HOST_OUTPUT_DIR}/"
 
 if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then

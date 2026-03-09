@@ -2,9 +2,7 @@
 # export rocm_libraries_path=/data0/cycheng2/rocm-libraries
 
 # gfx1250 dense
-#${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/*gfx1250.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/*gfx1250.yaml
 
 # gfx1250 sparse
-#${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250
-
-/data0/cycheng2/tickets/st-codegen-test/examples/sample.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250
