@@ -1,0 +1,8 @@
+# Set this variable before running:
+# export rocm_libraries_path=/data0/cycheng2/rocm-libraries
+
+# gfx1250 dense
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/*gfx1250.yaml
+
+# gfx1250 sparse
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250
