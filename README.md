@@ -65,7 +65,12 @@ asm/
 run:
 
 ```bash
-scripts/diff-asm.sh --asm-root ./asm
+# default use ./asm folder
+scripts/diff-asm.sh
+```
+
+```bash
+scripts/diff-asm.sh --asm-root ./myfolder
 ```
 
 For side-by-side output:

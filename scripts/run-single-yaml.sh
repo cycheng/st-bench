@@ -91,6 +91,7 @@ parse_config_file() {
 
     case "${key}" in
       build_dir) BUILD_DIR="${value}" ;;
+      rocm_libraries_path) : ;;  # accepted for shared config compatibility
       container) CONTAINER_NAME="${value}" ;;
       workdir) WORKDIR="${value}" ;;
       client) CLIENT_PATH="${value}" ;;
@@ -238,9 +239,13 @@ if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
   grep -oE 'NO_CHECK.{0,10}' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
 fi
 
-if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm'"; then
-  rm -rf "${HOST_OUTPUT_DIR}/cmpasm"
-  docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm" "${HOST_OUTPUT_DIR}/cmpasm"
+if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
+  rm -rf "${HOST_OUTPUT_DIR}/orig"
+  docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+fi
+if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
+  rm -rf "${HOST_OUTPUT_DIR}/st"
+  docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
 fi
 
 # Keep workspace clean after artifact copy.
