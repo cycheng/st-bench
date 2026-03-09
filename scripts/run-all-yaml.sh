@@ -13,6 +13,7 @@ Usage:
 Config file format (key=value):
   build_dir=/path/to/build
   list_file=./test-lists/gfx1250.list   # repeatable, required
+  rocm_libraries_path=/data0/cycheng2/rocm-libraries
   container=my-dev-container
   workdir=/workspace/st-codegen-test
   output_root=./artifacts
@@ -29,6 +30,7 @@ EOF
 
 BUILD_DIR=""
 LIST_FILES=()
+ROCM_LIBRARIES_PATH="${rocm_libraries_path:-}"
 CONTAINER_NAME=""
 WORKDIR=""
 OUTPUT_ROOT=""
@@ -79,6 +81,7 @@ parse_config_file() {
     case "${key}" in
       build_dir) BUILD_DIR="${value}" ;;
       list_file) LIST_FILES+=("${value}") ;;
+      rocm_libraries_path) ROCM_LIBRARIES_PATH="${value}" ;;
       container) CONTAINER_NAME="${value}" ;;
       workdir) WORKDIR="${value}" ;;
       output_root) OUTPUT_ROOT="${value}" ;;
@@ -139,6 +142,9 @@ fi
 expand_vars() {
   local raw="$1"
   local expanded
+  if [[ -n "${ROCM_LIBRARIES_PATH}" ]]; then
+    export rocm_libraries_path="${ROCM_LIBRARIES_PATH}"
+  fi
   set +u
   expanded="$(eval "echo \"${raw}\"")"
   set -u
