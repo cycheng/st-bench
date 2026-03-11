@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from statistics import mean
 
@@ -118,6 +118,131 @@ def parse_log(path: Path) -> list[KernelTiming]:
     return kernels
 
 
+@dataclass
+class TestCaseResult:
+    name: str
+    log_path: Path
+    kernels: list[KernelTiming] = field(default_factory=list)
+
+    @property
+    def num_kernels(self) -> int:
+        return len(self.kernels)
+
+    @property
+    def total_a(self) -> float:
+        return sum(k.a_time for k in self.kernels)
+
+    @property
+    def max_a(self) -> float:
+        return max((k.a_time for k in self.kernels), default=0.0)
+
+    @property
+    def mean_a(self) -> float:
+        return mean(k.a_time for k in self.kernels) if self.kernels else 0.0
+
+    @property
+    def total_rocisa(self) -> float:
+        return sum(k.t_rocisa for k in self.kernels)
+
+    @property
+    def total_time(self) -> float:
+        return sum(k.t_total for k in self.kernels)
+
+    @property
+    def mean_b_pct(self) -> float:
+        finite = [k.b_pct for k in self.kernels if k.b_pct != float("inf")]
+        return mean(finite) if finite else 0.0
+
+
+def discover_testcases(asm_dir: Path) -> list[TestCaseResult]:
+    results: list[TestCaseResult] = []
+    for child in sorted(asm_dir.iterdir()):
+        if not child.is_dir():
+            continue
+        logs = list(child.glob("*.log"))
+        if not logs:
+            continue
+        log_path = logs[0]
+        name = child.name
+        kernels = parse_log(log_path)
+        results.append(TestCaseResult(name=name, log_path=log_path, kernels=kernels))
+    return results
+
+
+def print_testcase_summary_table(results: list[TestCaseResult]) -> None:
+    hdr = f"{'TestCase':<30} {'Kernels':>7} {'Sum(A)':>10} {'Max(A)':>10} {'Mean(A)':>10} {'Mean(B%)':>10} {'Sum(Total)':>12}"
+    sep = "-" * len(hdr)
+    print(sep)
+    print(hdr)
+    print(sep)
+    for r in results:
+        if not r.kernels:
+            print(f"{r.name:<30} {'(no kernels)':>7}")
+            continue
+        print(
+            f"{r.name:<30} {r.num_kernels:>7} "
+            f"{r.total_a:>9.4f}s {r.max_a:>9.4f}s {r.mean_a:>9.4f}s "
+            f"{r.mean_b_pct:>9.2f}% {r.total_time:>11.4f}s"
+        )
+    print(sep)
+
+
+def print_overall_summary(results: list[TestCaseResult]) -> None:
+    all_kernels = [k for r in results for k in r.kernels]
+    valid = [r for r in results if r.kernels]
+    if not all_kernels:
+        print("  No kernels found across all testcases.")
+        return
+
+    grand_total_a = sum(k.a_time for k in all_kernels)
+    grand_total_time = sum(k.t_total for k in all_kernels)
+    a_vals = sorted(k.a_time for k in all_kernels)
+    b_vals = sorted(k.b_pct for k in all_kernels if k.b_pct != float("inf"))
+
+    print(f"  Testcases scanned:   {len(results)}")
+    print(f"  Testcases with data: {len(valid)}")
+    print(f"  Total kernels:       {len(all_kernels)}")
+    print(f"  Grand total (A):     {grand_total_a:.4f}s")
+    print(f"  Grand total (0):     {grand_total_time:.4f}s")
+    print()
+    print(f"  (A) across all kernels:")
+    print(f"    Min:  {a_vals[0]:.4f}s")
+    print(f"    Max:  {a_vals[-1]:.4f}s")
+    print(f"    Mean: {mean(a_vals):.4f}s")
+    print(f"    P50:  {percentile(a_vals, 0.50):.4f}s")
+    print(f"    P90:  {percentile(a_vals, 0.90):.4f}s")
+    print(f"    P95:  {percentile(a_vals, 0.95):.4f}s")
+    print()
+    print_histogram(a_vals, [(0, 0.05), (0.05, 0.1), (0.1, 0.2), (0.2, 0.3), (0.3, 0.5), (0.5, 1.0), (1.0, float("inf"))], "s")
+    print()
+
+    if b_vals:
+        inf_count = len(all_kernels) - len(b_vals)
+        print(f"  (B)% across all kernels:")
+        if inf_count:
+            print(f"    Excluded inf values: {inf_count}")
+        print(f"    Min:  {b_vals[0]:.2f}%")
+        print(f"    Max:  {b_vals[-1]:.2f}%")
+        print(f"    Mean: {mean(b_vals):.2f}%")
+        print(f"    P50:  {percentile(b_vals, 0.50):.2f}%")
+        print(f"    P90:  {percentile(b_vals, 0.90):.2f}%")
+        print(f"    P95:  {percentile(b_vals, 0.95):.2f}%")
+        print()
+        print_histogram(b_vals, [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 100), (100, float("inf"))], "%")
+
+    print()
+    print("  Top 10 testcases by Sum(A):")
+    by_total_a = sorted(valid, key=lambda r: r.total_a, reverse=True)[:10]
+    for rank, r in enumerate(by_total_a, 1):
+        print(f"    {rank:>2}. {r.name:<30} Sum(A)={r.total_a:.4f}s  ({r.num_kernels} kernels)")
+
+    print()
+    print("  Top 10 testcases by Mean(B%):")
+    by_mean_b = sorted(valid, key=lambda r: r.mean_b_pct, reverse=True)[:10]
+    for rank, r in enumerate(by_mean_b, 1):
+        print(f"    {rank:>2}. {r.name:<30} Mean(B%)={r.mean_b_pct:.2f}%  ({r.num_kernels} kernels)")
+
+
 def percentile(sorted_vals: list[float], pct: float) -> float:
     if not sorted_vals:
         return 0.0
@@ -150,29 +275,21 @@ def print_kernel(rank: int, kernel: KernelTiming) -> None:
     print()
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Parse StinkyTofu compile timing log")
-    parser.add_argument("log_file", type=Path, help="Path to compile log file")
-    parser.add_argument("--top", type=int, default=20, help="Top N entries to show (default: 20)")
-    args = parser.parse_args()
-
-    if not args.log_file.is_file():
-        raise SystemExit(f"Log file not found: {args.log_file}")
-
-    kernels = parse_log(args.log_file)
+def report_single_log(log_path: Path, top: int) -> None:
+    kernels = parse_log(log_path)
     if not kernels:
         raise SystemExit("No kernel timing blocks found.")
 
-    print(f"Parsed {len(kernels)} kernels from {args.log_file}\n")
+    print(f"Parsed {len(kernels)} kernels from {log_path}\n")
     print("=" * 70)
     print("\nTop kernels by (A)=(1a)+(1b)+(2)\n")
-    by_a = sorted(kernels, key=lambda k: k.a_time, reverse=True)[: args.top]
+    by_a = sorted(kernels, key=lambda k: k.a_time, reverse=True)[:top]
     for rank, kernel in enumerate(by_a, 1):
         print_kernel(rank, kernel)
 
     print("=" * 70)
     print("\nTop kernels by (B)%=(A)/Rocisa::str(moduleKernelBody)\n")
-    by_b = sorted(kernels, key=lambda k: k.b_pct, reverse=True)[: args.top]
+    by_b = sorted(kernels, key=lambda k: k.b_pct, reverse=True)[:top]
     for rank, kernel in enumerate(by_b, 1):
         print_kernel(rank, kernel)
 
@@ -207,6 +324,70 @@ def main() -> None:
         print(f"  P90:   {percentile(b_vals, 0.90):.2f}%")
         print(f"  P95:   {percentile(b_vals, 0.95):.2f}%")
         print_histogram(b_vals, [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 100), (100, float("inf"))], "%")
+
+
+def report_directory(asm_dir: Path, top: int) -> None:
+    print(f"Scanning directory: {asm_dir}\n")
+    results = discover_testcases(asm_dir)
+    if not results:
+        raise SystemExit(f"No testcases (subdirs with .log files) found in {asm_dir}")
+
+    valid = [r for r in results if r.kernels]
+    skipped = [r for r in results if not r.kernels]
+
+    print(f"Found {len(results)} testcase(s), {len(valid)} with kernel data"
+          f"{f', {len(skipped)} skipped (no kernels)' if skipped else ''}\n")
+
+    if skipped:
+        print("Skipped testcases (no kernels parsed):")
+        for r in skipped:
+            print(f"  - {r.name}")
+        print()
+
+    print("=" * 100)
+    print("\nPer-TestCase Summary\n")
+    print_testcase_summary_table(valid)
+
+    print()
+    print("=" * 100)
+    print("\nOverall Summary (all testcases combined)\n")
+    print_overall_summary(valid)
+
+    all_kernels = [k for r in valid for k in r.kernels]
+    if all_kernels:
+        print()
+        print("=" * 100)
+        print(f"\nTop {top} kernels by (A) across ALL testcases\n")
+        by_a = sorted(
+            ((r.name, k) for r in valid for k in r.kernels),
+            key=lambda x: x[1].a_time, reverse=True,
+        )[:top]
+        for rank, (tc_name, kernel) in enumerate(by_a, 1):
+            print(f"--- Rank {rank} [{tc_name}] (kernel #{kernel.idx}) ---")
+            print(f"  (1a) toStinkyTofuModule:      {kernel.t_1a:.4f}s")
+            print(f"  (1b) runOptimizationPipeline: {kernel.t_1b:.4f}s")
+            print(f"  (2)  emitAssembly:            {kernel.t_2:.4f}s")
+            print(f"  Rocisa::str(moduleKernelBody): {kernel.t_rocisa:.4f}s")
+            print(f"  (3) debug file write:         {kernel.t_3:.4f}s")
+            print(f"  (0) total:                    {kernel.t_total:.4f}s")
+            print(f"  (A)=(1a)+(1b)+(2):            {kernel.a_time:.4f}s")
+            print(f"  (B)=(A)/Rocisa:               {kernel.b_pct:.2f}%")
+            print()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Parse StinkyTofu compile timing log")
+    parser.add_argument("path", type=Path,
+                        help="Path to a single log file, or a directory of testcases (e.g. ./asm)")
+    parser.add_argument("--top", type=int, default=20, help="Top N entries to show (default: 20)")
+    args = parser.parse_args()
+
+    if args.path.is_dir():
+        report_directory(args.path, args.top)
+    elif args.path.is_file():
+        report_single_log(args.path, args.top)
+    else:
+        raise SystemExit(f"Path not found: {args.path}")
 
 
 if __name__ == "__main__":
