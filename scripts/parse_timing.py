@@ -58,30 +58,60 @@ def parse_log(path: Path) -> list[KernelTiming]:
             i += 1
             continue
 
-        block = lines[i : i + 6]
-        if len(block) < 6:
-            break
+        # Timing lines are not always strictly contiguous and newer logs may
+        # omit stage (1b). Scan forward until we close this kernel block at (0).
+        t_1a = float(m1a.group(1))
+        t_1b = 0.0
+        t_2 = None
+        t_rocisa = None
+        t_3 = None
+        t_total = None
 
-        m1b = PATTERNS["1b"].search(block[1])
-        m2 = PATTERNS["2"].search(block[2])
-        mro = PATTERNS["rocisa"].search(block[3])
-        m3 = PATTERNS["3"].search(block[4])
-        m0 = PATTERNS["0"].search(block[5])
+        j = i + 1
+        while j < len(lines):
+            line = lines[j]
 
-        if all([m1b, m2, mro, m3, m0]):
+            m1b = PATTERNS["1b"].search(line)
+            if m1b:
+                t_1b = float(m1b.group(1))
+
+            m2 = PATTERNS["2"].search(line)
+            if m2:
+                t_2 = float(m2.group(1))
+
+            mro = PATTERNS["rocisa"].search(line)
+            if mro:
+                t_rocisa = float(mro.group(1))
+
+            m3 = PATTERNS["3"].search(line)
+            if m3:
+                t_3 = float(m3.group(1))
+
+            m0 = PATTERNS["0"].search(line)
+            if m0:
+                t_total = float(m0.group(1))
+                break
+
+            # Next kernel started before seeing a closing (0): abandon this one.
+            if PATTERNS["1a"].search(line):
+                break
+
+            j += 1
+
+        if all(v is not None for v in (t_2, t_rocisa, t_3, t_total)):
             idx += 1
             kernels.append(
                 KernelTiming(
                     idx=idx,
-                    t_1a=float(m1a.group(1)),
-                    t_1b=float(m1b.group(1)),
-                    t_2=float(m2.group(1)),
-                    t_rocisa=float(mro.group(1)),
-                    t_3=float(m3.group(1)),
-                    t_total=float(m0.group(1)),
+                    t_1a=t_1a,
+                    t_1b=t_1b,
+                    t_2=t_2,
+                    t_rocisa=t_rocisa,
+                    t_3=t_3,
+                    t_total=t_total,
                 )
             )
-            i += 6
+            i = j + 1
         else:
             i += 1
 

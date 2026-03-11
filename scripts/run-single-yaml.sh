@@ -90,7 +90,9 @@ parse_config_file() {
     value="${value%"${value##*[![:space:]]}"}"
 
     case "${key}" in
+      task_type) : ;;  # accepted for shared config compatibility
       build_dir) BUILD_DIR="${value}" ;;
+      list_file) : ;;  # accepted for shared config compatibility
       rocm_libraries_path) : ;;  # accepted for shared config compatibility
       container) CONTAINER_NAME="${value}" ;;
       workdir) WORKDIR="${value}" ;;
@@ -101,6 +103,10 @@ parse_config_file() {
       docker_auto_start) AUTO_START="$(parse_bool "${value}")" ;;
       no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      hipblaslt_repo_path) : ;;      # accepted for shared config compatibility
+      hipblaslt_install_flags) : ;;  # accepted for shared config compatibility
+      hipblaslt_build_type) : ;;     # accepted for shared config compatibility
+      hipblaslt_symlink_name) : ;;   # accepted for shared config compatibility
       *)
         echo "Unknown config key: ${key}" >&2
         exit 1
