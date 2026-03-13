@@ -94,9 +94,9 @@ run_diff() {
 
   set +e
   if [[ ${SIDE_BY_SIDE} -eq 1 ]]; then
-    diff -y --suppress-common-lines -W 200 -b "${left_dir}" "${right_dir}"
+    diff -y --suppress-common-lines -W 200 -b --exclude=manifest.txt "${left_dir}" "${right_dir}"
   else
-    diff -qr -b "${left_dir}" "${right_dir}"
+    diff -qr -b --exclude=manifest.txt "${left_dir}" "${right_dir}"
   fi
   diff_status=$?
   set -e
