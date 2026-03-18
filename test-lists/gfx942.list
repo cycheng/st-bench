@@ -1,0 +1,92 @@
+# gfx942 test list
+# Set this variable before running:
+# export rocm_libraries_path=/data1/darrenh/rocm-libraries
+
+# --- gemm dense ---
+# gfx942/gfx940 specific
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/*gfx942*.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/*gfx940*.yaml
+
+# general gemm (no arch suffix = compatible with gfx942)
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/8rn_b_s.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/ag.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/bf16_tn.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/bf16_tn_predict.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/cgemm.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/dtl.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/dtv.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/f64.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp16_HH_BHS_bf16mfma.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp16_tn.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp16_use_e.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp16fp32mix.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp32_nt.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp32_scalealphavec.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp32_tn.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8bf8nss.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8n.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8n_rowwise.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8n_use_e.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8nfp16mix_fp8nss.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8nfp16mix_hfp8ns.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8nfp16mix_hhs.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/fp8nfp16mix_hhs_lsu4.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gsuasb.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gsuc.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/hh_f8nhs.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/icache_flush.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/largeMT.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/large_size.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/lsu_fnuz.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/lsu_i8.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/mbskPrefetchOpt.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/mix_cvt_after_ds_fnuz.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/no_shadowinit.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/swizzleA.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/swizzleB.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/tail_small_size.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/ulsgro1.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/wgm.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/xfp32.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/zgemm.yaml
+
+# --- sgemm ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sgemm_xf32_asm.yaml
+
+# --- amaxd ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/amaxd/8rn_amaxd.yaml
+
+# --- client ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/client/rotate_mode0.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/client/rotate_mode1.yaml
+
+# --- exception ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/exception/f16_cf32_nan.yaml
+
+# --- gradient ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gradient/fp16_gradient_activation.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gradient/fp16_gradient_bias.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gradient/fp8bf8nss_gradient_bias_b.yaml
+
+# --- groupedgemm ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/groupedgemm/grouped_gemm.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/groupedgemm/*gfx942*.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/groupedgemm/grouped_gemm_userargs.yaml
+
+# --- gsu ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gsu/*.yaml
+
+# --- streamk ---
+# sk_bgemm_div, sk_f8gemm_quick, sk_I8gemm_quick, sk_reduction have skip-gfx942
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_bgemm_quick.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_dgemm_quick.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_f8ngemm_quick.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_hgemm_epilogues.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_hgemm_lsu.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_hgemm_quick.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_hgemm_race.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_sgemm_alpha0.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/sk_sgemm_quick.yaml
+
+# --- sparse/gfx94x ---
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx94x
