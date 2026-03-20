@@ -20,6 +20,7 @@ Config file format (key=value):
   output_root=./artifacts
   env=TARGET_ARCH=gfx1250               # repeatable
   env_file=./my-env.list                # repeatable
+  build_only=true                       # default true; set false to skip --build-only
   docker_auto_start=true
   keep_container_out=false
   hipblaslt_repo_path=${rocm_libraries_path}/projects/hipblaslt
@@ -42,6 +43,7 @@ OUTPUT_ROOT=""
 EXTRA_ENVS=()
 ENV_FILES=()
 DOCKER_AUTO_START=1
+BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
 TASK_TYPE="yaml"
 HIPBLASLT_REPO_PATH=""
@@ -100,6 +102,7 @@ parse_config_file() {
       env_file) ENV_FILES+=("${value}") ;;
       docker_auto_start) DOCKER_AUTO_START="$(parse_bool "${value}")" ;;
       no_start) DOCKER_AUTO_START="$((1 - $(parse_bool "${value}")))" ;;
+      build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       hipblaslt_repo_path) HIPBLASLT_REPO_PATH="${value}" ;;
       hipblaslt_install_flags) HIPBLASLT_INSTALL_FLAGS="${value}" ;;
@@ -186,6 +189,7 @@ run_yaml() {
   [[ -n "${CONTAINER_NAME}" ]] && args+=(--container "${CONTAINER_NAME}")
   [[ -n "${WORKDIR}" ]] && args+=(--workdir "${WORKDIR}")
   [[ -n "${OUTPUT_ROOT}" ]] && args+=(--output-root "${OUTPUT_ROOT}")
+  [[ ${BUILD_ONLY} -eq 0 ]] && args+=(--no-build-only)
   [[ ${DOCKER_AUTO_START} -eq 0 ]] && args+=(--no-start)
   [[ ${KEEP_CONTAINER_OUT} -eq 1 ]] && args+=(--keep-container-out)
 

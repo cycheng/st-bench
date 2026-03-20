@@ -22,6 +22,7 @@ Optional:
   --output-root <dir>    Host output root (default: ./artifacts).
   --env KEY=VALUE        Extra docker env var (repeatable).
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
+  --no-build-only        Disable --build-only (default: --build-only is enabled).
   --no-start             Do not auto-start container.
   --keep-container-out   Keep <yaml-base>.out in container workdir.
   -h, --help             Show help.
@@ -46,6 +47,7 @@ WORKDIR="$(pwd)"
 CLIENT_PATH=""
 OUTPUT_ROOT="$(pwd)/artifacts"
 AUTO_START=1
+BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
 EXTRA_ENVS=()
 ENV_FILES=()
@@ -102,6 +104,7 @@ parse_config_file() {
       env_file) ENV_FILES+=("${value}") ;;
       docker_auto_start) AUTO_START="$(parse_bool "${value}")" ;;
       no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
+      build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       hipblaslt_repo_path) : ;;      # accepted for shared config compatibility
       hipblaslt_install_flags) : ;;  # accepted for shared config compatibility
@@ -158,6 +161,10 @@ while [[ $# -gt 0 ]]; do
     --env-file)
       ENV_FILES+=("$2")
       shift 2
+      ;;
+    --no-build-only)
+      BUILD_ONLY=0
+      shift
       ;;
     --no-start)
       AUTO_START=0
@@ -236,8 +243,14 @@ done
 docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
 
 echo "Running ${ABS_YAML} in container ${CONTAINER_NAME}"
+TENSILE_ARGS="'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out'"
+if [[ ${BUILD_ONLY} -eq 1 ]]; then
+  TENSILE_ARGS+=" --build-only"
+fi
+TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
+
 docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
-  "'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out' --prebuilt-client='${CLIENT_PATH}'" \
+  "${TENSILE_ARGS}" \
   | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 
 if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
