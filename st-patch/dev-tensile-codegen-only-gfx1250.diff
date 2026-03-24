@@ -1,30 +1,8 @@
-diff --git a/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py b/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
-index d367287895..19d24e1d42 100644
---- a/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
-@@ -527,6 +527,8 @@ def _benchmarkProblemType(problemTypeConfig, problemSizeGroupConfig, problemSize
-         # run benchmarking client
-         if buildOnly:
-             print1("# Build-only mode: skipping benchmark.")
-+        elif globalParameters["GenerateSourcesAndExit"]:
-+            print1("# GenerateSourcesAndExit is True; skipping client execution.")
-         elif not os.path.exists(resultsFileName) or globalParameters["ForceRedoBenchmarkProblems"]:
-             libraryLogicPath = None
-             forBenchmark = True
-@@ -626,6 +628,8 @@ def main(
- 
-                 if buildOnly:
-                     print1("# Build-only mode: skipping result collection.")
-+                elif globalParameters["GenerateSourcesAndExit"]:
-+                    print1("# GenerateSourcesAndExit is True; skipping result collection.")
-                 else:
-                     print("clientExit={} {} for {}" \
-                             .format(totalTestFails, "(ERROR)" if totalTestFails else "(PASS)", \
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-index 854aa26896..916e20ad94 100644
+index 854aa26896..9b7c059100 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-@@ -261,10 +261,11 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+@@ -261,10 +261,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
      Raises:
          Exception if both tools fail to detect ISA.
      """
@@ -32,40 +10,15 @@ index 854aa26896..916e20ad94 100644
 -    if not isinstance(result, IsaVersion):
 -        raise Exception("Failed to detect currect ISA")
 -    return result
-+    # result = _detectGlobalCurrentISA(enumerator, deviceId)
-+    # if not isinstance(result, IsaVersion):
-+    #     raise Exception("Failed to detect currect ISA")
-+    # return result
 +    return IsaVersion(12, 5, 0)
  
  
  class ArchInfo(NamedTuple):
-diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index 74caa9c8cb..f2c780d0f6 100644
---- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-@@ -114,7 +114,7 @@ globalParameters["ShowProgressBar"] = (
- globalParameters["SolutionSelectionAlg"] = (
-     1  # algorithm to determine which solutions to keep. 0=removeLeastImportantSolutions, 1=keepWinnerSolutions (faster)
- )
--globalParameters["GenerateSourcesAndExit"] = False  # Exit after kernel source generation.
-+globalParameters["GenerateSourcesAndExit"] = True  # Exit after kernel source generation.
- globalParameters["ExitOnFails"] = (
-     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
- )
 diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-index f60e4e5bad..b972e69a3d 100644
+index 8ee04d371c..b2d27fc0e0 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-@@ -56,6 +56,7 @@ from Tensile.Toolchain.Component import Assembler
- 
- import math
- import abc
-+import os
- import sys
- import collections
- from copy import deepcopy
-@@ -255,7 +256,7 @@ class StateValues:
+@@ -255,7 +255,7 @@ class StateValues:
    startVgprAddressDbg: int               = -1
    startVgprAlphaTmp: int                 = -1
    startVgprSerial: int                   = -1
@@ -74,7 +27,7 @@ index f60e4e5bad..b972e69a3d 100644
  
    numSgprSizesSum: int                   = 0
    numSgprSizesFree: int                  = 0
-@@ -722,7 +723,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -722,7 +722,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
          elif mfmaBlockCount >= 2 and mfmaCount == 2:
            # interleave case, we still need nop 0
            waitState = 0
@@ -83,12 +36,13 @@ index f60e4e5bad..b972e69a3d 100644
      if waitState >= 0:
        dstPackItems.append(SNop(waitState=waitState, comment="nop for x32f emulation"))
  
-@@ -5125,7 +5126,27 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -5157,7 +5157,28 @@ class KernelWriter(metaclass=abc.ABCMeta):
      error = self.states.overflowedResources
      print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
  
 -    return (error, str(moduleKernelBody))
 +    asm_str = str(moduleKernelBody)
++    import os
 +    if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM"):
 +      import hashlib, fcntl
 +      os.makedirs("cmpasm/orig", exist_ok=True)
@@ -112,7 +66,7 @@ index f60e4e5bad..b972e69a3d 100644
  
    ##############################################################################
    # Init Kernel
-@@ -6153,7 +6174,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6185,7 +6206,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
          maxOffsetMXSA += kernel["LdsOffsetA_Blk"]
          maxOffsetMXSB += kernel["LdsOffsetA_Blk"]
          maxOffsetMetadata += kernel["LdsOffsetA_Blk"]
@@ -121,7 +75,7 @@ index f60e4e5bad..b972e69a3d 100644
        numVgprMultiplierA = maxOffsetA // maxLDSConstOffset + 1
        numVgprMultiplierB = maxOffsetB // maxLDSConstOffset + 1
        numVgprMultiplierMXSA = maxOffsetMXSA // maxLDSConstOffset + 1
-@@ -6277,7 +6298,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6309,7 +6330,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
          * kernel["NumLoadsPerpendicularB"] * kernel["GlobalReadVectorWidthB"]
      numGlobalReadInstructionsB = int(numGlobalReadsB * tensorParametersB["bpeGR"])// \
          (tensorParametersB["globalReadInstruction"].blockWidth * 4)
@@ -130,7 +84,7 @@ index f60e4e5bad..b972e69a3d 100644
      if kernel["enableTDMB"]:
        self.states.b.numVgprGlobalReadOffsets = 0
      elif kernel["BufferLoad"]:
-@@ -6645,7 +6666,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6681,7 +6702,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
  
      self.states.a.startVgprValu = vgprIdx
      vgprIdx += self.states.a.numVgprValu
@@ -139,7 +93,7 @@ index f60e4e5bad..b972e69a3d 100644
      numVgprValuPackA = 0
      if tensorParametersA["bpe"] < 4 and not kernel["UnrollMajorLDSA"] and not kernel["enableLDSTrA"]:
        self.states.a.startVgprValuPack = vgprIdx
-@@ -6683,7 +6704,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6719,7 +6740,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
          vgprIdx = ((vgprIdx+1)//2)*2
      else:
        vgprIdx = ((vgprIdx+1)//2)*2
@@ -148,7 +102,7 @@ index f60e4e5bad..b972e69a3d 100644
      self.states.b.startVgprValu = vgprIdx
      vgprIdx += self.states.b.numVgprValu
      numVgprValuPackB = 0
-@@ -6744,7 +6765,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6780,7 +6801,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
          if(self.states.archCaps["VgprBank"]):
            vgprIdx += 1
          # gfx1250
@@ -157,7 +111,7 @@ index f60e4e5bad..b972e69a3d 100644
            vgprIdx = ((vgprIdx+1)//2)*2
          self.states.m.startVgprValu = vgprIdx
          vgprIdx += self.states.m.numVgprValu
-@@ -6828,7 +6849,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -6864,7 +6885,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
  
      # for cgemm or zgemm + MIAV case, allocate 2 or 4 vgpr for alpha calculation (cannot use tmp vgpr in write batch)
      if kernel["ProblemType"]["DataType"].isComplex() \
