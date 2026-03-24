@@ -1,0 +1,93 @@
+GlobalParameters:
+  NumElementsToValidate: -1
+  KernelTime: True
+  NewClient: 2
+  BoundsCheck: False
+  ValidationMaxToPrint: 4
+  ValidationPrintValids: False
+  DataInitTypeA: 3
+  DataInitTypeB: 3
+  NumWarmups: 1
+  EnqueuesPerSync: 1
+  MinKForGSU: 1
+  Architecture: gfx1250
+  CpuThreads: 1
+  ROCmAgentEnumeratorPath: rocm_agent_enumerator
+  PrintSolutionRejectionReason: True
+  StinkyTofuOptLevel: 3
+
+BenchmarkProblems:
+  #######################################
+  # NN - standard
+  #######################################
+  -
+    - # ProblemType
+      OperationType: GEMM
+      DataType: b
+      DestDataType: b
+      ComputeDataType: s
+      HighPrecisionAccumulate:  True
+      TransposeA: True
+      TransposeB: False
+      UseBeta: True
+      Batched: True
+      SupportUserArgs: True
+      UseBias: 0
+      Activation: False
+      UseScaleAlphaVec: 0
+
+    - # BenchmarkProblemSizeGroup - Standard
+      InitialSolutionParameters:
+      BenchmarkCommonParameters:
+        - KernelLanguage: ["Assembly"]
+      ForkParameters:
+        - MatrixInstruction:
+          - [16, 16, 32, 1,  1, 8, 8,  2, 2 ]
+          # - [16, 16, 32, 1, 1, 1, 1, 1, 1]
+          # - [16, 16, 32, 1, 1, 1, 1, 2, 2]
+        - DepthU: [128]
+        - ClusterLocalRead: [0]
+        - TransposeLDS: [-1]
+        - LDSTrInst: [False]
+        - LdsPadA: [0]
+        - LdsPadB: [0]
+        - LdsBlockSizePerPadA: [256]
+        - LdsBlockSizePerPadB: [256]
+        # - LdsPadA: [-1]
+        # - LdsPadB: [-1]
+        # - LdsBlockSizePerPadA: [-1]
+        # - LdsBlockSizePerPadB: [-1]
+        - LdsPadMetadata: [0]
+        - StaggerU: [0]
+        - ScheduleIterAlg: [0]
+        - PrefetchLocalRead: [1]
+        - PrefetchGlobalRead: [2]
+        - GlobalSplitU: [1]
+        - GlobalSplitUAlgorithm: [MultipleBuffer]
+        - GlobalReadVectorWidthA: [-1]
+        - GlobalReadVectorWidthB: [-1]
+        # - 1LDSBuffer: [-1]
+        - 1LDSBuffer: [0]
+        - TDMInst: [3]
+        - VectorWidthA: [1]
+        - SourceSwap: [0]
+        - DirectToVgprSparseMetadata: [0]
+        - WorkGroupMapping: [1]
+        - StoreVectorWidth: [-1]
+        - DirectToVgprA: [False]
+        - WavefrontSize: [32]
+        - AssertFree0ElementMultiple: [1]
+        - AssertFree1ElementMultiple: [1]
+      BenchmarkForkParameters:
+      JoinParameters:
+      BenchmarkJoinParameters:
+      BenchmarkFinalParameters:
+        - ProblemSizes:
+          - Exact: [2048, 1024, 1, 4096]
+          # - Exact: [512, 512, 1, 512]
+          # - Exact: [64, 64, 1, 512]
+          # - Exact: [32, 32, 1, 128]
+          # - Exact: [32, 16, 1, 128]
+          # - Exact: [16, 16, 1, 512]
+          # - Exact: [16, 16, 1, 256]
+          # - Exact: [16, 16, 1, 128]
