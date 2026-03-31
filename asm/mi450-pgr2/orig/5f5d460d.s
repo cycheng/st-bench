@@ -1920,45 +1920,45 @@ label_skipPGR2_1:
 label_skipPGR2_2:
 // Skip force waitcnt0
 s_barrier_signal -1 
-s_barrier_wait -1
+s_barrier_wait -1             // LW to PLR, sync LDS0
 
 /* local read prefetch a */
 s_nop 0
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read prefetch b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read inc a */
 /* N/A, lro->32 */
@@ -1990,41 +1990,41 @@ label_LoopBeginL:
 /* local read a */
 s_nop 0
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->64 */
@@ -2122,40 +2122,40 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->96 */
@@ -2239,41 +2239,41 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 s_wait_loadcnt 0
 s_wait_tensorcnt 0                                 // 1wait for global read
 
@@ -2284,9 +2284,9 @@ s_wait_tensorcnt 0                                 // 1wait for global read
 /* local write MXSB */
 
 /* local write B */
-s_wait_dscnt 0                                     // Waiting curren LR finish for next GR(TDM)
+s_wait_dscnt 0                                     // Waiting current LR finish for next GR(TDM)
 s_barrier_signal -1 
-s_barrier_wait -1             // Waiting curren LR finish for next GR(TDM)
+s_barrier_wait -1             // Waiting current LR finish for next GR(TDM), sync LDS0
 
 /* tdm swap offsets a */
 // TDM LDS swap(aligned pow2: True)
@@ -2382,44 +2382,44 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 /* iter 3 */
 // Skip force waitcnt0
 s_barrier_signal -1 
-s_barrier_wait -1
+s_barrier_wait -1             // PGR, and wait until LW done to sync LDS1
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 
 /* local read increment a */
 /* N/A, lro->32 */
@@ -2523,41 +2523,41 @@ label_LoopEndL:
 /* local read a */
 s_nop 0
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->64 */
@@ -2641,40 +2641,40 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->96 */
@@ -2758,41 +2758,41 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 s_wait_loadcnt 0
 s_wait_tensorcnt 0                                 // 1wait for global read
 
@@ -2914,44 +2914,44 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 /* iter 3 */
 // Skip force waitcnt0
 s_barrier_signal -1 
-s_barrier_wait -1
+s_barrier_wait -1             // noLoadLoop sync LDS0
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->32 */
@@ -3068,41 +3068,41 @@ s_cbranch_scc0 label_OptNLL_End                    // skip if tail loop required
 
 /* local read a */
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->64 */
@@ -3198,40 +3198,40 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->96 */
@@ -3315,41 +3315,41 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 s_wait_loadcnt 0
 s_wait_tensorcnt 0                                 // 1wait for global read
 
@@ -4659,41 +4659,41 @@ label_GSU_3:
 /* local read a */
 s_nop 0
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8256 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8288 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16448 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16480 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24640 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24672 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32832 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32864 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41024 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41056 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49216 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49248 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57408 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57440 // L -> Reg lro=32 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:64 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:96 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:320 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:352 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:576 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:608 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:832 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:864 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1088 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1120 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1344 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1376 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1600 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1632 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->64 */
@@ -4789,40 +4789,40 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57472 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57504 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:384 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:416 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:640 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:672 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:896 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:928 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1152 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1184 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1408 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1440 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1664 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1696 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1920 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1952 // L -> Reg lro=64 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read increment a */
 /* N/A, lro->96 */
@@ -4906,41 +4906,41 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X
 
 /* local read a */
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+56-512:vgprValuA_X1_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57536 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X1_I0+60-512:vgprValuA_X1_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57568 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0
-ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+0-512:vgprValuB_X1_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+4-512:vgprValuB_X1_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+8-512:vgprValuB_X1_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:448 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+12-512:vgprValuB_X1_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:480 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+16-512:vgprValuB_X1_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:704 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+20-512:vgprValuB_X1_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:736 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+24-512:vgprValuB_X1_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:960 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+28-512:vgprValuB_X1_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:992 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+32-512:vgprValuB_X1_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1216 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+36-512:vgprValuB_X1_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1248 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+40-512:vgprValuB_X1_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1472 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+44-512:vgprValuB_X1_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1504 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+48-512:vgprValuB_X1_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1728 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1760 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1984 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
-ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0
+ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:2016 // L -> Reg lro=96 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
 s_wait_loadcnt 0
 s_wait_tensorcnt 0                                 // 1wait for global read
 
@@ -5202,7 +5202,7 @@ s_barrier_wait -1
 s_wait_dscnt 0                                     // 5wait for local write
 // Skip force waitcnt0
 s_barrier_signal -1 
-s_barrier_wait -1
+s_barrier_wait -1             // Tail loop LW->LR, sync LDS0
 .set vgprG2LA_BASE, UNDEF
 .set vgprG2LA, UNDEF
 .set vgprG2LB_BASE, UNDEF
@@ -5244,40 +5244,40 @@ label_TailLoopBeginL:
 /* local read a */
 s_nop 0
 s_set_vgpr_msb 130                                 // src0: 2, src1: 0, src2: 0, dst: 2
-ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16384 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32768 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49152 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read b */
-ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0
-ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0
+ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAddrB+0-512] offset:0 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAddrB+0-512] offset:256 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalReadAddrB+0-512] offset:768 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalReadAddrB+0-512] offset:1280 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
+ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
 
 /* local read inc a */
 s_mov_b32 s8, 64                                   // inc
