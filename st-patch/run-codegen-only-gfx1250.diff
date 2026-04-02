@@ -1,5 +1,5 @@
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-index 854aa268967..916e20ad942 100644
+index 854aa26896..916e20ad94 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 @@ -261,10 +261,11 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
@@ -15,19 +15,6 @@ index 854aa268967..916e20ad942 100644
 +    #     raise Exception("Failed to detect currect ISA")
 +    # return result
 +    return IsaVersion(12, 5, 0)
-
-
+ 
+ 
  class ArchInfo(NamedTuple):
-diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index 1dafb695f6c..c5b2fee52e5 100644
---- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-@@ -114,7 +114,7 @@ globalParameters["ShowProgressBar"] = (
- globalParameters["SolutionSelectionAlg"] = (
-     1  # algorithm to determine which solutions to keep. 0=removeLeastImportantSolutions, 1=keepWinnerSolutions (faster)
- )
--globalParameters["GenerateSourcesAndExit"] = False  # Exit after kernel source generation.
-+globalParameters["GenerateSourcesAndExit"] = True  # Exit after kernel source generation.
- globalParameters["ExitOnFails"] = (
-     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
- )
