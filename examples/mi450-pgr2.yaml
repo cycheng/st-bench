@@ -15,6 +15,7 @@ GlobalParameters:
   ROCmAgentEnumeratorPath: rocm_agent_enumerator
   PrintSolutionRejectionReason: True
   StinkyTofuOptLevel: 3
+  StinkyTofuPrintAfterPass: "StinkyBuildImplicitDependencyPass"
 
 BenchmarkProblems:
   #######################################
