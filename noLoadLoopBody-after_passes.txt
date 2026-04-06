@@ -2,38 +2,38 @@
 *** After Pass: StinkyBuildImplicitDependencyPass ***
 st.func @temp() {
 ^entry:
-  v[580:583], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[516:523], v[646:653], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[524:531], v[646:653], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[532:539], v[646:653], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -98,38 +98,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[556:563], v[702:709], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[564:571], v[702:709], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[572:579], v[702:709], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[516:519], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[520:523], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[524:527], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[528:531], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[532:535], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[536:539], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[540:543], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[544:547], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[548:551], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[552:555], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[556:559], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[560:563], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[564:567], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[568:571], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[572:575], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[576:579], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[646:649], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[650:653], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[654:657], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[658:661], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[662:665], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[666:669], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[670:673], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[674:677], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[678:681], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[682:685], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[686:689], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[690:693], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[694:697], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[698:701], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[702:705], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[706:709], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[516:519] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[520:523] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[524:527] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[528:531] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[532:535] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[536:539] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[540:543] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[544:547] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[548:551] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[552:555] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[556:559] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[560:563] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[564:567] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[568:571] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[572:575] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[576:579] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[646:649] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[650:653] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[654:657] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[658:661] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[662:665] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[666:669] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[670:673] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[674:677] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[678:681] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[682:685] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[686:689] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[690:693] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[694:697] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[698:701] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[702:705] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[706:709] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[580:587], v[710:717], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[588:595], v[710:717], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[596:603], v[710:717], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -194,38 +194,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[620:627], v[766:773], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[628:635], v[766:773], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[636:643], v[766:773], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[580:583], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643], PSEUDO0 = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773], PSEUDO0 = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
   "st.s_wait_tensorcnt"(0) { issueCycles = 1, latencyCycles = 1 }
   "st.s_wait_tensorcnt"(0) { issueCycles = 1, latencyCycles = 1 }
   "st.s_wait_tensorcnt"(0) { issueCycles = 1, latencyCycles = 1 }
@@ -297,40 +297,40 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[556:563], v[702:709], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[564:571], v[702:709], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[572:579], v[702:709], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  PSEUDO0 = "st.s_barrier_signal"(-1, PSEUDO0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
-  PSEUDO0 = "st.s_barrier_wait"(-1, PSEUDO0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
-  v[516:519] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[520:523] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[524:527] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[528:531] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[532:535] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[536:539] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[540:543] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[544:547] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[548:551] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32768, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[552:555] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32800, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[556:559] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 40960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[560:563] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 40992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[564:567] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[568:571] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[572:575] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[576:579] = "st.ds_load_b128"(v512, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[646:649] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[650:653] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[654:657] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 256, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[658:661] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 288, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[662:665] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 512, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[666:669] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 544, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[670:673] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 768, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[674:677] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 800, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[678:681] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1024, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[682:685] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1056, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[686:689] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1280, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[690:693] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1312, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[694:697] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1536, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[698:701] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1568, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[702:705] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1792, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[706:709] = "st.ds_load_b128"(v514, PSEUDO0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1824, gds = false }, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.s_barrier_signal"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.s_barrier_wait"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  v[516:519] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[520:523] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[524:527] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[528:531] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[532:535] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[536:539] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[540:543] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[544:547] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[548:551] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32768, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[552:555] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32800, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[556:559] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 40960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[560:563] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 40992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[564:567] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[568:571] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[572:575] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[576:579] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[646:649] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[650:653] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[654:657] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 256, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[658:661] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 288, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[662:665] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 512, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[666:669] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 544, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[670:673] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 768, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[674:677] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 800, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[678:681] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1024, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[682:685] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1056, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[686:689] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1280, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[690:693] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1312, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[694:697] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1536, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[698:701] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1568, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[702:705] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1792, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[706:709] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1824, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[580:587], v[710:717], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[588:595], v[710:717], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[596:603], v[710:717], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -434,38 +434,38 @@ st.func @temp() {
   "st.s_cbranch_scc0"(label_OptNLL_End) { issueCycles = 1, latencyCycles = 1 }
   Successors: ^label_OptNLL_End, ^label_toPGR1_1_2_3_4_5_6
 ^label_toPGR1_1_2_3_4_5_6:
-  v[580:583] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[516:523], v[646:653], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[524:531], v[646:653], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[532:539], v[646:653], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -530,38 +530,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[556:563], v[702:709], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[564:571], v[702:709], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[572:579], v[702:709], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[516:519] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[520:523] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[524:527] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[528:531] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[532:535] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[536:539] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[540:543] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[544:547] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[548:551] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[552:555] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[556:559] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[560:563] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[564:567] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[568:571] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[572:575] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[576:579] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[646:649] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[650:653] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[654:657] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[658:661] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[662:665] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[666:669] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[670:673] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[674:677] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[678:681] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[682:685] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[686:689] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[690:693] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[694:697] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[698:701] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[702:705] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[706:709] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[516:519] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[520:523] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[524:527] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[528:531] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[532:535] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[536:539] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[540:543] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[544:547] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[548:551] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[552:555] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[556:559] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[560:563] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[564:567] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[568:571] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[572:575] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[576:579] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[646:649] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[650:653] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[654:657] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[658:661] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[662:665] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[666:669] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[670:673] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[674:677] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[678:681] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[682:685] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[686:689] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[690:693] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[694:697] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[698:701] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[702:705] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[706:709] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[580:587], v[710:717], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[588:595], v[710:717], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[596:603], v[710:717], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -626,38 +626,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[620:627], v[766:773], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[628:635], v[766:773], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[636:643], v[766:773], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[580:583] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
   "st.s_wait_tensorcnt"(0) { issueCycles = 1, latencyCycles = 1 }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[516:523], v[646:653], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[524:531], v[646:653], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -1684,38 +1684,38 @@ st.func @temp() {
 ^label_OptNLL_End:
   Successors: ^label_GSU_3
 ^label_GSU_3:
-  v[580:583] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8256, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8288, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41024, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41056, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 832, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 864, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1600, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1632, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1856, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1888, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[516:523], v[646:653], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[524:531], v[646:653], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[532:539], v[646:653], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -1780,38 +1780,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[556:563], v[702:709], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[564:571], v[702:709], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[572:579], v[702:709], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[516:519] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[520:523] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[524:527] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[528:531] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[532:535] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[536:539] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[540:543] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[544:547] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[548:551] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[552:555] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[556:559] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[560:563] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[564:567] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[568:571] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[572:575] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[576:579] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[646:649] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[650:653] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[654:657] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[658:661] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[662:665] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[666:669] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[670:673] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[674:677] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[678:681] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[682:685] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[686:689] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[690:693] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[694:697] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[698:701] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[702:705] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[706:709] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[516:519] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[520:523] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[524:527] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8320, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[528:531] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8352, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[532:535] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16512, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[536:539] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16544, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[540:543] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[544:547] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[548:551] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[552:555] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[556:559] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41088, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[560:563] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41120, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[564:567] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49280, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[568:571] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49312, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[572:575] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[576:579] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[646:649] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 128, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[650:653] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 160, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[654:657] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[658:661] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[662:665] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 640, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[666:669] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 672, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[670:673] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 896, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[674:677] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 928, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[678:681] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[682:685] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[686:689] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1408, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[690:693] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1440, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[694:697] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1664, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[698:701] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1696, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[702:705] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1920, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[706:709] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1952, gds = false }, mod.memtoken = { tokens = [0] } }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[580:587], v[710:717], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[588:595], v[710:717], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[16:23] = "st.v_wmma_f32_16x16x32_bf16"(v[596:603], v[710:717], v[16:23]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
@@ -1876,38 +1876,38 @@ st.func @temp() {
   v[488:495] = "st.v_wmma_f32_16x16x32_bf16"(v[620:627], v[766:773], v[488:495]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[496:503] = "st.v_wmma_f32_16x16x32_bf16"(v[628:635], v[766:773], v[496:503]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[504:511] = "st.v_wmma_f32_16x16x32_bf16"(v[636:643], v[766:773], v[504:511]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
-  v[580:583] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[584:587] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[588:591] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[592:595] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[596:599] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[600:603] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[604:607] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[608:611] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[612:615] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[616:619] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[620:623] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[624:627] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[628:631] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[632:635] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[636:639] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[640:643] = "st.ds_load_b128"(v512) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[710:713] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[714:717] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[718:721] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[722:725] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[726:729] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[730:733] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[734:737] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[738:741] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[742:745] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[746:749] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[750:753] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[754:757] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[758:761] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[762:765] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[766:769] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
-  v[770:773] = "st.ds_load_b128"(v514) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[580:583] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[584:587] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[588:591] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8384, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[592:595] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 8416, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[596:599] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16576, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[600:603] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16608, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[604:607] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24768, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[608:611] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 24800, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[612:615] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[616:619] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[620:623] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41152, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[624:627] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 41184, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[628:631] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49344, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[632:635] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 49376, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[636:639] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57536, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[640:643] = "st.ds_load_b128"(v512, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 57568, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[710:713] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 192, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[714:717] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 224, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[718:721] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 448, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[722:725] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 480, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[726:729] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 704, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[730:733] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 736, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[734:737] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 960, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[738:741] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 992, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[742:745] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1216, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[746:749] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1248, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[750:753] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1472, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[754:757] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1504, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[758:761] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1728, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[762:765] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1760, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[766:769] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 1984, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[770:773] = "st.ds_load_b128"(v514, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 2016, gds = false }, mod.memtoken = { tokens = [0] } }
   "st.s_wait_tensorcnt"(0) { issueCycles = 1, latencyCycles = 1 }
   v[0:7] = "st.v_wmma_f32_16x16x32_bf16"(v[516:523], v[646:653], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
   v[8:15] = "st.v_wmma_f32_16x16x32_bf16"(v[524:531], v[646:653], v[8:15]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }

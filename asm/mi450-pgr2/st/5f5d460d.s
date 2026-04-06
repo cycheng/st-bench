@@ -2020,8 +2020,8 @@ ds_load_b128 v[vgprValuB_X1_I0+52-512:vgprValuB_X1_I0+52-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuB_X1_I0+56-512:vgprValuB_X1_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1856 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 s_set_vgpr_msb 33474                               // src0: 2, src1: 0, src2: 0, dst: 3
 ds_load_b128 v[vgprValuB_X1_I0+60-768:vgprValuB_X1_I0+60-768+3], v[vgprLocalReadAddrB+0-512] offset:1888 // L -> Reg lro=32 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_xor_b32 s[sgprtdmAGroup0+1], s[sgprtdmAGroup0+1], 0x20000
 s_add_u32 s[sgprtdmAGroup0+2], s[sgprtdmAGroup0+2], s[sgprtdmABIncs] // TDM increment
+s_xor_b32 s[sgprtdmAGroup0+1], s[sgprtdmAGroup0+1], 0x20000
 s_sub_u32 s[sgprLoopCounterL], s[sgprLoopCounterL], 1 // dec counterL
 s_cmp_eq_i32 s[sgprLoopCounterL], 0x2              // counterL==2
 s_wait_dscnt 0
