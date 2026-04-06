@@ -3242,16 +3242,16 @@ s_cbranch_scc0 label_OptNLL_End                    // Branch if Beta is not zero
 s_cmp_eq_u32 s[sgprAlpha], 1.0                     // Alpha == 1.0 ?
 s_cbranch_scc0 label_OptNLL_End                    // branch if alpha != 1
 s_mov_b32 s8, 0
+s_and_b32 s62, 255, s[sgprSizeI]                   // s62 = s[sgprSizeI] % 256
 s_add_u32 s63, -0x1, s[sgprNumWorkGroups0]
 s_cmp_ge_u32 s[sgprWorkGroup0], s63                // wg0 >= nwg0-1 ?
-s_and_b32 s62, 255, s[sgprSizeI]                   // s62 = s[sgprSizeI] % 256
 s_cselect_b32 s62, s62, 0                          // set rem
 s_cmp_gt_u32 s62, s8                               // rem > 0
 s_cbranch_scc1 label_OptNLL_End                    // jump if edges required
 s_mov_b32 s8, 0
+s_and_b32 s62, 255, s[sgprSizeJ]                   // s62 = s[sgprSizeJ] % 256
 s_add_u32 s63, -0x1, s[sgprNumWorkGroups1]
 s_cmp_ge_u32 s[sgprWorkGroup1], s63                // wg1 >= nwg1-1
-s_and_b32 s62, 255, s[sgprSizeJ]                   // s62 = s[sgprSizeJ] % 256
 s_cselect_b32 s62, s62, 0                          // set rem
 s_cmp_gt_u32 s62, s8                               // rem > 0
 s_cbranch_scc1 label_OptNLL_End                    // jump if edges required
