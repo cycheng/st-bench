@@ -5544,6 +5544,11 @@ v_nop                                              // Add v_nop before releasing
 .set vgprG2LB_BASE, 644
 .set vgprG2LB, vgprG2LB_BASE+0
 
+/* remove stagger offsets for tail loop */
+s_cmp_eq_u32 s[sgprOrigLoopCounter], 0             // skip if main loop was not executed
+s_cbranch_scc1 label_SkipRemoveStagger             // skip removeStagger
+label_SkipRemoveStagger:
+
 // numIterL = LOCAL_SPLITU * min(sizeL % LOCAL_DEPTHU, DEPTHU / LOCAL_SPLITU)
 s_and_b32 s[sgprLoopCounterL], 127, s[sgprSizesSum+0] // s[sgprLoopCounterL] = s[sgprSizesSum+0] % 128
 s_and_b32 s62, s[sgprGSU], 0x8000                  // SCC = (GSUC == 1) ?
@@ -5596,8 +5601,6 @@ label_GSUC_TL_End:
 s_cmp_eq_u32 s[sgprLoopCounterL], 0                // numIterL == 0
 s_mov_b32 s[sgprOrigLoopCounter], 0                // repurpose to count each localRead increment
 s_cbranch_scc1 label_SkipTailLoopL                 // skip to end of tail loop b/c numIter==0
-
-/* remove stagger offsets for tail loop */
 
 /* Update M0 for DTLDS */
 
@@ -28100,35 +28103,35 @@ v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 
 s_wait_loadcnt 39                                  // vlcnt(39) = 40 - 1 (beta) (interleaved)
 s_set_vgpr_msb 32899                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28141,35 +28144,35 @@ buffer_store_b128 v[528-512:531-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 38                                  // vlcnt(38) = 40 - 2 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28182,35 +28185,35 @@ buffer_store_b128 v[536-512:539-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 37                                  // vlcnt(37) = 40 - 3 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28223,35 +28226,35 @@ buffer_store_b128 v[544-512:547-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 36                                  // vlcnt(36) = 40 - 4 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28264,35 +28267,35 @@ buffer_store_b128 v[552-512:555-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 35                                  // vlcnt(35) = 40 - 5 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28305,35 +28308,35 @@ buffer_store_b128 v[560-512:563-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 34                                  // vlcnt(34) = 40 - 6 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28346,35 +28349,35 @@ buffer_store_b128 v[568-512:571-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 33                                  // vlcnt(33) = 40 - 7 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28387,35 +28390,35 @@ buffer_store_b128 v[576-512:579-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 32                                  // vlcnt(32) = 40 - 8 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28428,35 +28431,35 @@ buffer_store_b128 v[584-512:587-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 31                                  // vlcnt(31) = 40 - 9 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28472,35 +28475,35 @@ buffer_store_b128 v[592-512:595-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 30                                  // vlcnt(30) = 40 - 10 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28513,35 +28516,35 @@ buffer_store_b128 v[600-512:603-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 29                                  // vlcnt(29) = 40 - 11 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28554,35 +28557,35 @@ buffer_store_b128 v[608-512:611-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 28                                  // vlcnt(28) = 40 - 12 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28595,35 +28598,35 @@ buffer_store_b128 v[616-512:619-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 27                                  // vlcnt(27) = 40 - 13 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28636,35 +28639,35 @@ buffer_store_b128 v[624-512:627-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 26                                  // vlcnt(26) = 40 - 14 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28677,35 +28680,35 @@ buffer_store_b128 v[632-512:635-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 25                                  // vlcnt(25) = 40 - 15 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28718,35 +28721,35 @@ buffer_store_b128 v[640-512:643-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 24                                  // vlcnt(24) = 40 - 16 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28759,35 +28762,35 @@ buffer_store_b128 v[648-512:651-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 23                                  // vlcnt(23) = 40 - 17 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[917-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[917-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[917-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[917-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[919-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[919-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[919-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[919-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28803,35 +28806,35 @@ buffer_store_b128 v[656-512:659-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 22                                  // vlcnt(22) = 40 - 18 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28844,35 +28847,35 @@ buffer_store_b128 v[664-512:667-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 21                                  // vlcnt(21) = 40 - 19 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28885,35 +28888,35 @@ buffer_store_b128 v[672-512:675-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 20                                  // vlcnt(20) = 40 - 20 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28926,35 +28929,35 @@ buffer_store_b128 v[680-512:683-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 19                                  // vlcnt(19) = 40 - 21 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+689-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+690-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+691-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+692-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+693-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+694-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+695-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -28967,35 +28970,35 @@ buffer_store_b128 v[688-512:691-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 18                                  // vlcnt(18) = 40 - 22 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+696-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+697-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[937-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[937-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+698-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[937-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[937-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+699-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+700-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+701-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[939-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[939-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+702-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[939-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[939-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+703-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29008,35 +29011,35 @@ buffer_store_b128 v[696-512:699-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 17                                  // vlcnt(17) = 40 - 23 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+704-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+705-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+706-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+707-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+708-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+709-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+710-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+711-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29049,35 +29052,35 @@ buffer_store_b128 v[704-512:707-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 16                                  // vlcnt(16) = 40 - 24 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+712-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+713-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+714-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+715-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+716-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+717-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+718-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+719-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29090,35 +29093,35 @@ buffer_store_b128 v[712-512:715-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 15                                  // vlcnt(15) = 40 - 25 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+720-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+721-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+722-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+723-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+724-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+725-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+726-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+727-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29134,35 +29137,35 @@ buffer_store_b128 v[720-512:723-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 14                                  // vlcnt(14) = 40 - 26 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+728-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+729-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+730-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+731-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+732-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+733-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+734-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+735-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29175,35 +29178,35 @@ buffer_store_b128 v[728-512:731-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 13                                  // vlcnt(13) = 40 - 27 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+736-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+737-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[957-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[957-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+738-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[957-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[957-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+739-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+740-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+741-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[959-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[959-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+742-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[959-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[959-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+743-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29216,35 +29219,35 @@ buffer_store_b128 v[736-512:739-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 12                                  // vlcnt(12) = 40 - 28 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+744-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+745-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+746-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+747-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+748-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+749-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+750-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+751-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29257,35 +29260,35 @@ buffer_store_b128 v[744-512:747-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 11                                  // vlcnt(11) = 40 - 29 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+752-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+753-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+754-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+755-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+756-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+757-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+758-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+759-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29298,35 +29301,35 @@ buffer_store_b128 v[752-512:755-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 10                                  // vlcnt(10) = 40 - 30 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+760-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+761-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+762-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+763-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+764-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+765-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+766-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+767-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -29339,35 +29342,35 @@ buffer_store_b128 v[760-512:763-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 9                                   // vlcnt(9) = 40 - 31 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+768-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+769-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+770-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+771-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+772-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+773-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+774-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+775-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29380,35 +29383,35 @@ buffer_store_b128 v[768-768:771-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 8                                   // vlcnt(8) = 40 - 32 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+776-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+777-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[977-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[977-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+778-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[977-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[977-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+779-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+780-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+781-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[979-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[979-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+782-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[979-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[979-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+783-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29421,35 +29424,35 @@ buffer_store_b128 v[776-768:779-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 7                                   // vlcnt(7) = 40 - 33 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+784-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+785-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+786-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+787-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+788-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+789-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+790-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+791-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29465,35 +29468,35 @@ buffer_store_b128 v[784-768:787-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 6                                   // vlcnt(6) = 40 - 34 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+792-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+793-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+794-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+795-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+796-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+797-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+798-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+799-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29506,35 +29509,35 @@ buffer_store_b128 v[792-768:795-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 5                                   // vlcnt(5) = 40 - 35 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+800-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+801-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+802-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+803-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+804-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+805-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+806-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+807-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29547,35 +29550,35 @@ buffer_store_b128 v[800-768:803-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 4                                   // vlcnt(4) = 40 - 36 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+808-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+809-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[993-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[993-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+810-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[993-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[993-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+811-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+812-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+813-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[995-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[995-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+814-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[995-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[995-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+815-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29588,35 +29591,35 @@ buffer_store_b128 v[808-768:811-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 3                                   // vlcnt(3) = 40 - 37 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+816-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+817-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[997-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[997-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+818-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[997-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[997-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+819-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+820-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+821-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[999-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[999-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+822-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[999-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[999-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+823-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29629,35 +29632,35 @@ buffer_store_b128 v[816-768:819-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 2                                   // vlcnt(2) = 40 - 38 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+824-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+825-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1001-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1001-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+826-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1001-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1001-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+827-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+828-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+829-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1003-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1003-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+830-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1003-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1003-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+831-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29670,35 +29673,35 @@ buffer_store_b128 v[824-768:827-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 1                                   // vlcnt(1) = 40 - 39 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+832-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+833-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1005-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1005-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+834-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1005-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1005-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+835-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+836-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+837-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1007-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1007-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+838-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1007-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1007-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+839-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -29711,35 +29714,35 @@ buffer_store_b128 v[832-768:835-768], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 0                                   // vlcnt(0) = 40 - 40 (beta) (interleaved)
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+840-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+841-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1009-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1009-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+842-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1009-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1009-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+843-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+844-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+845-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1011-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1011-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+846-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[1011-768] op_sel:[1]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1011-768] op_sel:[1]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+847-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -30021,21 +30024,21 @@ v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 
 s_wait_loadcnt 23                                  // vlcnt(23) = 24 - 1 (beta) (interleaved)
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[720-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[720-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[720-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[720-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[722-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[722-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[722-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[722-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+529-512] // convert C to bf16 and Pack with neighbor
@@ -30049,21 +30052,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[528-512:531-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 
 s_wait_loadcnt 22                                  // vlcnt(22) = 24 - 2 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[724-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[724-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[724-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[724-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[726-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[726-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[726-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[726-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+537-512] // convert C to bf16 and Pack with neighbor
@@ -30074,21 +30077,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[536-512:539-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:64 // store D
 
 s_wait_loadcnt 21                                  // vlcnt(21) = 24 - 3 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[728-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[728-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[728-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[728-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[730-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[730-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[730-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[730-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[544-512], v[vgprValuC+544-512], v[vgprValuC+545-512] // convert C to bf16 and Pack with neighbor
@@ -30099,21 +30102,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[544-512:547-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:128 // store D
 
 s_wait_loadcnt 20                                  // vlcnt(20) = 24 - 4 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[732-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[732-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[732-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[732-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[734-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[734-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[734-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[734-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[552-512], v[vgprValuC+552-512], v[vgprValuC+553-512] // convert C to bf16 and Pack with neighbor
@@ -30124,21 +30127,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[552-512:555-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:192 // store D
 
 s_wait_loadcnt 19                                  // vlcnt(19) = 24 - 5 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[736-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[736-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[736-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[736-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[738-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[738-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[738-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[738-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[560-512], v[vgprValuC+560-512], v[vgprValuC+561-512] // convert C to bf16 and Pack with neighbor
@@ -30149,21 +30152,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[560-512:563-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:256 // store D
 
 s_wait_loadcnt 18                                  // vlcnt(18) = 24 - 6 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[740-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[740-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[740-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[740-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[742-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[742-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[742-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[742-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[568-512], v[vgprValuC+568-512], v[vgprValuC+569-512] // convert C to bf16 and Pack with neighbor
@@ -30174,21 +30177,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[568-512:571-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:320 // store D
 
 s_wait_loadcnt 17                                  // vlcnt(17) = 24 - 7 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[744-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[744-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[744-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[744-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[746-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[746-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[746-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[746-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[576-512], v[vgprValuC+576-512], v[vgprValuC+577-512] // convert C to bf16 and Pack with neighbor
@@ -30199,21 +30202,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[576-512:579-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:384 // store D
 
 s_wait_loadcnt 16                                  // vlcnt(16) = 24 - 8 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[748-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[748-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[748-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[748-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[750-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[750-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[750-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[750-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[584-512], v[vgprValuC+584-512], v[vgprValuC+585-512] // convert C to bf16 and Pack with neighbor
@@ -30224,21 +30227,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[584-512:587-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:448 // store D
 
 s_wait_loadcnt 15                                  // vlcnt(15) = 24 - 9 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[592-512], v[vgprValuC+592-512], v[vgprValuC+593-512] // convert C to bf16 and Pack with neighbor
@@ -30252,21 +30255,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[592-512:595-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 
 s_wait_loadcnt 14                                  // vlcnt(14) = 24 - 10 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[756-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[756-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[756-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[756-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[758-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[758-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[758-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[758-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[600-512], v[vgprValuC+600-512], v[vgprValuC+601-512] // convert C to bf16 and Pack with neighbor
@@ -30277,21 +30280,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[600-512:603-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:64 // store D
 
 s_wait_loadcnt 13                                  // vlcnt(13) = 24 - 11 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[608-512], v[vgprValuC+608-512], v[vgprValuC+609-512] // convert C to bf16 and Pack with neighbor
@@ -30302,21 +30305,21 @@ s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0,
 buffer_store_b128 v[608-512:611-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:128 // store D
 
 s_wait_loadcnt 12                                  // vlcnt(12) = 24 - 12 (beta) (interleaved)
-v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[616-512], v[vgprValuC+616-512], v[vgprValuC+617-512] // convert C to bf16 and Pack with neighbor
@@ -30328,35 +30331,35 @@ buffer_store_b128 v[616-512:619-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 11                                  // vlcnt(11) = 24 - 13 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30369,35 +30372,35 @@ buffer_store_b128 v[624-512:627-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 10                                  // vlcnt(10) = 24 - 14 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30410,35 +30413,35 @@ buffer_store_b128 v[632-512:635-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 9                                   // vlcnt(9) = 24 - 15 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[776-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[776-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[776-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[776-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[778-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[778-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[778-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[778-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30451,35 +30454,35 @@ buffer_store_b128 v[640-512:643-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 8                                   // vlcnt(8) = 24 - 16 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30492,35 +30495,35 @@ buffer_store_b128 v[648-512:651-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 7                                   // vlcnt(7) = 24 - 17 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30536,35 +30539,35 @@ buffer_store_b128 v[656-512:659-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 6                                   // vlcnt(6) = 24 - 18 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30577,35 +30580,35 @@ buffer_store_b128 v[664-512:667-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 5                                   // vlcnt(5) = 24 - 19 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30618,35 +30621,35 @@ buffer_store_b128 v[672-512:675-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 4                                   // vlcnt(4) = 24 - 20 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[796-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[796-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[796-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[796-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[798-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[798-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[798-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[798-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30659,35 +30662,35 @@ buffer_store_b128 v[680-512:683-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 3                                   // vlcnt(3) = 24 - 21 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+689-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+690-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+691-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+692-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+693-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+694-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+695-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30700,35 +30703,35 @@ buffer_store_b128 v[688-512:691-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 2                                   // vlcnt(2) = 24 - 22 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+696-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+697-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+698-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+699-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+700-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+701-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+702-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+703-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30741,35 +30744,35 @@ buffer_store_b128 v[696-512:699-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 1                                   // vlcnt(1) = 24 - 23 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+704-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+705-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+706-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+707-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+708-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+709-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+710-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+711-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -30782,35 +30785,35 @@ buffer_store_b128 v[704-512:707-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null o
 
 s_wait_loadcnt 0                                   // vlcnt(0) = 24 - 24 (beta) (interleaved)
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+712-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+713-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+714-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+715-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+716-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+717-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+718-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+719-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -31788,21 +31791,21 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+529-512] // convert C to bf16 and Pack with neighbor
@@ -31812,35 +31815,35 @@ v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+534-512], v[vgprValuC+535-512] // conv
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[528-512:531-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[816-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[816-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[816-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[816-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[818-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[818-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[818-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[818-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -31850,35 +31853,35 @@ v_cvt_pk_bf16_f32 v[538-512], v[vgprValuC+540-512], v[vgprValuC+541-512] // conv
 v_cvt_pk_bf16_f32 v[539-512], v[vgprValuC+542-512], v[vgprValuC+543-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[536-512:539-512], v[820-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -31888,35 +31891,35 @@ v_cvt_pk_bf16_f32 v[546-512], v[vgprValuC+548-512], v[vgprValuC+549-512] // conv
 v_cvt_pk_bf16_f32 v[547-512], v[vgprValuC+550-512], v[vgprValuC+551-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[544-512:547-512], v[821-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -31926,35 +31929,35 @@ v_cvt_pk_bf16_f32 v[554-512], v[vgprValuC+556-512], v[vgprValuC+557-512] // conv
 v_cvt_pk_bf16_f32 v[555-512], v[vgprValuC+558-512], v[vgprValuC+559-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[552-512:555-512], v[822-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -31964,35 +31967,35 @@ v_cvt_pk_bf16_f32 v[562-512], v[vgprValuC+564-512], v[vgprValuC+565-512] // conv
 v_cvt_pk_bf16_f32 v[563-512], v[vgprValuC+566-512], v[vgprValuC+567-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[560-512:563-512], v[823-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[836-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[836-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[836-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[836-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[838-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[838-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[838-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[838-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32002,35 +32005,35 @@ v_cvt_pk_bf16_f32 v[570-512], v[vgprValuC+572-512], v[vgprValuC+573-512] // conv
 v_cvt_pk_bf16_f32 v[571-512], v[vgprValuC+574-512], v[vgprValuC+575-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[568-512:571-512], v[840-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32040,35 +32043,35 @@ v_cvt_pk_bf16_f32 v[578-512], v[vgprValuC+580-512], v[vgprValuC+581-512] // conv
 v_cvt_pk_bf16_f32 v[579-512], v[vgprValuC+582-512], v[vgprValuC+583-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[576-512:579-512], v[841-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32078,35 +32081,35 @@ v_cvt_pk_bf16_f32 v[586-512], v[vgprValuC+588-512], v[vgprValuC+589-512] // conv
 v_cvt_pk_bf16_f32 v[587-512], v[vgprValuC+590-512], v[vgprValuC+591-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[584-512:587-512], v[842-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32116,35 +32119,35 @@ v_cvt_pk_bf16_f32 v[594-512], v[vgprValuC+596-512], v[vgprValuC+597-512] // conv
 v_cvt_pk_bf16_f32 v[595-512], v[vgprValuC+598-512], v[vgprValuC+599-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[592-512:595-512], v[843-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[856-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[858-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32154,35 +32157,35 @@ v_cvt_pk_bf16_f32 v[602-512], v[vgprValuC+604-512], v[vgprValuC+605-512] // conv
 v_cvt_pk_bf16_f32 v[603-512], v[vgprValuC+606-512], v[vgprValuC+607-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[600-512:603-512], v[860-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32192,35 +32195,35 @@ v_cvt_pk_bf16_f32 v[610-512], v[vgprValuC+612-512], v[vgprValuC+613-512] // conv
 v_cvt_pk_bf16_f32 v[611-512], v[vgprValuC+614-512], v[vgprValuC+615-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[608-512:611-512], v[861-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32230,35 +32233,35 @@ v_cvt_pk_bf16_f32 v[618-512], v[vgprValuC+620-512], v[vgprValuC+621-512] // conv
 v_cvt_pk_bf16_f32 v[619-512], v[vgprValuC+622-512], v[vgprValuC+623-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[616-512:619-512], v[862-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32268,35 +32271,35 @@ v_cvt_pk_bf16_f32 v[626-512], v[vgprValuC+628-512], v[vgprValuC+629-512] // conv
 v_cvt_pk_bf16_f32 v[627-512], v[vgprValuC+630-512], v[vgprValuC+631-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[624-512:627-512], v[863-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[876-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[878-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32306,35 +32309,35 @@ v_cvt_pk_bf16_f32 v[634-512], v[vgprValuC+636-512], v[vgprValuC+637-512] // conv
 v_cvt_pk_bf16_f32 v[635-512], v[vgprValuC+638-512], v[vgprValuC+639-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[632-512:635-512], v[880-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32344,35 +32347,35 @@ v_cvt_pk_bf16_f32 v[642-512], v[vgprValuC+644-512], v[vgprValuC+645-512] // conv
 v_cvt_pk_bf16_f32 v[643-512], v[vgprValuC+646-512], v[vgprValuC+647-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[640-512:643-512], v[881-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[888-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[890-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32382,35 +32385,35 @@ v_cvt_pk_bf16_f32 v[650-512], v[vgprValuC+652-512], v[vgprValuC+653-512] // conv
 v_cvt_pk_bf16_f32 v[651-512], v[vgprValuC+654-512], v[vgprValuC+655-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[648-512:651-512], v[882-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[892-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[894-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32420,35 +32423,35 @@ v_cvt_pk_bf16_f32 v[658-512], v[vgprValuC+660-512], v[vgprValuC+661-512] // conv
 v_cvt_pk_bf16_f32 v[659-512], v[vgprValuC+662-512], v[vgprValuC+663-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[656-512:659-512], v[883-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[896-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[898-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32458,35 +32461,35 @@ v_cvt_pk_bf16_f32 v[666-512], v[vgprValuC+668-512], v[vgprValuC+669-512] // conv
 v_cvt_pk_bf16_f32 v[667-512], v[vgprValuC+670-512], v[vgprValuC+671-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[664-512:667-512], v[900-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[905-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[907-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32496,35 +32499,35 @@ v_cvt_pk_bf16_f32 v[674-512], v[vgprValuC+676-512], v[vgprValuC+677-512] // conv
 v_cvt_pk_bf16_f32 v[675-512], v[vgprValuC+678-512], v[vgprValuC+679-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[672-512:675-512], v[901-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[909-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[911-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32534,35 +32537,35 @@ v_cvt_pk_bf16_f32 v[682-512], v[vgprValuC+684-512], v[vgprValuC+685-512] // conv
 v_cvt_pk_bf16_f32 v[683-512], v[vgprValuC+686-512], v[vgprValuC+687-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[680-512:683-512], v[903-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+689-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+690-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[913-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+691-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+692-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+693-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+694-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[915-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+695-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32572,35 +32575,35 @@ v_cvt_pk_bf16_f32 v[690-512], v[vgprValuC+692-512], v[vgprValuC+693-512] // conv
 v_cvt_pk_bf16_f32 v[691-512], v[vgprValuC+694-512], v[vgprValuC+695-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[688-512:691-512], v[916-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+696-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+697-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+698-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[921-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+699-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+700-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+701-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+702-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[923-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+703-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32610,35 +32613,35 @@ v_cvt_pk_bf16_f32 v[698-512], v[vgprValuC+700-512], v[vgprValuC+701-512] // conv
 v_cvt_pk_bf16_f32 v[699-512], v[vgprValuC+702-512], v[vgprValuC+703-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[696-512:699-512], v[917-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+704-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+705-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+706-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[925-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+707-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+708-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+709-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+710-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[927-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+711-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32648,35 +32651,35 @@ v_cvt_pk_bf16_f32 v[706-512], v[vgprValuC+708-512], v[vgprValuC+709-512] // conv
 v_cvt_pk_bf16_f32 v[707-512], v[vgprValuC+710-512], v[vgprValuC+711-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[704-512:707-512], v[918-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+712-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+713-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+714-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[929-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+715-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+716-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+717-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+718-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[931-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+719-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32686,35 +32689,35 @@ v_cvt_pk_bf16_f32 v[714-512], v[vgprValuC+716-512], v[vgprValuC+717-512] // conv
 v_cvt_pk_bf16_f32 v[715-512], v[vgprValuC+718-512], v[vgprValuC+719-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[712-512:715-512], v[919-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+720-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+721-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+722-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[933-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+723-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+724-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+725-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+726-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[935-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+727-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32724,35 +32727,35 @@ v_cvt_pk_bf16_f32 v[722-512], v[vgprValuC+724-512], v[vgprValuC+725-512] // conv
 v_cvt_pk_bf16_f32 v[723-512], v[vgprValuC+726-512], v[vgprValuC+727-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[720-512:723-512], v[936-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+728-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+729-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+730-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[941-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+731-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+732-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+733-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+734-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[943-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+735-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32762,35 +32765,35 @@ v_cvt_pk_bf16_f32 v[730-512], v[vgprValuC+732-512], v[vgprValuC+733-512] // conv
 v_cvt_pk_bf16_f32 v[731-512], v[vgprValuC+734-512], v[vgprValuC+735-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[728-512:731-512], v[937-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+736-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+737-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+738-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[945-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+739-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+740-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+741-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+742-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[947-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+743-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32800,35 +32803,35 @@ v_cvt_pk_bf16_f32 v[738-512], v[vgprValuC+740-512], v[vgprValuC+741-512] // conv
 v_cvt_pk_bf16_f32 v[739-512], v[vgprValuC+742-512], v[vgprValuC+743-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[736-512:739-512], v[938-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+744-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+745-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+746-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[949-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+747-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+748-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+749-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+750-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[951-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+751-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32838,35 +32841,35 @@ v_cvt_pk_bf16_f32 v[746-512], v[vgprValuC+748-512], v[vgprValuC+749-512] // conv
 v_cvt_pk_bf16_f32 v[747-512], v[vgprValuC+750-512], v[vgprValuC+751-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[744-512:747-512], v[939-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+752-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+753-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+754-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[953-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+755-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+756-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+757-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+758-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[955-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+759-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32876,35 +32879,35 @@ v_cvt_pk_bf16_f32 v[754-512], v[vgprValuC+756-512], v[vgprValuC+757-512] // conv
 v_cvt_pk_bf16_f32 v[755-512], v[vgprValuC+758-512], v[vgprValuC+759-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[752-512:755-512], v[956-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+760-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+761-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+762-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[961-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+763-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+764-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+765-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+766-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[963-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+767-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -32914,35 +32917,35 @@ v_cvt_pk_bf16_f32 v[762-512], v[vgprValuC+764-512], v[vgprValuC+765-512] // conv
 v_cvt_pk_bf16_f32 v[763-512], v[vgprValuC+766-512], v[vgprValuC+767-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[760-512:763-512], v[957-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+768-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+769-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+770-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[965-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+771-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+772-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+773-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+774-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[967-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+775-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -32953,35 +32956,35 @@ v_cvt_pk_bf16_f32 v[771-768], v[vgprValuC+774-768], v[vgprValuC+775-768] // conv
 s_set_vgpr_msb 53187                               // src0: 3, src1: 0, src2: 0, dst: 3
 buffer_store_b128 v[768-768:771-768], v[958-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 50051                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+776-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+777-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+778-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[969-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+779-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+780-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+781-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+782-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[971-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+783-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -32992,35 +32995,35 @@ v_cvt_pk_bf16_f32 v[779-768], v[vgprValuC+782-768], v[vgprValuC+783-768] // conv
 s_set_vgpr_msb 53187                               // src0: 3, src1: 0, src2: 0, dst: 3
 buffer_store_b128 v[776-768:779-768], v[959-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 50051                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+784-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+785-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+786-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[973-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+787-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+788-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+789-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+790-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[975-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+791-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -33031,35 +33034,35 @@ v_cvt_pk_bf16_f32 v[787-768], v[vgprValuC+790-768], v[vgprValuC+791-768] // conv
 s_set_vgpr_msb 53187                               // src0: 3, src1: 0, src2: 0, dst: 3
 buffer_store_b128 v[784-768:787-768], v[976-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 50051                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+792-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+793-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+794-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[981-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+795-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+796-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+797-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+798-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[983-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+799-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -33070,35 +33073,35 @@ v_cvt_pk_bf16_f32 v[795-768], v[vgprValuC+798-768], v[vgprValuC+799-768] // conv
 s_set_vgpr_msb 53187                               // src0: 3, src1: 0, src2: 0, dst: 3
 buffer_store_b128 v[792-768:795-768], v[977-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 50051                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+800-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+801-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+802-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[985-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+803-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+804-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+805-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+806-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[987-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+807-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -33109,35 +33112,35 @@ v_cvt_pk_bf16_f32 v[803-768], v[vgprValuC+806-768], v[vgprValuC+807-768] // conv
 s_set_vgpr_msb 53187                               // src0: 3, src1: 0, src2: 0, dst: 3
 buffer_store_b128 v[800-768:803-768], v[978-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 50051                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+808-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+809-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+810-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[989-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+811-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+812-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+813-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+814-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49795                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[991-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33730                               // src0: 2, src1: 0, src2: 0, dst: 3
 v_fmac_f32 v[vgprValuC+815-768], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 49871                               // src0: 3, src1: 3, src2: 0, dst: 3
@@ -33890,21 +33893,21 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[524-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[525-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[526-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[527-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+529-512] // convert C to bf16 and Pack with neighbor
@@ -33913,21 +33916,21 @@ v_cvt_pk_bf16_f32 v[530-512], v[vgprValuC+532-512], v[vgprValuC+533-512] // conv
 v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+534-512], v[vgprValuC+535-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[528-512:531-512], v[523-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[752-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[754-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+537-512] // convert C to bf16 and Pack with neighbor
@@ -33936,21 +33939,21 @@ v_cvt_pk_bf16_f32 v[538-512], v[vgprValuC+540-512], v[vgprValuC+541-512] // conv
 v_cvt_pk_bf16_f32 v[539-512], v[vgprValuC+542-512], v[vgprValuC+543-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[536-512:539-512], v[756-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[760-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[762-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[544-512], v[vgprValuC+544-512], v[vgprValuC+545-512] // convert C to bf16 and Pack with neighbor
@@ -33959,21 +33962,21 @@ v_cvt_pk_bf16_f32 v[546-512], v[vgprValuC+548-512], v[vgprValuC+549-512] // conv
 v_cvt_pk_bf16_f32 v[547-512], v[vgprValuC+550-512], v[vgprValuC+551-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[544-512:547-512], v[757-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[764-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[766-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[1]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[552-512], v[vgprValuC+552-512], v[vgprValuC+553-512] // convert C to bf16 and Pack with neighbor
@@ -33983,35 +33986,35 @@ v_cvt_pk_bf16_f32 v[555-512], v[vgprValuC+558-512], v[vgprValuC+559-512] // conv
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[552-512:555-512], v[758-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[768-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[770-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34022,35 +34025,35 @@ v_cvt_pk_bf16_f32 v[563-512], v[vgprValuC+566-512], v[vgprValuC+567-512] // conv
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[560-512:563-512], v[759-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[772-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[774-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34060,35 +34063,35 @@ v_cvt_pk_bf16_f32 v[570-512], v[vgprValuC+572-512], v[vgprValuC+573-512] // conv
 v_cvt_pk_bf16_f32 v[571-512], v[vgprValuC+574-512], v[vgprValuC+575-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[568-512:571-512], v[776-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[780-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[782-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34098,35 +34101,35 @@ v_cvt_pk_bf16_f32 v[578-512], v[vgprValuC+580-512], v[vgprValuC+581-512] // conv
 v_cvt_pk_bf16_f32 v[579-512], v[vgprValuC+582-512], v[vgprValuC+583-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[576-512:579-512], v[777-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[784-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[786-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34136,35 +34139,35 @@ v_cvt_pk_bf16_f32 v[586-512], v[vgprValuC+588-512], v[vgprValuC+589-512] // conv
 v_cvt_pk_bf16_f32 v[587-512], v[vgprValuC+590-512], v[vgprValuC+591-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[584-512:587-512], v[778-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[788-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[790-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34174,35 +34177,35 @@ v_cvt_pk_bf16_f32 v[594-512], v[vgprValuC+596-512], v[vgprValuC+597-512] // conv
 v_cvt_pk_bf16_f32 v[595-512], v[vgprValuC+598-512], v[vgprValuC+599-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[592-512:595-512], v[779-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[792-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[794-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34212,35 +34215,35 @@ v_cvt_pk_bf16_f32 v[602-512], v[vgprValuC+604-512], v[vgprValuC+605-512] // conv
 v_cvt_pk_bf16_f32 v[603-512], v[vgprValuC+606-512], v[vgprValuC+607-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[600-512:603-512], v[796-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[800-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[802-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34250,35 +34253,35 @@ v_cvt_pk_bf16_f32 v[610-512], v[vgprValuC+612-512], v[vgprValuC+613-512] // conv
 v_cvt_pk_bf16_f32 v[611-512], v[vgprValuC+614-512], v[vgprValuC+615-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[608-512:611-512], v[797-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[804-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[806-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34288,35 +34291,35 @@ v_cvt_pk_bf16_f32 v[618-512], v[vgprValuC+620-512], v[vgprValuC+621-512] // conv
 v_cvt_pk_bf16_f32 v[619-512], v[vgprValuC+622-512], v[vgprValuC+623-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[616-512:619-512], v[798-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[808-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[810-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34326,35 +34329,35 @@ v_cvt_pk_bf16_f32 v[626-512], v[vgprValuC+628-512], v[vgprValuC+629-512] // conv
 v_cvt_pk_bf16_f32 v[627-512], v[vgprValuC+630-512], v[vgprValuC+631-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[624-512:627-512], v[799-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[812-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[814-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34364,35 +34367,35 @@ v_cvt_pk_bf16_f32 v[634-512], v[vgprValuC+636-512], v[vgprValuC+637-512] // conv
 v_cvt_pk_bf16_f32 v[635-512], v[vgprValuC+638-512], v[vgprValuC+639-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[632-512:635-512], v[816-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[820-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[820-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[820-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[820-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[822-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[822-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[822-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[822-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34402,35 +34405,35 @@ v_cvt_pk_bf16_f32 v[642-512], v[vgprValuC+644-512], v[vgprValuC+645-512] // conv
 v_cvt_pk_bf16_f32 v[643-512], v[vgprValuC+646-512], v[vgprValuC+647-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[640-512:643-512], v[817-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[824-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[826-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34440,35 +34443,35 @@ v_cvt_pk_bf16_f32 v[650-512], v[vgprValuC+652-512], v[vgprValuC+653-512] // conv
 v_cvt_pk_bf16_f32 v[651-512], v[vgprValuC+654-512], v[vgprValuC+655-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[648-512:651-512], v[818-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[828-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[830-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34478,35 +34481,35 @@ v_cvt_pk_bf16_f32 v[658-512], v[vgprValuC+660-512], v[vgprValuC+661-512] // conv
 v_cvt_pk_bf16_f32 v[659-512], v[vgprValuC+662-512], v[vgprValuC+663-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[656-512:659-512], v[819-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[832-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[834-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34516,35 +34519,35 @@ v_cvt_pk_bf16_f32 v[666-512], v[vgprValuC+668-512], v[vgprValuC+669-512] // conv
 v_cvt_pk_bf16_f32 v[667-512], v[vgprValuC+670-512], v[vgprValuC+671-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[664-512:667-512], v[836-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[840-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[840-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[840-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[840-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[842-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[842-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[842-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[842-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34554,35 +34557,35 @@ v_cvt_pk_bf16_f32 v[674-512], v[vgprValuC+676-512], v[vgprValuC+677-512] // conv
 v_cvt_pk_bf16_f32 v[675-512], v[vgprValuC+678-512], v[vgprValuC+679-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[672-512:675-512], v[837-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[844-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[846-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34592,35 +34595,35 @@ v_cvt_pk_bf16_f32 v[682-512], v[vgprValuC+684-512], v[vgprValuC+685-512] // conv
 v_cvt_pk_bf16_f32 v[683-512], v[vgprValuC+686-512], v[vgprValuC+687-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[680-512:683-512], v[838-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[848-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+689-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+690-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+691-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+692-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[850-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+693-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+694-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+695-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34630,35 +34633,35 @@ v_cvt_pk_bf16_f32 v[690-512], v[vgprValuC+692-512], v[vgprValuC+693-512] // conv
 v_cvt_pk_bf16_f32 v[691-512], v[vgprValuC+694-512], v[vgprValuC+695-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[688-512:691-512], v[839-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+696-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[852-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+697-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+698-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+699-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+700-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[854-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+701-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+702-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+703-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34668,35 +34671,35 @@ v_cvt_pk_bf16_f32 v[698-512], v[vgprValuC+700-512], v[vgprValuC+701-512] // conv
 v_cvt_pk_bf16_f32 v[699-512], v[vgprValuC+702-512], v[vgprValuC+703-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[696-512:699-512], v[856-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+704-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[860-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+705-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+706-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+707-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+708-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[862-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+709-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+710-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+711-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34706,35 +34709,35 @@ v_cvt_pk_bf16_f32 v[706-512], v[vgprValuC+708-512], v[vgprValuC+709-512] // conv
 v_cvt_pk_bf16_f32 v[707-512], v[vgprValuC+710-512], v[vgprValuC+711-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[704-512:707-512], v[857-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+712-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[864-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+713-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+714-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+715-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+716-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[866-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+717-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+718-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+719-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34744,35 +34747,35 @@ v_cvt_pk_bf16_f32 v[714-512], v[vgprValuC+716-512], v[vgprValuC+717-512] // conv
 v_cvt_pk_bf16_f32 v[715-512], v[vgprValuC+718-512], v[vgprValuC+719-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[712-512:715-512], v[858-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+720-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[868-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+721-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+722-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+723-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+724-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[870-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+725-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+726-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+727-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34782,35 +34785,35 @@ v_cvt_pk_bf16_f32 v[722-512], v[vgprValuC+724-512], v[vgprValuC+725-512] // conv
 v_cvt_pk_bf16_f32 v[723-512], v[vgprValuC+726-512], v[vgprValuC+727-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[720-512:723-512], v[859-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+728-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[872-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+729-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+730-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+731-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+732-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[874-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+733-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+734-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+735-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34820,35 +34823,35 @@ v_cvt_pk_bf16_f32 v[730-512], v[vgprValuC+732-512], v[vgprValuC+733-512] // conv
 v_cvt_pk_bf16_f32 v[731-512], v[vgprValuC+734-512], v[vgprValuC+735-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[728-512:731-512], v[876-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+736-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[880-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+737-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+738-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+739-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+740-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[882-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+741-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+742-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+743-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -34858,35 +34861,35 @@ v_cvt_pk_bf16_f32 v[738-512], v[vgprValuC+740-512], v[vgprValuC+741-512] // conv
 v_cvt_pk_bf16_f32 v[739-512], v[vgprValuC+742-512], v[vgprValuC+743-512] // convert C to bf16 and Pack with neighbor
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b128 v[736-512:739-512], v[877-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+744-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[884-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+745-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+746-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+747-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+748-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[886-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+749-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+750-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33411                               // src0: 3, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[1]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+751-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -37955,1122 +37958,1122 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+523-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[523-512], v[vgprValuC+523-512], v[vgprValuC+523-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[523-512], v[690-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+524-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[524-512], v[vgprValuC+524-512], v[vgprValuC+524-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[524-512], v[692-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+525-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[525-512], v[vgprValuC+525-512], v[vgprValuC+525-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[525-512], v[694-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+526-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[526-512], v[vgprValuC+526-512], v[vgprValuC+526-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[526-512], v[696-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+527-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[527-512], v[vgprValuC+527-512], v[vgprValuC+527-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[527-512], v[698-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+528-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[528-512], v[700-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[529-512], v[vgprValuC+529-512], v[vgprValuC+529-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[529-512], v[702-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[530-512], v[vgprValuC+530-512], v[vgprValuC+530-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[530-512], v[704-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+531-512], v[vgprValuC+531-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[531-512], v[706-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[532-512], v[vgprValuC+532-512], v[vgprValuC+532-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[532-512], v[708-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[533-512], v[vgprValuC+533-512], v[vgprValuC+533-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[533-512], v[710-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[534-512], v[vgprValuC+534-512], v[vgprValuC+534-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[534-512], v[712-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[535-512], v[vgprValuC+535-512], v[vgprValuC+535-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[535-512], v[714-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+536-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[536-512], v[716-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[537-512], v[vgprValuC+537-512], v[vgprValuC+537-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[537-512], v[718-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[538-512], v[vgprValuC+538-512], v[vgprValuC+538-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[538-512], v[720-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[539-512], v[vgprValuC+539-512], v[vgprValuC+539-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[539-512], v[722-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[540-512], v[vgprValuC+540-512], v[vgprValuC+540-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[540-512], v[724-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[541-512], v[vgprValuC+541-512], v[vgprValuC+541-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[541-512], v[726-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[542-512], v[vgprValuC+542-512], v[vgprValuC+542-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[542-512], v[728-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[543-512], v[vgprValuC+543-512], v[vgprValuC+543-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[543-512], v[730-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[544-512], v[vgprValuC+544-512], v[vgprValuC+544-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[544-512], v[732-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[545-512], v[vgprValuC+545-512], v[vgprValuC+545-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[545-512], v[734-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[546-512], v[vgprValuC+546-512], v[vgprValuC+546-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[546-512], v[736-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[547-512], v[vgprValuC+547-512], v[vgprValuC+547-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[547-512], v[738-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[548-512], v[vgprValuC+548-512], v[vgprValuC+548-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[548-512], v[740-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[549-512], v[vgprValuC+549-512], v[vgprValuC+549-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[549-512], v[742-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[550-512], v[vgprValuC+550-512], v[vgprValuC+550-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[550-512], v[744-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[551-512], v[vgprValuC+551-512], v[vgprValuC+551-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[551-512], v[746-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[552-512], v[vgprValuC+552-512], v[vgprValuC+552-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[552-512], v[748-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[553-512], v[vgprValuC+553-512], v[vgprValuC+553-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[553-512], v[750-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[554-512], v[vgprValuC+554-512], v[vgprValuC+554-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[554-512], v[752-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[555-512], v[vgprValuC+555-512], v[vgprValuC+555-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[555-512], v[754-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[556-512], v[vgprValuC+556-512], v[vgprValuC+556-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[556-512], v[756-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[557-512], v[vgprValuC+557-512], v[vgprValuC+557-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[557-512], v[758-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[558-512], v[vgprValuC+558-512], v[vgprValuC+558-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[558-512], v[760-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[559-512], v[vgprValuC+559-512], v[vgprValuC+559-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[559-512], v[762-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[560-512], v[vgprValuC+560-512], v[vgprValuC+560-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[560-512], v[764-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[561-512], v[vgprValuC+561-512], v[vgprValuC+561-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[561-512], v[766-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[562-512], v[vgprValuC+562-512], v[vgprValuC+562-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[562-512], v[768-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[563-512], v[vgprValuC+563-512], v[vgprValuC+563-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[563-512], v[770-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[564-512], v[vgprValuC+564-512], v[vgprValuC+564-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[564-512], v[772-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[565-512], v[vgprValuC+565-512], v[vgprValuC+565-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[565-512], v[774-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[566-512], v[vgprValuC+566-512], v[vgprValuC+566-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[566-512], v[776-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[567-512], v[vgprValuC+567-512], v[vgprValuC+567-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[567-512], v[778-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[568-512], v[vgprValuC+568-512], v[vgprValuC+568-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[568-512], v[780-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[569-512], v[vgprValuC+569-512], v[vgprValuC+569-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[569-512], v[782-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[570-512], v[vgprValuC+570-512], v[vgprValuC+570-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[570-512], v[784-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[571-512], v[vgprValuC+571-512], v[vgprValuC+571-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[571-512], v[786-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[572-512], v[vgprValuC+572-512], v[vgprValuC+572-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[572-512], v[788-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[573-512], v[vgprValuC+573-512], v[vgprValuC+573-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[573-512], v[790-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[574-512], v[vgprValuC+574-512], v[vgprValuC+574-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[574-512], v[792-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[575-512], v[vgprValuC+575-512], v[vgprValuC+575-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[575-512], v[794-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[576-512], v[vgprValuC+576-512], v[vgprValuC+576-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[576-512], v[796-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[577-512], v[vgprValuC+577-512], v[vgprValuC+577-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[577-512], v[798-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[578-512], v[vgprValuC+578-512], v[vgprValuC+578-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[578-512], v[800-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[579-512], v[vgprValuC+579-512], v[vgprValuC+579-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[579-512], v[802-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[580-512], v[vgprValuC+580-512], v[vgprValuC+580-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[580-512], v[804-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[581-512], v[vgprValuC+581-512], v[vgprValuC+581-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[581-512], v[806-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[582-512], v[vgprValuC+582-512], v[vgprValuC+582-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[582-512], v[808-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[583-512], v[vgprValuC+583-512], v[vgprValuC+583-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[583-512], v[810-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[584-512], v[vgprValuC+584-512], v[vgprValuC+584-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[584-512], v[812-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[585-512], v[vgprValuC+585-512], v[vgprValuC+585-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[585-512], v[814-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[586-512], v[vgprValuC+586-512], v[vgprValuC+586-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[586-512], v[816-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[587-512], v[vgprValuC+587-512], v[vgprValuC+587-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[587-512], v[818-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[588-512], v[vgprValuC+588-512], v[vgprValuC+588-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[588-512], v[820-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[589-512], v[vgprValuC+589-512], v[vgprValuC+589-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[589-512], v[822-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[590-512], v[vgprValuC+590-512], v[vgprValuC+590-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[590-512], v[824-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[591-512], v[vgprValuC+591-512], v[vgprValuC+591-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[591-512], v[826-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[592-512], v[vgprValuC+592-512], v[vgprValuC+592-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[592-512], v[828-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[593-512], v[vgprValuC+593-512], v[vgprValuC+593-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[593-512], v[830-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[594-512], v[vgprValuC+594-512], v[vgprValuC+594-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[594-512], v[832-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[595-512], v[vgprValuC+595-512], v[vgprValuC+595-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[595-512], v[834-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[596-512], v[vgprValuC+596-512], v[vgprValuC+596-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[596-512], v[836-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[597-512], v[vgprValuC+597-512], v[vgprValuC+597-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[597-512], v[838-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[598-512], v[vgprValuC+598-512], v[vgprValuC+598-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[598-512], v[840-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[599-512], v[vgprValuC+599-512], v[vgprValuC+599-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[599-512], v[842-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[600-512], v[vgprValuC+600-512], v[vgprValuC+600-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[600-512], v[844-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[601-512], v[vgprValuC+601-512], v[vgprValuC+601-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[601-512], v[846-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[602-512], v[vgprValuC+602-512], v[vgprValuC+602-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[602-512], v[848-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[603-512], v[vgprValuC+603-512], v[vgprValuC+603-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[603-512], v[850-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[604-512], v[vgprValuC+604-512], v[vgprValuC+604-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[604-512], v[852-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[605-512], v[vgprValuC+605-512], v[vgprValuC+605-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[605-512], v[854-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[606-512], v[vgprValuC+606-512], v[vgprValuC+606-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[606-512], v[856-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[607-512], v[vgprValuC+607-512], v[vgprValuC+607-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[607-512], v[858-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[608-512], v[vgprValuC+608-512], v[vgprValuC+608-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[608-512], v[860-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[609-512], v[vgprValuC+609-512], v[vgprValuC+609-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[609-512], v[862-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[610-512], v[vgprValuC+610-512], v[vgprValuC+610-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[610-512], v[864-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[611-512], v[vgprValuC+611-512], v[vgprValuC+611-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[611-512], v[866-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[612-512], v[vgprValuC+612-512], v[vgprValuC+612-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[612-512], v[868-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[613-512], v[vgprValuC+613-512], v[vgprValuC+613-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[613-512], v[870-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[614-512], v[vgprValuC+614-512], v[vgprValuC+614-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[614-512], v[872-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[615-512], v[vgprValuC+615-512], v[vgprValuC+615-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[615-512], v[874-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[616-512], v[vgprValuC+616-512], v[vgprValuC+616-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[616-512], v[876-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[617-512], v[vgprValuC+617-512], v[vgprValuC+617-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[617-512], v[878-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[618-512], v[vgprValuC+618-512], v[vgprValuC+618-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[618-512], v[880-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[619-512], v[vgprValuC+619-512], v[vgprValuC+619-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[619-512], v[882-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[620-512], v[vgprValuC+620-512], v[vgprValuC+620-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[620-512], v[884-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[621-512], v[vgprValuC+621-512], v[vgprValuC+621-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[621-512], v[886-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[622-512], v[vgprValuC+622-512], v[vgprValuC+622-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[622-512], v[888-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[623-512], v[vgprValuC+623-512], v[vgprValuC+623-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[623-512], v[890-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[624-512], v[vgprValuC+624-512], v[vgprValuC+624-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[624-512], v[892-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[625-512], v[vgprValuC+625-512], v[vgprValuC+625-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[625-512], v[894-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[626-512], v[vgprValuC+626-512], v[vgprValuC+626-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[626-512], v[896-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[627-512], v[vgprValuC+627-512], v[vgprValuC+627-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[627-512], v[898-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[628-512], v[vgprValuC+628-512], v[vgprValuC+628-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[628-512], v[900-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[629-512], v[vgprValuC+629-512], v[vgprValuC+629-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[629-512], v[903-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[630-512], v[vgprValuC+630-512], v[vgprValuC+630-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[630-512], v[905-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[631-512], v[vgprValuC+631-512], v[vgprValuC+631-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[631-512], v[907-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[632-512], v[vgprValuC+632-512], v[vgprValuC+632-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[632-512], v[909-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[633-512], v[vgprValuC+633-512], v[vgprValuC+633-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[633-512], v[911-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[634-512], v[vgprValuC+634-512], v[vgprValuC+634-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[634-512], v[913-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[635-512], v[vgprValuC+635-512], v[vgprValuC+635-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[635-512], v[915-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[636-512], v[vgprValuC+636-512], v[vgprValuC+636-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[636-512], v[917-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[637-512], v[vgprValuC+637-512], v[vgprValuC+637-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[637-512], v[919-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[638-512], v[vgprValuC+638-512], v[vgprValuC+638-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[638-512], v[921-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[639-512], v[vgprValuC+639-512], v[vgprValuC+639-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[639-512], v[923-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[640-512], v[vgprValuC+640-512], v[vgprValuC+640-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[640-512], v[925-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[641-512], v[vgprValuC+641-512], v[vgprValuC+641-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[641-512], v[927-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[642-512], v[vgprValuC+642-512], v[vgprValuC+642-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[642-512], v[929-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[643-512], v[vgprValuC+643-512], v[vgprValuC+643-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[643-512], v[931-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[644-512], v[vgprValuC+644-512], v[vgprValuC+644-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[644-512], v[933-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[645-512], v[vgprValuC+645-512], v[vgprValuC+645-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[645-512], v[935-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[646-512], v[vgprValuC+646-512], v[vgprValuC+646-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[646-512], v[937-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[647-512], v[vgprValuC+647-512], v[vgprValuC+647-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[647-512], v[939-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[648-512], v[vgprValuC+648-512], v[vgprValuC+648-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[648-512], v[941-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[649-512], v[vgprValuC+649-512], v[vgprValuC+649-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[649-512], v[943-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[650-512], v[vgprValuC+650-512], v[vgprValuC+650-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[650-512], v[945-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[651-512], v[vgprValuC+651-512], v[vgprValuC+651-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[651-512], v[947-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[652-512], v[vgprValuC+652-512], v[vgprValuC+652-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[652-512], v[949-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[653-512], v[vgprValuC+653-512], v[vgprValuC+653-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[653-512], v[951-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[654-512], v[vgprValuC+654-512], v[vgprValuC+654-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[654-512], v[953-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[655-512], v[vgprValuC+655-512], v[vgprValuC+655-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[655-512], v[955-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[656-512], v[vgprValuC+656-512], v[vgprValuC+656-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[656-512], v[957-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[657-512], v[vgprValuC+657-512], v[vgprValuC+657-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[657-512], v[959-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[658-512], v[vgprValuC+658-512], v[vgprValuC+658-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[658-512], v[961-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[659-512], v[vgprValuC+659-512], v[vgprValuC+659-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[659-512], v[963-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[660-512], v[vgprValuC+660-512], v[vgprValuC+660-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[660-512], v[965-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[661-512], v[vgprValuC+661-512], v[vgprValuC+661-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[661-512], v[967-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[662-512], v[vgprValuC+662-512], v[vgprValuC+662-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[662-512], v[969-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[663-512], v[vgprValuC+663-512], v[vgprValuC+663-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[663-512], v[971-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[664-512], v[vgprValuC+664-512], v[vgprValuC+664-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[664-512], v[973-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[665-512], v[vgprValuC+665-512], v[vgprValuC+665-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[665-512], v[975-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[666-512], v[vgprValuC+666-512], v[vgprValuC+666-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[666-512], v[977-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[667-512], v[vgprValuC+667-512], v[vgprValuC+667-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[667-512], v[979-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[668-512], v[vgprValuC+668-512], v[vgprValuC+668-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[668-512], v[981-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[669-512], v[vgprValuC+669-512], v[vgprValuC+669-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[669-512], v[983-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[670-512], v[vgprValuC+670-512], v[vgprValuC+670-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[670-512], v[985-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[671-512], v[vgprValuC+671-512], v[vgprValuC+671-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[671-512], v[987-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[672-512], v[vgprValuC+672-512], v[vgprValuC+672-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[672-512], v[989-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[673-512], v[vgprValuC+673-512], v[vgprValuC+673-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[673-512], v[991-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[674-512], v[vgprValuC+674-512], v[vgprValuC+674-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[674-512], v[993-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[675-512], v[vgprValuC+675-512], v[vgprValuC+675-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[675-512], v[995-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[676-512], v[vgprValuC+676-512], v[vgprValuC+676-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[676-512], v[997-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[677-512], v[vgprValuC+677-512], v[vgprValuC+677-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[677-512], v[999-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[678-512], v[vgprValuC+678-512], v[vgprValuC+678-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[678-512], v[1001-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[679-512], v[vgprValuC+679-512], v[vgprValuC+679-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[679-512], v[1003-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[680-512], v[vgprValuC+680-512], v[vgprValuC+680-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[680-512], v[1005-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[681-512], v[vgprValuC+681-512], v[vgprValuC+681-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[681-512], v[1007-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[682-512], v[vgprValuC+682-512], v[vgprValuC+682-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[682-512], v[1009-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[683-512], v[vgprValuC+683-512], v[vgprValuC+683-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[683-512], v[1011-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[684-512], v[vgprValuC+684-512], v[vgprValuC+684-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[684-512], v[1013-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[685-512], v[vgprValuC+685-512], v[vgprValuC+685-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[685-512], v[1015-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[686-512], v[vgprValuC+686-512], v[vgprValuC+686-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[686-512], v[1017-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[687-512], v[vgprValuC+687-512], v[vgprValuC+687-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[687-512], v[1019-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -42142,1122 +42145,1122 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+523-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[523-512], v[vgprValuC+523-512], v[vgprValuC+523-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[523-512], v[690-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+524-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[524-512], v[vgprValuC+524-512], v[vgprValuC+524-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[524-512], v[692-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+525-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[525-512], v[vgprValuC+525-512], v[vgprValuC+525-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[525-512], v[694-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+526-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[526-512], v[vgprValuC+526-512], v[vgprValuC+526-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[526-512], v[696-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+527-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[527-512], v[vgprValuC+527-512], v[vgprValuC+527-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[527-512], v[698-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+528-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[528-512], v[700-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[529-512], v[vgprValuC+529-512], v[vgprValuC+529-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[529-512], v[702-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[530-512], v[vgprValuC+530-512], v[vgprValuC+530-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[530-512], v[704-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+531-512], v[vgprValuC+531-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[531-512], v[706-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[532-512], v[vgprValuC+532-512], v[vgprValuC+532-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[532-512], v[708-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[533-512], v[vgprValuC+533-512], v[vgprValuC+533-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[533-512], v[710-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[534-512], v[vgprValuC+534-512], v[vgprValuC+534-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[534-512], v[712-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[535-512], v[vgprValuC+535-512], v[vgprValuC+535-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[535-512], v[714-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+536-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[536-512], v[716-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[537-512], v[vgprValuC+537-512], v[vgprValuC+537-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[537-512], v[718-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[538-512], v[vgprValuC+538-512], v[vgprValuC+538-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[538-512], v[720-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[539-512], v[vgprValuC+539-512], v[vgprValuC+539-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[539-512], v[722-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[540-512], v[vgprValuC+540-512], v[vgprValuC+540-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[540-512], v[724-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[541-512], v[vgprValuC+541-512], v[vgprValuC+541-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[541-512], v[726-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[542-512], v[vgprValuC+542-512], v[vgprValuC+542-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[542-512], v[728-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[543-512], v[vgprValuC+543-512], v[vgprValuC+543-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[543-512], v[730-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[544-512], v[vgprValuC+544-512], v[vgprValuC+544-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[544-512], v[732-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[545-512], v[vgprValuC+545-512], v[vgprValuC+545-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[545-512], v[734-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[546-512], v[vgprValuC+546-512], v[vgprValuC+546-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[546-512], v[736-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[547-512], v[vgprValuC+547-512], v[vgprValuC+547-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[547-512], v[738-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[548-512], v[vgprValuC+548-512], v[vgprValuC+548-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[548-512], v[740-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[549-512], v[vgprValuC+549-512], v[vgprValuC+549-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[549-512], v[742-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[550-512], v[vgprValuC+550-512], v[vgprValuC+550-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[550-512], v[744-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[551-512], v[vgprValuC+551-512], v[vgprValuC+551-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[551-512], v[746-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[552-512], v[vgprValuC+552-512], v[vgprValuC+552-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[552-512], v[748-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[553-512], v[vgprValuC+553-512], v[vgprValuC+553-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[553-512], v[750-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[554-512], v[vgprValuC+554-512], v[vgprValuC+554-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[554-512], v[752-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[555-512], v[vgprValuC+555-512], v[vgprValuC+555-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[555-512], v[754-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[556-512], v[vgprValuC+556-512], v[vgprValuC+556-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[556-512], v[756-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[557-512], v[vgprValuC+557-512], v[vgprValuC+557-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[557-512], v[758-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[558-512], v[vgprValuC+558-512], v[vgprValuC+558-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[558-512], v[760-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[559-512], v[vgprValuC+559-512], v[vgprValuC+559-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[559-512], v[762-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[560-512], v[vgprValuC+560-512], v[vgprValuC+560-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[560-512], v[764-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[561-512], v[vgprValuC+561-512], v[vgprValuC+561-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[561-512], v[766-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[562-512], v[vgprValuC+562-512], v[vgprValuC+562-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[562-512], v[768-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[563-512], v[vgprValuC+563-512], v[vgprValuC+563-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[563-512], v[770-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[564-512], v[vgprValuC+564-512], v[vgprValuC+564-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[564-512], v[772-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[565-512], v[vgprValuC+565-512], v[vgprValuC+565-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[565-512], v[774-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[566-512], v[vgprValuC+566-512], v[vgprValuC+566-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[566-512], v[776-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[567-512], v[vgprValuC+567-512], v[vgprValuC+567-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[567-512], v[778-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[568-512], v[vgprValuC+568-512], v[vgprValuC+568-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[568-512], v[780-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[569-512], v[vgprValuC+569-512], v[vgprValuC+569-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[569-512], v[782-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[570-512], v[vgprValuC+570-512], v[vgprValuC+570-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[570-512], v[784-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[571-512], v[vgprValuC+571-512], v[vgprValuC+571-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[571-512], v[786-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[572-512], v[vgprValuC+572-512], v[vgprValuC+572-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[572-512], v[788-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[573-512], v[vgprValuC+573-512], v[vgprValuC+573-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[573-512], v[790-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[574-512], v[vgprValuC+574-512], v[vgprValuC+574-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[574-512], v[792-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[575-512], v[vgprValuC+575-512], v[vgprValuC+575-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[575-512], v[794-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[576-512], v[vgprValuC+576-512], v[vgprValuC+576-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[576-512], v[796-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[577-512], v[vgprValuC+577-512], v[vgprValuC+577-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[577-512], v[798-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[578-512], v[vgprValuC+578-512], v[vgprValuC+578-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[578-512], v[800-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[579-512], v[vgprValuC+579-512], v[vgprValuC+579-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[579-512], v[802-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[580-512], v[vgprValuC+580-512], v[vgprValuC+580-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[580-512], v[804-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[581-512], v[vgprValuC+581-512], v[vgprValuC+581-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[581-512], v[806-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[582-512], v[vgprValuC+582-512], v[vgprValuC+582-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[582-512], v[808-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[583-512], v[vgprValuC+583-512], v[vgprValuC+583-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[583-512], v[810-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[584-512], v[vgprValuC+584-512], v[vgprValuC+584-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[584-512], v[812-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[585-512], v[vgprValuC+585-512], v[vgprValuC+585-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[585-512], v[814-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[586-512], v[vgprValuC+586-512], v[vgprValuC+586-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[586-512], v[816-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[587-512], v[vgprValuC+587-512], v[vgprValuC+587-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[587-512], v[818-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[588-512], v[vgprValuC+588-512], v[vgprValuC+588-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[588-512], v[820-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[589-512], v[vgprValuC+589-512], v[vgprValuC+589-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[589-512], v[822-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[590-512], v[vgprValuC+590-512], v[vgprValuC+590-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[590-512], v[824-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[591-512], v[vgprValuC+591-512], v[vgprValuC+591-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[591-512], v[826-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[592-512], v[vgprValuC+592-512], v[vgprValuC+592-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[592-512], v[828-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[593-512], v[vgprValuC+593-512], v[vgprValuC+593-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[593-512], v[830-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[594-512], v[vgprValuC+594-512], v[vgprValuC+594-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[594-512], v[832-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[595-512], v[vgprValuC+595-512], v[vgprValuC+595-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[595-512], v[834-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[596-512], v[vgprValuC+596-512], v[vgprValuC+596-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[596-512], v[836-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[597-512], v[vgprValuC+597-512], v[vgprValuC+597-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[597-512], v[838-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[598-512], v[vgprValuC+598-512], v[vgprValuC+598-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[598-512], v[840-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[599-512], v[vgprValuC+599-512], v[vgprValuC+599-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[599-512], v[842-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[600-512], v[vgprValuC+600-512], v[vgprValuC+600-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[600-512], v[844-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[601-512], v[vgprValuC+601-512], v[vgprValuC+601-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[601-512], v[846-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[602-512], v[vgprValuC+602-512], v[vgprValuC+602-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[602-512], v[848-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[603-512], v[vgprValuC+603-512], v[vgprValuC+603-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[603-512], v[850-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[604-512], v[vgprValuC+604-512], v[vgprValuC+604-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[604-512], v[852-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[605-512], v[vgprValuC+605-512], v[vgprValuC+605-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[605-512], v[854-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[606-512], v[vgprValuC+606-512], v[vgprValuC+606-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[606-512], v[856-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[607-512], v[vgprValuC+607-512], v[vgprValuC+607-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[607-512], v[858-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[608-512], v[vgprValuC+608-512], v[vgprValuC+608-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[608-512], v[860-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[609-512], v[vgprValuC+609-512], v[vgprValuC+609-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[609-512], v[862-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[610-512], v[vgprValuC+610-512], v[vgprValuC+610-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[610-512], v[864-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[611-512], v[vgprValuC+611-512], v[vgprValuC+611-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[611-512], v[866-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[612-512], v[vgprValuC+612-512], v[vgprValuC+612-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[612-512], v[868-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[613-512], v[vgprValuC+613-512], v[vgprValuC+613-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[613-512], v[870-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[614-512], v[vgprValuC+614-512], v[vgprValuC+614-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[614-512], v[872-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[615-512], v[vgprValuC+615-512], v[vgprValuC+615-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[615-512], v[874-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[616-512], v[vgprValuC+616-512], v[vgprValuC+616-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[616-512], v[876-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[617-512], v[vgprValuC+617-512], v[vgprValuC+617-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[617-512], v[878-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[618-512], v[vgprValuC+618-512], v[vgprValuC+618-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[618-512], v[880-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[619-512], v[vgprValuC+619-512], v[vgprValuC+619-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[619-512], v[882-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[620-512], v[vgprValuC+620-512], v[vgprValuC+620-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[620-512], v[884-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[621-512], v[vgprValuC+621-512], v[vgprValuC+621-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[621-512], v[886-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[622-512], v[vgprValuC+622-512], v[vgprValuC+622-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[622-512], v[888-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[623-512], v[vgprValuC+623-512], v[vgprValuC+623-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[623-512], v[890-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[624-512], v[vgprValuC+624-512], v[vgprValuC+624-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[624-512], v[892-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[625-512], v[vgprValuC+625-512], v[vgprValuC+625-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[625-512], v[894-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[626-512], v[vgprValuC+626-512], v[vgprValuC+626-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[626-512], v[896-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[627-512], v[vgprValuC+627-512], v[vgprValuC+627-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[627-512], v[898-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[628-512], v[vgprValuC+628-512], v[vgprValuC+628-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[628-512], v[900-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[629-512], v[vgprValuC+629-512], v[vgprValuC+629-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[629-512], v[903-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[630-512], v[vgprValuC+630-512], v[vgprValuC+630-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[630-512], v[905-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[631-512], v[vgprValuC+631-512], v[vgprValuC+631-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[631-512], v[907-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[632-512], v[vgprValuC+632-512], v[vgprValuC+632-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[632-512], v[909-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[633-512], v[vgprValuC+633-512], v[vgprValuC+633-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[633-512], v[911-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[634-512], v[vgprValuC+634-512], v[vgprValuC+634-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[634-512], v[913-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[635-512], v[vgprValuC+635-512], v[vgprValuC+635-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[635-512], v[915-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[636-512], v[vgprValuC+636-512], v[vgprValuC+636-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[636-512], v[917-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[637-512], v[vgprValuC+637-512], v[vgprValuC+637-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[637-512], v[919-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[638-512], v[vgprValuC+638-512], v[vgprValuC+638-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[638-512], v[921-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[639-512], v[vgprValuC+639-512], v[vgprValuC+639-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[639-512], v[923-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[640-512], v[vgprValuC+640-512], v[vgprValuC+640-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[640-512], v[925-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[641-512], v[vgprValuC+641-512], v[vgprValuC+641-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[641-512], v[927-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[642-512], v[vgprValuC+642-512], v[vgprValuC+642-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[642-512], v[929-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[643-512], v[vgprValuC+643-512], v[vgprValuC+643-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[643-512], v[931-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[644-512], v[vgprValuC+644-512], v[vgprValuC+644-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[644-512], v[933-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[645-512], v[vgprValuC+645-512], v[vgprValuC+645-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[645-512], v[935-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[646-512], v[vgprValuC+646-512], v[vgprValuC+646-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[646-512], v[937-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[647-512], v[vgprValuC+647-512], v[vgprValuC+647-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[647-512], v[939-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[648-512], v[vgprValuC+648-512], v[vgprValuC+648-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[648-512], v[941-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[649-512], v[vgprValuC+649-512], v[vgprValuC+649-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[649-512], v[943-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[650-512], v[vgprValuC+650-512], v[vgprValuC+650-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[650-512], v[945-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[651-512], v[vgprValuC+651-512], v[vgprValuC+651-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[651-512], v[947-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[652-512], v[vgprValuC+652-512], v[vgprValuC+652-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[652-512], v[949-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[653-512], v[vgprValuC+653-512], v[vgprValuC+653-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[653-512], v[951-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[654-512], v[vgprValuC+654-512], v[vgprValuC+654-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[654-512], v[953-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[655-512], v[vgprValuC+655-512], v[vgprValuC+655-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[655-512], v[955-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[656-512], v[vgprValuC+656-512], v[vgprValuC+656-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[656-512], v[957-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[657-512], v[vgprValuC+657-512], v[vgprValuC+657-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[657-512], v[959-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[658-512], v[vgprValuC+658-512], v[vgprValuC+658-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[658-512], v[961-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[659-512], v[vgprValuC+659-512], v[vgprValuC+659-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[659-512], v[963-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[660-512], v[vgprValuC+660-512], v[vgprValuC+660-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[660-512], v[965-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[661-512], v[vgprValuC+661-512], v[vgprValuC+661-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[661-512], v[967-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[662-512], v[vgprValuC+662-512], v[vgprValuC+662-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[662-512], v[969-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[663-512], v[vgprValuC+663-512], v[vgprValuC+663-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[663-512], v[971-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[664-512], v[vgprValuC+664-512], v[vgprValuC+664-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[664-512], v[973-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[665-512], v[vgprValuC+665-512], v[vgprValuC+665-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[665-512], v[975-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[666-512], v[vgprValuC+666-512], v[vgprValuC+666-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[666-512], v[977-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[667-512], v[vgprValuC+667-512], v[vgprValuC+667-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[667-512], v[979-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[668-512], v[vgprValuC+668-512], v[vgprValuC+668-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[668-512], v[981-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[669-512], v[vgprValuC+669-512], v[vgprValuC+669-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[669-512], v[983-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[670-512], v[vgprValuC+670-512], v[vgprValuC+670-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[670-512], v[985-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[671-512], v[vgprValuC+671-512], v[vgprValuC+671-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[671-512], v[987-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[672-512], v[vgprValuC+672-512], v[vgprValuC+672-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[672-512], v[989-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[673-512], v[vgprValuC+673-512], v[vgprValuC+673-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[673-512], v[991-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[674-512], v[vgprValuC+674-512], v[vgprValuC+674-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[674-512], v[993-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[675-512], v[vgprValuC+675-512], v[vgprValuC+675-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[675-512], v[995-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[676-512], v[vgprValuC+676-512], v[vgprValuC+676-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[676-512], v[997-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[677-512], v[vgprValuC+677-512], v[vgprValuC+677-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[677-512], v[999-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[678-512], v[vgprValuC+678-512], v[vgprValuC+678-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[678-512], v[1001-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[679-512], v[vgprValuC+679-512], v[vgprValuC+679-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[679-512], v[1003-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[680-512], v[vgprValuC+680-512], v[vgprValuC+680-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[680-512], v[1005-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[681-512], v[vgprValuC+681-512], v[vgprValuC+681-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[681-512], v[1007-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[682-512], v[vgprValuC+682-512], v[vgprValuC+682-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[682-512], v[1009-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[683-512], v[vgprValuC+683-512], v[vgprValuC+683-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[683-512], v[1011-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[684-512], v[vgprValuC+684-512], v[vgprValuC+684-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[684-512], v[1013-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[685-512], v[vgprValuC+685-512], v[vgprValuC+685-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[685-512], v[1015-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[686-512], v[vgprValuC+686-512], v[vgprValuC+686-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[686-512], v[1017-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[687-512], v[vgprValuC+687-512], v[vgprValuC+687-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[687-512], v[1019-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -46331,1122 +46334,1122 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[689-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+523-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[523-512], v[vgprValuC+523-512], v[vgprValuC+523-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[523-512], v[690-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[691-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+524-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[524-512], v[vgprValuC+524-512], v[vgprValuC+524-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[524-512], v[692-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[693-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+525-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[525-512], v[vgprValuC+525-512], v[vgprValuC+525-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[525-512], v[694-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[695-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+526-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[526-512], v[vgprValuC+526-512], v[vgprValuC+526-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[526-512], v[696-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[697-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+527-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[527-512], v[vgprValuC+527-512], v[vgprValuC+527-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[527-512], v[698-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[699-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+528-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[528-512], v[700-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[701-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[529-512], v[vgprValuC+529-512], v[vgprValuC+529-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[529-512], v[702-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[703-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[530-512], v[vgprValuC+530-512], v[vgprValuC+530-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[530-512], v[704-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[705-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+531-512], v[vgprValuC+531-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[531-512], v[706-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[707-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[532-512], v[vgprValuC+532-512], v[vgprValuC+532-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[532-512], v[708-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[709-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[533-512], v[vgprValuC+533-512], v[vgprValuC+533-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[533-512], v[710-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[711-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[534-512], v[vgprValuC+534-512], v[vgprValuC+534-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[534-512], v[712-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[713-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[535-512], v[vgprValuC+535-512], v[vgprValuC+535-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[535-512], v[714-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[715-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+536-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[536-512], v[716-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[717-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+537-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[537-512], v[vgprValuC+537-512], v[vgprValuC+537-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[537-512], v[718-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[719-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+538-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[538-512], v[vgprValuC+538-512], v[vgprValuC+538-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[538-512], v[720-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[721-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+539-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[539-512], v[vgprValuC+539-512], v[vgprValuC+539-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[539-512], v[722-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[723-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+540-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[540-512], v[vgprValuC+540-512], v[vgprValuC+540-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[540-512], v[724-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[725-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+541-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[541-512], v[vgprValuC+541-512], v[vgprValuC+541-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[541-512], v[726-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[727-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+542-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[542-512], v[vgprValuC+542-512], v[vgprValuC+542-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[542-512], v[728-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[729-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+543-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[543-512], v[vgprValuC+543-512], v[vgprValuC+543-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[543-512], v[730-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[731-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+544-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[544-512], v[vgprValuC+544-512], v[vgprValuC+544-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[544-512], v[732-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[733-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+545-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[545-512], v[vgprValuC+545-512], v[vgprValuC+545-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[545-512], v[734-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[735-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+546-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[546-512], v[vgprValuC+546-512], v[vgprValuC+546-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[546-512], v[736-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[737-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+547-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[547-512], v[vgprValuC+547-512], v[vgprValuC+547-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[547-512], v[738-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[739-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+548-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[548-512], v[vgprValuC+548-512], v[vgprValuC+548-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[548-512], v[740-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[741-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+549-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[549-512], v[vgprValuC+549-512], v[vgprValuC+549-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[549-512], v[742-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[743-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+550-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[550-512], v[vgprValuC+550-512], v[vgprValuC+550-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[550-512], v[744-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[745-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+551-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[551-512], v[vgprValuC+551-512], v[vgprValuC+551-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[551-512], v[746-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[747-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+552-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[552-512], v[vgprValuC+552-512], v[vgprValuC+552-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[552-512], v[748-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[749-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+553-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[553-512], v[vgprValuC+553-512], v[vgprValuC+553-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[553-512], v[750-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[751-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+554-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[554-512], v[vgprValuC+554-512], v[vgprValuC+554-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[554-512], v[752-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[753-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+555-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[555-512], v[vgprValuC+555-512], v[vgprValuC+555-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[555-512], v[754-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[755-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+556-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[556-512], v[vgprValuC+556-512], v[vgprValuC+556-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[556-512], v[756-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[757-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+557-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[557-512], v[vgprValuC+557-512], v[vgprValuC+557-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[557-512], v[758-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[759-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+558-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[558-512], v[vgprValuC+558-512], v[vgprValuC+558-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[558-512], v[760-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[761-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+559-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[559-512], v[vgprValuC+559-512], v[vgprValuC+559-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[559-512], v[762-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[763-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+560-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[560-512], v[vgprValuC+560-512], v[vgprValuC+560-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[560-512], v[764-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[765-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+561-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[561-512], v[vgprValuC+561-512], v[vgprValuC+561-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[561-512], v[766-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[767-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+562-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[562-512], v[vgprValuC+562-512], v[vgprValuC+562-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[562-512], v[768-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[769-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+563-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[563-512], v[vgprValuC+563-512], v[vgprValuC+563-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[563-512], v[770-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[771-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+564-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[564-512], v[vgprValuC+564-512], v[vgprValuC+564-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[564-512], v[772-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[773-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+565-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[565-512], v[vgprValuC+565-512], v[vgprValuC+565-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[565-512], v[774-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[775-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+566-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[566-512], v[vgprValuC+566-512], v[vgprValuC+566-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[566-512], v[776-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[777-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+567-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[567-512], v[vgprValuC+567-512], v[vgprValuC+567-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[567-512], v[778-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[779-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+568-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[568-512], v[vgprValuC+568-512], v[vgprValuC+568-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[568-512], v[780-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[781-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+569-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[569-512], v[vgprValuC+569-512], v[vgprValuC+569-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[569-512], v[782-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[783-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+570-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[570-512], v[vgprValuC+570-512], v[vgprValuC+570-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[570-512], v[784-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[785-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+571-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[571-512], v[vgprValuC+571-512], v[vgprValuC+571-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[571-512], v[786-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[787-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+572-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[572-512], v[vgprValuC+572-512], v[vgprValuC+572-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[572-512], v[788-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[789-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+573-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[573-512], v[vgprValuC+573-512], v[vgprValuC+573-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[573-512], v[790-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[791-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+574-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[574-512], v[vgprValuC+574-512], v[vgprValuC+574-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[574-512], v[792-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[793-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+575-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[575-512], v[vgprValuC+575-512], v[vgprValuC+575-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[575-512], v[794-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[795-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+576-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[576-512], v[vgprValuC+576-512], v[vgprValuC+576-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[576-512], v[796-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[797-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+577-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[577-512], v[vgprValuC+577-512], v[vgprValuC+577-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[577-512], v[798-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[799-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+578-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[578-512], v[vgprValuC+578-512], v[vgprValuC+578-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[578-512], v[800-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[801-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+579-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[579-512], v[vgprValuC+579-512], v[vgprValuC+579-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[579-512], v[802-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[803-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+580-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[580-512], v[vgprValuC+580-512], v[vgprValuC+580-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[580-512], v[804-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[805-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+581-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[581-512], v[vgprValuC+581-512], v[vgprValuC+581-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[581-512], v[806-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[807-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+582-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[582-512], v[vgprValuC+582-512], v[vgprValuC+582-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[582-512], v[808-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[809-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+583-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[583-512], v[vgprValuC+583-512], v[vgprValuC+583-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[583-512], v[810-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[811-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+584-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[584-512], v[vgprValuC+584-512], v[vgprValuC+584-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[584-512], v[812-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[813-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+585-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[585-512], v[vgprValuC+585-512], v[vgprValuC+585-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[585-512], v[814-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[815-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+586-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[586-512], v[vgprValuC+586-512], v[vgprValuC+586-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[586-512], v[816-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[817-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+587-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[587-512], v[vgprValuC+587-512], v[vgprValuC+587-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[587-512], v[818-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[819-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+588-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[588-512], v[vgprValuC+588-512], v[vgprValuC+588-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[588-512], v[820-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[821-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+589-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[589-512], v[vgprValuC+589-512], v[vgprValuC+589-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[589-512], v[822-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[823-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+590-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[590-512], v[vgprValuC+590-512], v[vgprValuC+590-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[590-512], v[824-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[825-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+591-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[591-512], v[vgprValuC+591-512], v[vgprValuC+591-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[591-512], v[826-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[827-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+592-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[592-512], v[vgprValuC+592-512], v[vgprValuC+592-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[592-512], v[828-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[829-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+593-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[593-512], v[vgprValuC+593-512], v[vgprValuC+593-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[593-512], v[830-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[831-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+594-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[594-512], v[vgprValuC+594-512], v[vgprValuC+594-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[594-512], v[832-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[833-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+595-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[595-512], v[vgprValuC+595-512], v[vgprValuC+595-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[595-512], v[834-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[835-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+596-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[596-512], v[vgprValuC+596-512], v[vgprValuC+596-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[596-512], v[836-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[837-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+597-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[597-512], v[vgprValuC+597-512], v[vgprValuC+597-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[597-512], v[838-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[839-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+598-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[598-512], v[vgprValuC+598-512], v[vgprValuC+598-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[598-512], v[840-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[841-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+599-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[599-512], v[vgprValuC+599-512], v[vgprValuC+599-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[599-512], v[842-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[843-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+600-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[600-512], v[vgprValuC+600-512], v[vgprValuC+600-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[600-512], v[844-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[845-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+601-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[601-512], v[vgprValuC+601-512], v[vgprValuC+601-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[601-512], v[846-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[847-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+602-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[602-512], v[vgprValuC+602-512], v[vgprValuC+602-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[602-512], v[848-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[849-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+603-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[603-512], v[vgprValuC+603-512], v[vgprValuC+603-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[603-512], v[850-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[851-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+604-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[604-512], v[vgprValuC+604-512], v[vgprValuC+604-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[604-512], v[852-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[853-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+605-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[605-512], v[vgprValuC+605-512], v[vgprValuC+605-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[605-512], v[854-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[855-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+606-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[606-512], v[vgprValuC+606-512], v[vgprValuC+606-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[606-512], v[856-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[857-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+607-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[607-512], v[vgprValuC+607-512], v[vgprValuC+607-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[607-512], v[858-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[859-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+608-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[608-512], v[vgprValuC+608-512], v[vgprValuC+608-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[608-512], v[860-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[861-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+609-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[609-512], v[vgprValuC+609-512], v[vgprValuC+609-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[609-512], v[862-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[863-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+610-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[610-512], v[vgprValuC+610-512], v[vgprValuC+610-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[610-512], v[864-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[865-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+611-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[611-512], v[vgprValuC+611-512], v[vgprValuC+611-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[611-512], v[866-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[867-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+612-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[612-512], v[vgprValuC+612-512], v[vgprValuC+612-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[612-512], v[868-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[869-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+613-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[613-512], v[vgprValuC+613-512], v[vgprValuC+613-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[613-512], v[870-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[871-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+614-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[614-512], v[vgprValuC+614-512], v[vgprValuC+614-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[614-512], v[872-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[873-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+615-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[615-512], v[vgprValuC+615-512], v[vgprValuC+615-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[615-512], v[874-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[875-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+616-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[616-512], v[vgprValuC+616-512], v[vgprValuC+616-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[616-512], v[876-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[877-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+617-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[617-512], v[vgprValuC+617-512], v[vgprValuC+617-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[617-512], v[878-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[879-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+618-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[618-512], v[vgprValuC+618-512], v[vgprValuC+618-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[618-512], v[880-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[881-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+619-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[619-512], v[vgprValuC+619-512], v[vgprValuC+619-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[619-512], v[882-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[883-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+620-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[620-512], v[vgprValuC+620-512], v[vgprValuC+620-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[620-512], v[884-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[885-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+621-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[621-512], v[vgprValuC+621-512], v[vgprValuC+621-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[621-512], v[886-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[887-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+622-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[622-512], v[vgprValuC+622-512], v[vgprValuC+622-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[622-512], v[888-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[889-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+623-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[623-512], v[vgprValuC+623-512], v[vgprValuC+623-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[623-512], v[890-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[891-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+624-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[624-512], v[vgprValuC+624-512], v[vgprValuC+624-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[624-512], v[892-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[893-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+625-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[625-512], v[vgprValuC+625-512], v[vgprValuC+625-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[625-512], v[894-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[895-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+626-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[626-512], v[vgprValuC+626-512], v[vgprValuC+626-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[626-512], v[896-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[897-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+627-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[627-512], v[vgprValuC+627-512], v[vgprValuC+627-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[627-512], v[898-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[899-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+628-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[628-512], v[vgprValuC+628-512], v[vgprValuC+628-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[628-512], v[900-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[901-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+629-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[629-512], v[vgprValuC+629-512], v[vgprValuC+629-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[629-512], v[903-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[904-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+630-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[630-512], v[vgprValuC+630-512], v[vgprValuC+630-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[630-512], v[905-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[906-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+631-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[631-512], v[vgprValuC+631-512], v[vgprValuC+631-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[631-512], v[907-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[908-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+632-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[632-512], v[vgprValuC+632-512], v[vgprValuC+632-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[632-512], v[909-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[910-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+633-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[633-512], v[vgprValuC+633-512], v[vgprValuC+633-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[633-512], v[911-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[912-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+634-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[634-512], v[vgprValuC+634-512], v[vgprValuC+634-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[634-512], v[913-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[914-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+635-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[635-512], v[vgprValuC+635-512], v[vgprValuC+635-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[635-512], v[915-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[916-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+636-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[636-512], v[vgprValuC+636-512], v[vgprValuC+636-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[636-512], v[917-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[918-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+637-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[637-512], v[vgprValuC+637-512], v[vgprValuC+637-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[637-512], v[919-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[920-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+638-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[638-512], v[vgprValuC+638-512], v[vgprValuC+638-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[638-512], v[921-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[922-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+639-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[639-512], v[vgprValuC+639-512], v[vgprValuC+639-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[639-512], v[923-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[924-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+640-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[640-512], v[vgprValuC+640-512], v[vgprValuC+640-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[640-512], v[925-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[926-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+641-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[641-512], v[vgprValuC+641-512], v[vgprValuC+641-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[641-512], v[927-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[928-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+642-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[642-512], v[vgprValuC+642-512], v[vgprValuC+642-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[642-512], v[929-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[930-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+643-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[643-512], v[vgprValuC+643-512], v[vgprValuC+643-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[643-512], v[931-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[932-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+644-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[644-512], v[vgprValuC+644-512], v[vgprValuC+644-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[644-512], v[933-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[934-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+645-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[645-512], v[vgprValuC+645-512], v[vgprValuC+645-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[645-512], v[935-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[936-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+646-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[646-512], v[vgprValuC+646-512], v[vgprValuC+646-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[646-512], v[937-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[938-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+647-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[647-512], v[vgprValuC+647-512], v[vgprValuC+647-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[647-512], v[939-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[940-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+648-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[648-512], v[vgprValuC+648-512], v[vgprValuC+648-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[648-512], v[941-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[942-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+649-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[649-512], v[vgprValuC+649-512], v[vgprValuC+649-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[649-512], v[943-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[944-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+650-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[650-512], v[vgprValuC+650-512], v[vgprValuC+650-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[650-512], v[945-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[946-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+651-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[651-512], v[vgprValuC+651-512], v[vgprValuC+651-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[651-512], v[947-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[948-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+652-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[652-512], v[vgprValuC+652-512], v[vgprValuC+652-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[652-512], v[949-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[950-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+653-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[653-512], v[vgprValuC+653-512], v[vgprValuC+653-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[653-512], v[951-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[952-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+654-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[654-512], v[vgprValuC+654-512], v[vgprValuC+654-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[654-512], v[953-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[954-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+655-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[655-512], v[vgprValuC+655-512], v[vgprValuC+655-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[655-512], v[955-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[956-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+656-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[656-512], v[vgprValuC+656-512], v[vgprValuC+656-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[656-512], v[957-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[958-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+657-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[657-512], v[vgprValuC+657-512], v[vgprValuC+657-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[657-512], v[959-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[960-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+658-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[658-512], v[vgprValuC+658-512], v[vgprValuC+658-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[658-512], v[961-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[962-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+659-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[659-512], v[vgprValuC+659-512], v[vgprValuC+659-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[659-512], v[963-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[964-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+660-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[660-512], v[vgprValuC+660-512], v[vgprValuC+660-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[660-512], v[965-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[966-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+661-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[661-512], v[vgprValuC+661-512], v[vgprValuC+661-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[661-512], v[967-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[968-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+662-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[662-512], v[vgprValuC+662-512], v[vgprValuC+662-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[662-512], v[969-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[970-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+663-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[663-512], v[vgprValuC+663-512], v[vgprValuC+663-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[663-512], v[971-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[972-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+664-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[664-512], v[vgprValuC+664-512], v[vgprValuC+664-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[664-512], v[973-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[974-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+665-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[665-512], v[vgprValuC+665-512], v[vgprValuC+665-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[665-512], v[975-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[976-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+666-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[666-512], v[vgprValuC+666-512], v[vgprValuC+666-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[666-512], v[977-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[978-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+667-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[667-512], v[vgprValuC+667-512], v[vgprValuC+667-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[667-512], v[979-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[980-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+668-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[668-512], v[vgprValuC+668-512], v[vgprValuC+668-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[668-512], v[981-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[982-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+669-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[669-512], v[vgprValuC+669-512], v[vgprValuC+669-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[669-512], v[983-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[984-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+670-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[670-512], v[vgprValuC+670-512], v[vgprValuC+670-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[670-512], v[985-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[986-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+671-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[671-512], v[vgprValuC+671-512], v[vgprValuC+671-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[671-512], v[987-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[988-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+672-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[672-512], v[vgprValuC+672-512], v[vgprValuC+672-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[672-512], v[989-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[990-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+673-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[673-512], v[vgprValuC+673-512], v[vgprValuC+673-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[673-512], v[991-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[992-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+674-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[674-512], v[vgprValuC+674-512], v[vgprValuC+674-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[674-512], v[993-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[994-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+675-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[675-512], v[vgprValuC+675-512], v[vgprValuC+675-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[675-512], v[995-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[996-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+676-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[676-512], v[vgprValuC+676-512], v[vgprValuC+676-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[676-512], v[997-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[998-768] op_sel:[0]   // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+677-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[677-512], v[vgprValuC+677-512], v[vgprValuC+677-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[677-512], v[999-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1000-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+678-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[678-512], v[vgprValuC+678-512], v[vgprValuC+678-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[678-512], v[1001-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1002-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+679-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[679-512], v[vgprValuC+679-512], v[vgprValuC+679-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[679-512], v[1003-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1004-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+680-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[680-512], v[vgprValuC+680-512], v[vgprValuC+680-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[680-512], v[1005-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1006-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+681-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[681-512], v[vgprValuC+681-512], v[vgprValuC+681-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[681-512], v[1007-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1008-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+682-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[682-512], v[vgprValuC+682-512], v[vgprValuC+682-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[682-512], v[1009-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1010-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+683-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[683-512], v[vgprValuC+683-512], v[vgprValuC+683-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[683-512], v[1011-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1012-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+684-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[684-512], v[vgprValuC+684-512], v[vgprValuC+684-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[684-512], v[1013-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1014-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+685-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[685-512], v[vgprValuC+685-512], v[vgprValuC+685-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[685-512], v[1015-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1016-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+686-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[686-512], v[vgprValuC+686-512], v[vgprValuC+686-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[686-512], v[1017-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1018-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+687-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[687-512], v[vgprValuC+687-512], v[vgprValuC+687-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35459                               // src0: 3, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[687-512], v[1019-768], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[1020-768] op_sel:[0]  // cvt bf16 to fp32. 
 s_set_vgpr_msb 33666                               // src0: 2, src1: 0, src2: 0, dst: 2
 v_fmac_f32 v[vgprValuC+688-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
@@ -47713,85 +47716,85 @@ v_mov_b32 v[520-512], 0xffff0000                   // mask for pack two bfloat16
 v_mov_b32 v[521-512], 0x7fff0000                   // fp32 Nan
 v_mov_b32 v[522-512], 0x7fff                       // rounding bias for bfloat16
 s_set_vgpr_msb 32898                               // src0: 2, src1: 0, src2: 0, dst: 2
-v_cvt_f32_bf16 v[516-512], v[537-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[537-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+523-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[523-512], v[vgprValuC+523-512], v[vgprValuC+523-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[523-512], v[538-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[539-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[539-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+524-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[524-512], v[vgprValuC+524-512], v[vgprValuC+524-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[524-512], v[540-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[541-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[541-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+525-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[525-512], v[vgprValuC+525-512], v[vgprValuC+525-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[525-512], v[542-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[543-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[543-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+526-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[526-512], v[vgprValuC+526-512], v[vgprValuC+526-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[526-512], v[544-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[545-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[545-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+527-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[527-512], v[vgprValuC+527-512], v[vgprValuC+527-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[527-512], v[546-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[547-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[547-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+528-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[528-512], v[vgprValuC+528-512], v[vgprValuC+528-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[528-512], v[548-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[549-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[549-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+529-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[529-512], v[vgprValuC+529-512], v[vgprValuC+529-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[529-512], v[550-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[551-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[551-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+530-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[530-512], v[vgprValuC+530-512], v[vgprValuC+530-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[530-512], v[552-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[553-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[553-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+531-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[531-512], v[vgprValuC+531-512], v[vgprValuC+531-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[531-512], v[554-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[555-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[555-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+532-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[532-512], v[vgprValuC+532-512], v[vgprValuC+532-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[532-512], v[556-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[557-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[557-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+533-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[533-512], v[vgprValuC+533-512], v[vgprValuC+533-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[533-512], v[558-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[559-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[559-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+534-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[534-512], v[vgprValuC+534-512], v[vgprValuC+534-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[534-512], v[560-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[561-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[561-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+535-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[535-512], v[vgprValuC+535-512], v[vgprValuC+535-512] // convert C to bf16 in gwvw==1
 s_set_vgpr_msb 35458                               // src0: 2, src1: 0, src2: 0, dst: 2
 buffer_store_b16 v[535-512], v[562-512], s[sgprSrdD:sgprSrdD+3], null offen offset:0 // store D
-v_cvt_f32_bf16 v[516-512], v[563-512] op_sel:[0]   // cvt bf16 to f32
+v_cvt_f32_bf16 v[516-512], v[563-512] op_sel:[0]   // cvt bf16 to fp32. 
 v_fmac_f32 v[vgprValuC+536-512], v[516-512], s[sgprBeta] // finalSum = sum*alpha + C*beta
 s_set_vgpr_msb 33418                               // src0: 2, src1: 2, src2: 0, dst: 2
 v_cvt_pk_bf16_f32 v[536-512], v[vgprValuC+536-512], v[vgprValuC+536-512] // convert C to bf16 in gwvw==1
