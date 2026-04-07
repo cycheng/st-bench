@@ -2114,43 +2114,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2262,43 +2255,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2330,102 +2316,54 @@ s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 48
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 32
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
@@ -2453,102 +2391,54 @@ s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 16
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_tensorcnt 0
 s_barrier_signal -1
@@ -2564,7 +2454,6 @@ ds_load_b128 v[vgprValuB_X0_I0+0-512:vgprValuB_X0_I0+0-512+3], v[vgprLocalReadAd
 ds_load_b128 v[vgprValuB_X0_I0+4-512:vgprValuB_X0_I0+4-512+3], v[vgprLocalReadAddrB+0-512] offset:32 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8192 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8224 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 6
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2572,7 +2461,6 @@ ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16416 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24576 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24608 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 10
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2580,7 +2468,6 @@ ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32800 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:40960 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:40992 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 14
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2588,7 +2475,6 @@ ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49184 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+56-512:vgprValuA_X0_I0+56-512+3], v[vgprLocalReadAddrA+0-512] offset:57344 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuA_X0_I0+60-512:vgprValuA_X0_I0+60-512+3], v[vgprLocalReadAddrA+0-512] offset:57376 // L -> Reg lro=0 swapByteOffset=0 ti=32 vIdx=7 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 18
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2596,7 +2482,6 @@ ds_load_b128 v[vgprValuB_X0_I0+8-512:vgprValuB_X0_I0+8-512+3], v[vgprLocalReadAd
 ds_load_b128 v[vgprValuB_X0_I0+12-512:vgprValuB_X0_I0+12-512+3], v[vgprLocalReadAddrB+0-512] offset:288 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=1 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+16-512:vgprValuB_X0_I0+16-512+3], v[vgprLocalReadAddrB+0-512] offset:512 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+20-512:vgprValuB_X0_I0+20-512+3], v[vgprLocalReadAddrB+0-512] offset:544 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=2 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 22
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2604,7 +2489,6 @@ ds_load_b128 v[vgprValuB_X0_I0+24-512:vgprValuB_X0_I0+24-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuB_X0_I0+28-512:vgprValuB_X0_I0+28-512+3], v[vgprLocalReadAddrB+0-512] offset:800 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=3 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+32-512:vgprValuB_X0_I0+32-512+3], v[vgprLocalReadAddrB+0-512] offset:1024 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+36-512:vgprValuB_X0_I0+36-512+3], v[vgprLocalReadAddrB+0-512] offset:1056 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=4 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 26
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2612,14 +2496,12 @@ ds_load_b128 v[vgprValuB_X0_I0+40-512:vgprValuB_X0_I0+40-512+3], v[vgprLocalRead
 ds_load_b128 v[vgprValuB_X0_I0+44-512:vgprValuB_X0_I0+44-512+3], v[vgprLocalReadAddrB+0-512] offset:1312 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=5 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+48-512:vgprValuB_X0_I0+48-512+3], v[vgprLocalReadAddrB+0-512] offset:1536 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+52-512:vgprValuB_X0_I0+52-512+3], v[vgprLocalReadAddrB+0-512] offset:1568 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=6 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
-s_wait_dscnt 30
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuB_X0_I0+56-512:vgprValuB_X0_I0+56-512+3], v[vgprLocalReadAddrB+0-512] offset:1792 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS1
 ds_load_b128 v[vgprValuB_X0_I0+60-512:vgprValuB_X0_I0+60-512+3], v[vgprLocalReadAddrB+0-512] offset:1824 // L -> Reg lro=0 swapByteOffset=0 ti=256 vIdx=0 eIdx=7 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS1
 s_wait_dscnt 0
-s_wait_tensorcnt 0
 s_barrier_signal -1
 s_barrier_wait -1                                  // Waiting current LR finish for next GR(TDM), sync LDS0
 tensor_load_to_lds s[sgprtdmAGroup0:sgprtdmAGroup0+3], s[sgprtdmAGroup1:sgprtdmAGroup1+7]
@@ -2778,43 +2660,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2926,43 +2801,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -2994,102 +2862,54 @@ s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 48
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 32
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
@@ -3117,104 +2937,57 @@ s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 16
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 0
+s_wait_tensorcnt 0
 s_barrier_signal -1
 s_barrier_wait -1                                  // noLoadLoop sync LDS0
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -3453,43 +3226,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -3601,43 +3367,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -3663,102 +3422,54 @@ s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 48
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 32
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
@@ -3786,102 +3497,54 @@ s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 16
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 0
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
@@ -5081,43 +4744,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+0-512:vgprValuA_X0_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:128 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+4-512:vgprValuA_X0_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:160 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+8-512:vgprValuA_X0_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8320 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+12-512:vgprValuA_X0_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8352 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+16-512:vgprValuA_X0_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16512 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+20-512:vgprValuA_X0_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16544 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+24-512:vgprValuA_X0_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24704 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+28-512:vgprValuA_X0_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24736 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+32-512:vgprValuA_X0_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32896 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+36-512:vgprValuA_X0_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32928 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+40-512:vgprValuA_X0_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41088 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+44-512:vgprValuA_X0_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41120 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X0_I0+48-512:vgprValuA_X0_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49280 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=0 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X0_I0+52-512:vgprValuA_X0_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49312 // L -> Reg lro=64 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=0 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -5229,43 +4885,36 @@ v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+0-512:vgprValuA_X1_I0+0-512+3], v[vgprLocalReadAddrA+0-512] offset:192 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+4-512:vgprValuA_X1_I0+4-512+3], v[vgprLocalReadAddrA+0-512] offset:224 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=0 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 48
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+456-256:vgprValuC+456-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+456-256:vgprValuC+456-256+7] // left value = v[456+0:463+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+8-512:vgprValuA_X1_I0+8-512+3], v[vgprLocalReadAddrA+0-512] offset:8384 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+12-512:vgprValuA_X1_I0+12-512+3], v[vgprLocalReadAddrA+0-512] offset:8416 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=1 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 50
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+464-256:vgprValuC+464-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+464-256:vgprValuC+464-256+7] // left value = v[464+0:471+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+16-512:vgprValuA_X1_I0+16-512+3], v[vgprLocalReadAddrA+0-512] offset:16576 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+20-512:vgprValuA_X1_I0+20-512+3], v[vgprLocalReadAddrA+0-512] offset:16608 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=2 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 52
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+472-256:vgprValuC+472-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+472-256:vgprValuC+472-256+7] // left value = v[472+0:479+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+24-512:vgprValuA_X1_I0+24-512+3], v[vgprLocalReadAddrA+0-512] offset:24768 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+28-512:vgprValuA_X1_I0+28-512+3], v[vgprLocalReadAddrA+0-512] offset:24800 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=3 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 54
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+480-256:vgprValuC+480-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+480-256:vgprValuC+480-256+7] // left value = v[480+0:487+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+32-512:vgprValuA_X1_I0+32-512+3], v[vgprLocalReadAddrA+0-512] offset:32960 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+36-512:vgprValuA_X1_I0+36-512+3], v[vgprLocalReadAddrA+0-512] offset:32992 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=4 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 56
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+488-256:vgprValuC+488-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+488-256:vgprValuC+488-256+7] // left value = v[488+0:495+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+40-512:vgprValuA_X1_I0+40-512+3], v[vgprLocalReadAddrA+0-512] offset:41152 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+44-512:vgprValuA_X1_I0+44-512+3], v[vgprLocalReadAddrA+0-512] offset:41184 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=5 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 58
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+496-256:vgprValuC+496-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+496-256:vgprValuC+496-256+7] // left value = v[496+0:503+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
 ds_load_b128 v[vgprValuA_X1_I0+48-512:vgprValuA_X1_I0+48-512+3], v[vgprLocalReadAddrA+0-512] offset:49344 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=0 oIdx=0 buffer=1 iui=0 sync LDS0
 ds_load_b128 v[vgprValuA_X1_I0+52-512:vgprValuA_X1_I0+52-512+3], v[vgprLocalReadAddrA+0-512] offset:49376 // L -> Reg lro=96 swapByteOffset=0 ti=32 vIdx=6 eIdx=0 rIdx=1 oIdx=0 buffer=1 iui=0 sync LDS0
-s_wait_dscnt 60
 s_set_vgpr_msb 33370                               // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+504-256:vgprValuC+504-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+504-256:vgprValuC+504-256+7] // left value = v[504+0:511+0]
 s_set_vgpr_msb 23170                               // src0: 2, src1: 0, src2: 0, dst: 2
@@ -5291,102 +4940,54 @@ s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+0+0+0-512:vgprValuB_X0_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+8+0+0-512:vgprValuB_X0_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+16+0+0-512:vgprValuB_X0_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+24+0+0-512:vgprValuB_X0_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 48
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+32+0+0-512:vgprValuB_X0_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+40+0+0-512:vgprValuB_X0_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 48
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 46
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X0_I0+8+0+0-512:vgprValuA_X0_I0+8+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 44
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X0_I0+16+0+0-512:vgprValuA_X0_I0+16+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 42
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X0_I0+24+0+0-512:vgprValuA_X0_I0+24+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 40
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X0_I0+32+0+0-512:vgprValuA_X0_I0+32+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 38
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X0_I0+40+0+0-512:vgprValuA_X0_I0+40+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 36
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X0_I0+48+0+0-512:vgprValuA_X0_I0+48+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 34
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X0_I0+56+0+0-512:vgprValuA_X0_I0+56+0+0-512+7], v[vgprValuB_X0_I0+48+0+0-512:vgprValuB_X0_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 32
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X0_I0+0+0+0-512:vgprValuA_X0_I0+0+0+0-512+7], v[vgprValuB_X0_I0+56+0+0-512:vgprValuB_X0_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
@@ -5414,102 +5015,54 @@ s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+48:vgprValuC+48+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+48:vgprValuC+48+7] // left value = v[48+0:55+0]
 s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+56:vgprValuC+56+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+0+0+0-512:vgprValuB_X1_I0+0+0+0-512+7], v[vgprValuC+56:vgprValuC+56+7] // left value = v[56+0:63+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+64:vgprValuC+64+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+64:vgprValuC+64+7] // left value = v[64+0:71+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+72:vgprValuC+72+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+72:vgprValuC+72+7] // left value = v[72+0:79+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+80:vgprValuC+80+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+80:vgprValuC+80+7] // left value = v[80+0:87+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+88:vgprValuC+88+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+88:vgprValuC+88+7] // left value = v[88+0:95+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+96:vgprValuC+96+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+96:vgprValuC+96+7] // left value = v[96+0:103+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+104:vgprValuC+104+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+104:vgprValuC+104+7] // left value = v[104+0:111+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+112:vgprValuC+112+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+112:vgprValuC+112+7] // left value = v[112+0:119+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+120:vgprValuC+120+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+8+0+0-512:vgprValuB_X1_I0+8+0+0-512+7], v[vgprValuC+120:vgprValuC+120+7] // left value = v[120+0:127+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+128:vgprValuC+128+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+128:vgprValuC+128+7] // left value = v[128+0:135+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+136:vgprValuC+136+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+136:vgprValuC+136+7] // left value = v[136+0:143+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+144:vgprValuC+144+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+144:vgprValuC+144+7] // left value = v[144+0:151+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+152:vgprValuC+152+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+152:vgprValuC+152+7] // left value = v[152+0:159+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+160:vgprValuC+160+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+160:vgprValuC+160+7] // left value = v[160+0:167+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+168:vgprValuC+168+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+168:vgprValuC+168+7] // left value = v[168+0:175+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+176:vgprValuC+176+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+176:vgprValuC+176+7] // left value = v[176+0:183+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+184:vgprValuC+184+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+16+0+0-512:vgprValuB_X1_I0+16+0+0-512+7], v[vgprValuC+184:vgprValuC+184+7] // left value = v[184+0:191+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+192:vgprValuC+192+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+192:vgprValuC+192+7] // left value = v[192+0:199+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+200:vgprValuC+200+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+200:vgprValuC+200+7] // left value = v[200+0:207+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+208:vgprValuC+208+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+208:vgprValuC+208+7] // left value = v[208+0:215+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+216:vgprValuC+216+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+216:vgprValuC+216+7] // left value = v[216+0:223+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+224:vgprValuC+224+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+224:vgprValuC+224+7] // left value = v[224+0:231+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+232:vgprValuC+232+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+232:vgprValuC+232+7] // left value = v[232+0:239+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+240:vgprValuC+240+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+240:vgprValuC+240+7] // left value = v[240+0:247+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+248:vgprValuC+248+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+24+0+0-512:vgprValuB_X1_I0+24+0+0-512+7], v[vgprValuC+248:vgprValuC+248+7] // left value = v[248+0:255+0]
-s_wait_dscnt 16
 s_set_vgpr_msb 2650                                // src0: 2, src1: 2, src2: 1, dst: 1
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+256-256:vgprValuC+256-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+256-256:vgprValuC+256-256+7] // left value = v[256+0:263+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+264-256:vgprValuC+264-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+264-256:vgprValuC+264-256+7] // left value = v[264+0:271+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+272-256:vgprValuC+272-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+272-256:vgprValuC+272-256+7] // left value = v[272+0:279+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+280-256:vgprValuC+280-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+280-256:vgprValuC+280-256+7] // left value = v[280+0:287+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+288-256:vgprValuC+288-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+288-256:vgprValuC+288-256+7] // left value = v[288+0:295+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+296-256:vgprValuC+296-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+296-256:vgprValuC+296-256+7] // left value = v[296+0:303+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+304-256:vgprValuC+304-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+304-256:vgprValuC+304-256+7] // left value = v[304+0:311+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+312-256:vgprValuC+312-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+32+0+0-512:vgprValuB_X1_I0+32+0+0-512+7], v[vgprValuC+312-256:vgprValuC+312-256+7] // left value = v[312+0:319+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+320-256:vgprValuC+320-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+320-256:vgprValuC+320-256+7] // left value = v[320+0:327+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+328-256:vgprValuC+328-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+328-256:vgprValuC+328-256+7] // left value = v[328+0:335+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+336-256:vgprValuC+336-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+336-256:vgprValuC+336-256+7] // left value = v[336+0:343+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+344-256:vgprValuC+344-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+344-256:vgprValuC+344-256+7] // left value = v[344+0:351+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+352-256:vgprValuC+352-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+352-256:vgprValuC+352-256+7] // left value = v[352+0:359+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+360-256:vgprValuC+360-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+360-256:vgprValuC+360-256+7] // left value = v[360+0:367+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+368-256:vgprValuC+368-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+368-256:vgprValuC+368-256+7] // left value = v[368+0:375+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+376-256:vgprValuC+376-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+40+0+0-512:vgprValuB_X1_I0+40+0+0-512+7], v[vgprValuC+376-256:vgprValuC+376-256+7] // left value = v[376+0:383+0]
-s_wait_dscnt 16
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+384-256:vgprValuC+384-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+384-256:vgprValuC+384-256+7] // left value = v[384+0:391+0]
-s_wait_dscnt 14
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+392-256:vgprValuC+392-256+7], v[vgprValuA_X1_I0+8+0+0-512:vgprValuA_X1_I0+8+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+392-256:vgprValuC+392-256+7] // left value = v[392+0:399+0]
-s_wait_dscnt 12
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+400-256:vgprValuC+400-256+7], v[vgprValuA_X1_I0+16+0+0-512:vgprValuA_X1_I0+16+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+400-256:vgprValuC+400-256+7] // left value = v[400+0:407+0]
-s_wait_dscnt 10
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+408-256:vgprValuC+408-256+7], v[vgprValuA_X1_I0+24+0+0-512:vgprValuA_X1_I0+24+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+408-256:vgprValuC+408-256+7] // left value = v[408+0:415+0]
-s_wait_dscnt 8
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+416-256:vgprValuC+416-256+7], v[vgprValuA_X1_I0+32+0+0-512:vgprValuA_X1_I0+32+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+416-256:vgprValuC+416-256+7] // left value = v[416+0:423+0]
-s_wait_dscnt 6
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+424-256:vgprValuC+424-256+7], v[vgprValuA_X1_I0+40+0+0-512:vgprValuA_X1_I0+40+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+424-256:vgprValuC+424-256+7] // left value = v[424+0:431+0]
-s_wait_dscnt 4
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+432-256:vgprValuC+432-256+7], v[vgprValuA_X1_I0+48+0+0-512:vgprValuA_X1_I0+48+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+432-256:vgprValuC+432-256+7] // left value = v[432+0:439+0]
-s_wait_dscnt 2
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+440-256:vgprValuC+440-256+7], v[vgprValuA_X1_I0+56+0+0-512:vgprValuA_X1_I0+56+0+0-512+7], v[vgprValuB_X1_I0+48+0+0-512:vgprValuB_X1_I0+48+0+0-512+7], v[vgprValuC+440-256:vgprValuC+440-256+7] // left value = v[440+0:447+0]
 s_wait_dscnt 0
 v_wmma_f32_16x16x32_bf16 v[vgprValuC+448-256:vgprValuC+448-256+7], v[vgprValuA_X1_I0+0+0+0-512:vgprValuA_X1_I0+0+0+0-512+7], v[vgprValuB_X1_I0+56+0+0-512:vgprValuB_X1_I0+56+0+0-512+7], v[vgprValuC+448-256:vgprValuC+448-256+7] // left value = v[448+0:455+0]
