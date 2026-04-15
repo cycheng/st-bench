@@ -291,7 +291,7 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     "${TENSILE_ARGS}" \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 else
-  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" bash -lc "${TENSILE_ARGS}") \
+  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}") \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 fi
 

@@ -282,7 +282,7 @@ run_hipblaslt_install() {
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc "${cmd}"
   else
-    env "${RUNTIME_ENV_VARS[@]}" bash -lc "${cmd}"
+    env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${cmd}"
   fi
 
   mkdir -p "${output_root}"
