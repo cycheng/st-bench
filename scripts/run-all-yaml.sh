@@ -12,6 +12,7 @@ Usage:
 
 Config file format (key=value):
   task_type=yaml|hipblaslt_install     # optional, default: yaml
+  execution_mode=docker|host           # optional, default: docker
   build_dir=/path/to/build
   list_file=./test-lists/gfx1250.list   # repeatable, required for task_type=yaml
   rocm_libraries_path=/data0/cycheng2/rocm-libraries
@@ -46,6 +47,7 @@ DOCKER_AUTO_START=1
 BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
 TASK_TYPE="yaml"
+EXECUTION_MODE="docker"
 HIPBLASLT_REPO_PATH=""
 HIPBLASLT_INSTALL_FLAGS=""
 HIPBLASLT_BUILD_TYPE="debug"
@@ -59,6 +61,18 @@ parse_bool() {
     0|false|no|off) echo 0 ;;
     *)
       echo "Invalid boolean value: ${raw}" >&2
+      exit 1
+      ;;
+  esac
+}
+
+normalize_execution_mode() {
+  local raw="$1"
+  local lower="${raw,,}"
+  case "${lower}" in
+    docker|host) echo "${lower}" ;;
+    *)
+      echo "Invalid execution mode: ${raw}. Use docker or host." >&2
       exit 1
       ;;
   esac
@@ -92,6 +106,7 @@ parse_config_file() {
 
     case "${key}" in
       task_type) TASK_TYPE="${value}" ;;
+      execution_mode) EXECUTION_MODE="$(normalize_execution_mode "${value}")" ;;
       build_dir) BUILD_DIR="${value}" ;;
       list_file) LIST_FILES+=("${value}") ;;
       rocm_libraries_path) ROCM_LIBRARIES_PATH="${value}" ;;
@@ -160,10 +175,11 @@ expand_vars() {
 }
 
 build_docker_env_args() {
+  RUNTIME_ENV_VARS=()
   DOCKER_ENV_ARGS=()
   local env_file line
   for kv in "${EXTRA_ENVS[@]}"; do
-    DOCKER_ENV_ARGS+=("-e" "${kv}")
+    RUNTIME_ENV_VARS+=("${kv}")
   done
   for env_file in "${ENV_FILES[@]}"; do
     if [[ ! -f "${env_file}" ]]; then
@@ -174,8 +190,11 @@ build_docker_env_args() {
       line="${line#"${line%%[![:space:]]*}"}"
       line="${line%"${line##*[![:space:]]}"}"
       [[ -z "${line}" || "${line}" == \#* ]] && continue
-      DOCKER_ENV_ARGS+=("-e" "${line}")
+      RUNTIME_ENV_VARS+=("${line}")
     done < "${env_file}"
+  done
+  for kv in "${RUNTIME_ENV_VARS[@]}"; do
+    DOCKER_ENV_ARGS+=("-e" "${kv}")
   done
 }
 
@@ -186,6 +205,7 @@ run_yaml() {
   echo "=========================================="
 
   args=(--yaml "${yaml_file}" --build-dir "${BUILD_DIR}")
+  args+=(--execution-mode "${EXECUTION_MODE}")
   [[ -n "${CONTAINER_NAME}" ]] && args+=(--container "${CONTAINER_NAME}")
   [[ -n "${WORKDIR}" ]] && args+=(--workdir "${WORKDIR}")
   [[ -n "${OUTPUT_ROOT}" ]] && args+=(--output-root "${OUTPUT_ROOT}")
@@ -219,14 +239,6 @@ run_hipblaslt_install() {
   local repo_path install_flags build_type cmpasm_path
   local output_root symlink_name symlink_path cmd
 
-  if [[ -z "${CONTAINER_NAME}" ]]; then
-    echo "container is required for task_type=hipblaslt_install." >&2
-    exit 1
-  fi
-  if [[ -z "${WORKDIR}" ]]; then
-    echo "workdir is required for task_type=hipblaslt_install." >&2
-    exit 1
-  fi
   if [[ -z "${HIPBLASLT_REPO_PATH}" ]]; then
     echo "hipblaslt_repo_path is required for task_type=hipblaslt_install." >&2
     exit 1
@@ -242,19 +254,36 @@ run_hipblaslt_install() {
 
   build_docker_env_args
 
-  if [[ ${DOCKER_AUTO_START} -eq 1 ]]; then
-    docker start "${CONTAINER_NAME}" >/dev/null
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    if [[ -z "${CONTAINER_NAME}" ]]; then
+      echo "container is required for task_type=hipblaslt_install in docker mode." >&2
+      exit 1
+    fi
+    if [[ -z "${WORKDIR}" ]]; then
+      echo "workdir is required for task_type=hipblaslt_install in docker mode." >&2
+      exit 1
+    fi
+    if [[ ${DOCKER_AUTO_START} -eq 1 ]]; then
+      docker start "${CONTAINER_NAME}" >/dev/null
+    fi
   fi
 
   printf -v cmd "cd %q && ./install.sh %s" "${repo_path}" "${install_flags}"
 
   echo "=========================================="
   echo "Task: hipblaslt_install"
-  echo "Container: ${CONTAINER_NAME}"
+  echo "Execution mode: ${EXECUTION_MODE}"
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    echo "Container: ${CONTAINER_NAME}"
+  fi
   echo "Repo: ${repo_path}"
   echo "Install flags: ${install_flags}"
   echo "=========================================="
-  docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc "${cmd}"
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc "${cmd}"
+  else
+    env "${RUNTIME_ENV_VARS[@]}" bash -lc "${cmd}"
+  fi
 
   mkdir -p "${output_root}"
   ln -sfn "${cmpasm_path}" "${symlink_path}"
@@ -315,6 +344,8 @@ collect_and_run_from_target() {
     fi
   done
 }
+
+EXECUTION_MODE="$(normalize_execution_mode "${EXECUTION_MODE}")"
 
 if [[ "${TASK_TYPE}" == "yaml" ]]; then
   if [[ ! -x "${RUN_ONE_SCRIPT}" ]]; then

@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Run one Tensile YAML inside a docker container.
+Run one Tensile YAML in docker or on host.
 
 Usage:
   scripts/run-single-yaml.sh <config-file> <yaml-file>
@@ -16,6 +16,7 @@ Required:
 
 Optional:
   --config <file>        Config file path.
+  --execution-mode <m>   Runtime mode: docker|host (default: docker).
   --container <name>     Docker container name (default: stinkytofu-dev).
   --workdir <dir>        Working directory inside container (default: current directory).
   --client <path>        Prebuilt client path (default: <build-dir>/tensilelite/client/tensilelite-client).
@@ -42,6 +43,7 @@ EOF
 YAML_FILE=""
 BUILD_DIR=""
 CONFIG_FILE=""
+EXECUTION_MODE="docker"
 CONTAINER_NAME="${DOCKER_CONTAINER:-stinkytofu-dev}"
 WORKDIR="$(pwd)"
 CLIENT_PATH=""
@@ -51,6 +53,18 @@ BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
 EXTRA_ENVS=()
 ENV_FILES=()
+
+normalize_execution_mode() {
+  local raw="$1"
+  local lower="${raw,,}"
+  case "${lower}" in
+    docker|host) echo "${lower}" ;;
+    *)
+      echo "Invalid execution mode: ${raw}. Use docker or host." >&2
+      exit 1
+      ;;
+  esac
+}
 
 parse_bool() {
   local raw="$1"
@@ -96,6 +110,7 @@ parse_config_file() {
       build_dir) BUILD_DIR="${value}" ;;
       list_file) : ;;  # accepted for shared config compatibility
       rocm_libraries_path) : ;;  # accepted for shared config compatibility
+      execution_mode) EXECUTION_MODE="$(normalize_execution_mode "${value}")" ;;
       container) CONTAINER_NAME="${value}" ;;
       workdir) WORKDIR="${value}" ;;
       client) CLIENT_PATH="${value}" ;;
@@ -137,6 +152,14 @@ while [[ $# -gt 0 ]]; do
     --build-dir)
       BUILD_DIR="$2"
       shift 2
+      ;;
+    --execution-mode)
+      EXECUTION_MODE="$(normalize_execution_mode "$2")"
+      shift 2
+      ;;
+    --host|--native-host|--no-docker)
+      EXECUTION_MODE="host"
+      shift
       ;;
     --container)
       CONTAINER_NAME="$2"
@@ -196,6 +219,8 @@ if [[ -z "${YAML_FILE}" || -z "${BUILD_DIR}" ]]; then
   exit 1
 fi
 
+EXECUTION_MODE="$(normalize_execution_mode "${EXECUTION_MODE}")"
+
 if [[ ! -f "${YAML_FILE}" ]]; then
   echo "YAML file not found: ${YAML_FILE}" >&2
   exit 1
@@ -215,7 +240,7 @@ if [[ ! -x "${CLIENT_PATH}" ]]; then
   exit 1
 fi
 
-if [[ ${AUTO_START} -eq 1 ]]; then
+if [[ "${EXECUTION_MODE}" == "docker" && ${AUTO_START} -eq 1 ]]; then
   docker start "${CONTAINER_NAME}" >/dev/null
 fi
 
@@ -224,9 +249,9 @@ ABS_YAML="$(readlink -f "${YAML_FILE}")"
 HOST_OUTPUT_DIR="${OUTPUT_ROOT}/${BASE_NAME}"
 mkdir -p "${HOST_OUTPUT_DIR}"
 
-DOCKER_ENV_ARGS=()
+RUNTIME_ENV_VARS=()
 for kv in "${EXTRA_ENVS[@]}"; do
-  DOCKER_ENV_ARGS+=("-e" "${kv}")
+  RUNTIME_ENV_VARS+=("${kv}")
 done
 
 for env_file in "${ENV_FILES[@]}"; do
@@ -236,44 +261,77 @@ for env_file in "${ENV_FILES[@]}"; do
   fi
   while IFS= read -r line; do
     [[ -z "${line}" || "${line}" =~ ^# ]] && continue
-    DOCKER_ENV_ARGS+=("-e" "${line}")
+    RUNTIME_ENV_VARS+=("${line}")
   done < "${env_file}"
 done
 
-docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
+if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+  docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
+else
+  (cd "${WORKDIR}" && rm -rf "${BASE_NAME}.out" "cmpasm")
+fi
 
-echo "Running ${ABS_YAML} in container ${CONTAINER_NAME}"
+if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+  echo "Running ${ABS_YAML} in container ${CONTAINER_NAME}"
+else
+  echo "Running ${ABS_YAML} on host at ${WORKDIR}"
+fi
 TENSILE_ARGS="'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out'"
 if [[ ${BUILD_ONLY} -eq 1 ]]; then
   TENSILE_ARGS+=" --build-only"
 fi
 TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
 
-docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
-  "${TENSILE_ARGS}" \
-  | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+  DOCKER_ENV_ARGS=()
+  for kv in "${RUNTIME_ENV_VARS[@]}"; do
+    DOCKER_ENV_ARGS+=("-e" "${kv}")
+  done
+  docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
+    "${TENSILE_ARGS}" \
+    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+else
+  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" bash -lc "${TENSILE_ARGS}") \
+    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+fi
 
 if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
   grep -A 4 'Processes:' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
   grep -oE 'NO_CHECK.{0,10}' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
 fi
 
-if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
-  rm -rf "${HOST_OUTPUT_DIR}/orig"
-  docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+  if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
+    rm -rf "${HOST_OUTPUT_DIR}/orig"
+    docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+  fi
+  if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
+    rm -rf "${HOST_OUTPUT_DIR}/st"
+    docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
+  fi
+  # Keep workspace clean after artifact copy.
+  docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
+else
+  if [[ -d "${WORKDIR}/cmpasm/orig" ]]; then
+    rm -rf "${HOST_OUTPUT_DIR}/orig"
+    cp -a "${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+  fi
+  if [[ -d "${WORKDIR}/cmpasm/st" ]]; then
+    rm -rf "${HOST_OUTPUT_DIR}/st"
+    cp -a "${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
+  fi
+  # Keep workspace clean after artifact copy.
+  rm -rf "${WORKDIR}/cmpasm"
 fi
-if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
-  rm -rf "${HOST_OUTPUT_DIR}/st"
-  docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
-fi
-
-# Keep workspace clean after artifact copy.
-docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
 
 cp "${ABS_YAML}" "${HOST_OUTPUT_DIR}/"
 
 if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
-  docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out'"
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out'"
+  else
+    rm -rf "${WORKDIR}/${BASE_NAME}.out"
+  fi
 fi
 
 echo "Saved artifacts to ${HOST_OUTPUT_DIR}"
