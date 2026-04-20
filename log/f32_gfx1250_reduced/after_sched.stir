@@ -1,0 +1,701 @@
+st.func @temp() {
+^entry:
+  LDS1 = "st.ds_store_b128"(v10, v[50:53]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [1] } }
+  LDS1 = "st.ds_store_b128"(v10, v[54:57]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [1] } }
+  LDS1 = "st.ds_store_b128"(v11, v[58:61]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [1] } }
+  LDS1 = "st.ds_store_b128"(v11, v[62:65]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [1] } }
+  v10 = "st.v_xor_b32"(0x4000, v10) { issueCycles = 1, latencyCycles = 1 }
+  v11 = "st.v_xor_b32"(0x4000, v11) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s12, 0x1) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_skipPGR2_1, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_skipPGR2_1, ^entry_1
+^entry_1:
+  v[50:53] = "st.buffer_load_b128"(v8, s[48:51], 0) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[54:57] = "st.buffer_load_b128"(v8, s[48:51], s66) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[58:61] = "st.buffer_load_b128"(v9, s[52:55], 0) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[62:65] = "st.buffer_load_b128"(v9, s[52:55], s67) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  "st.s_branch"(label_skipPGR2_2) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_skipPGR2_2
+^label_skipPGR2_1:
+  Successors: ^label_skipPGR2_2
+^label_skipPGR2_2:
+  v65 = "st.PHI"(v[62:65], 0) { issueCycles = 0, latencyCycles = 0 }
+  v64 = "st.PHI"(v[62:65], 0) { issueCycles = 0, latencyCycles = 0 }
+  v63 = "st.PHI"(v[62:65], 0) { issueCycles = 0, latencyCycles = 0 }
+  v62 = "st.PHI"(v[62:65], 0) { issueCycles = 0, latencyCycles = 0 }
+  v61 = "st.PHI"(v[58:61], 0) { issueCycles = 0, latencyCycles = 0 }
+  v60 = "st.PHI"(v[58:61], 0) { issueCycles = 0, latencyCycles = 0 }
+  v59 = "st.PHI"(v[58:61], 0) { issueCycles = 0, latencyCycles = 0 }
+  v58 = "st.PHI"(v[58:61], 0) { issueCycles = 0, latencyCycles = 0 }
+  v57 = "st.PHI"(v[54:57], 0) { issueCycles = 0, latencyCycles = 0 }
+  v56 = "st.PHI"(v[54:57], 0) { issueCycles = 0, latencyCycles = 0 }
+  v55 = "st.PHI"(v[54:57], 0) { issueCycles = 0, latencyCycles = 0 }
+  v54 = "st.PHI"(v[54:57], 0) { issueCycles = 0, latencyCycles = 0 }
+  v53 = "st.PHI"(v[50:53], 0) { issueCycles = 0, latencyCycles = 0 }
+  v52 = "st.PHI"(v[50:53], 0) { issueCycles = 0, latencyCycles = 0 }
+  v51 = "st.PHI"(v[50:53], 0) { issueCycles = 0, latencyCycles = 0 }
+  v50 = "st.PHI"(v[50:53], 0) { issueCycles = 0, latencyCycles = 0 }
+  LDS0 = "st.s_barrier_signal"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.s_barrier_wait"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  v[16:19] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[34:37] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  Successors: ^label_openLoopL
+^label_openLoopL:
+  SCC0 = "st.s_cmp_eq_u32"(s12, 0x1) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_toPGR1, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_toPGR1, ^label_openLoopL_1
+^label_openLoopL_1:
+  SCC0 = "st.s_cmp_le_u32"(s12, 0x2) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_LoopEndL, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_LoopEndL, ^label_LoopBeginL
+^label_LoopBeginL:
+  v11 = "st.PHI"(v11, v11) { issueCycles = 0, latencyCycles = 0 }
+  v10 = "st.PHI"(v10, v10) { issueCycles = 0, latencyCycles = 0 }
+  v65 = "st.PHI"(v[62:65], v65) { issueCycles = 0, latencyCycles = 0 }
+  v64 = "st.PHI"(v[62:65], v64) { issueCycles = 0, latencyCycles = 0 }
+  v63 = "st.PHI"(v[62:65], v63) { issueCycles = 0, latencyCycles = 0 }
+  v50 = "st.PHI"(v[50:53], v50) { issueCycles = 0, latencyCycles = 0 }
+  v51 = "st.PHI"(v[50:53], v51) { issueCycles = 0, latencyCycles = 0 }
+  v52 = "st.PHI"(v[50:53], v52) { issueCycles = 0, latencyCycles = 0 }
+  v53 = "st.PHI"(v[50:53], v53) { issueCycles = 0, latencyCycles = 0 }
+  v54 = "st.PHI"(v[54:57], v54) { issueCycles = 0, latencyCycles = 0 }
+  v55 = "st.PHI"(v[54:57], v55) { issueCycles = 0, latencyCycles = 0 }
+  v56 = "st.PHI"(v[54:57], v56) { issueCycles = 0, latencyCycles = 0 }
+  v57 = "st.PHI"(v[54:57], v57) { issueCycles = 0, latencyCycles = 0 }
+  v58 = "st.PHI"(v[58:61], v58) { issueCycles = 0, latencyCycles = 0 }
+  v59 = "st.PHI"(v[58:61], v59) { issueCycles = 0, latencyCycles = 0 }
+  s48 = "st.PHI"(s48, 0) { issueCycles = 0, latencyCycles = 0 }
+  s57 = "st.PHI"(s57, 0) { issueCycles = 0, latencyCycles = 0 }
+  s49 = "st.PHI"(s49, 0) { issueCycles = 0, latencyCycles = 0 }
+  v7 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  s12 = "st.PHI"(s12, 0) { issueCycles = 0, latencyCycles = 0 }
+  v16 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v2 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v61 = "st.PHI"(v[58:61], v61) { issueCycles = 0, latencyCycles = 0 }
+  v4 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v13 = "st.PHI"(v13, 0) { issueCycles = 0, latencyCycles = 0 }
+  s58 = "st.PHI"(s58, 0) { issueCycles = 0, latencyCycles = 0 }
+  v3 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v62 = "st.PHI"(v[62:65], v62) { issueCycles = 0, latencyCycles = 0 }
+  s59 = "st.PHI"(s59, 0) { issueCycles = 0, latencyCycles = 0 }
+  v6 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v12 = "st.PHI"(v12, 0) { issueCycles = 0, latencyCycles = 0 }
+  s52 = "st.PHI"(s52, 0) { issueCycles = 0, latencyCycles = 0 }
+  s53 = "st.PHI"(s53, 0) { issueCycles = 0, latencyCycles = 0 }
+  v0 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  s56 = "st.PHI"(s56, 0) { issueCycles = 0, latencyCycles = 0 }
+  v1 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v60 = "st.PHI"(v[58:61], v60) { issueCycles = 0, latencyCycles = 0 }
+  v5 = "st.PHI"(v[0:7], 0) { issueCycles = 0, latencyCycles = 0 }
+  v17 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v18 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v19 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v34 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v35 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v36 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v37 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  LDS1 = "st.s_barrier_signal"(-1, LDS1) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [1] } }
+  LDS1 = "st.s_barrier_wait"(-1, LDS1) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [1] } }
+  v[20:23] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[38:41] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[16:17], v[34:35], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  SCC0 = "st.s_cmp_eq_u32"(s12, s47) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s60, s64, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s69 = "st.s_cselect_b32"(s61, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s48, SCC0 = "st.s_add_u32"(s48, s68) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_addc_u32"(s49, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s56, SCC0 = "st.s_sub_u32"(s56, s68) { issueCycles = 1, latencyCycles = 1 }
+  s57, SCC0 = "st.s_subb_u32"(s57, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s57, 0) { issueCycles = 1, latencyCycles = 1 }
+  s50 = "st.s_cselect_b32"(s56, BufferLimit, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_and_b32"(s50, 127) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_lshl_b32"(s8, 25) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_and_b32"(s49, 33554431) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_or_b32"(s49, s8) { issueCycles = 1, latencyCycles = 1 }
+  s50, SCC0 = "st.s_lshr_b32"(s50, 7) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s12, s47) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s62, s65, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s69 = "st.s_cselect_b32"(s63, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s52, SCC0 = "st.s_add_u32"(s52, s68) { issueCycles = 1, latencyCycles = 1 }
+  v[24:27] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[42:45] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  s53, SCC0 = "st.s_addc_u32"(s53, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s58, SCC0 = "st.s_sub_u32"(s58, s68) { issueCycles = 1, latencyCycles = 1 }
+  s59, SCC0 = "st.s_subb_u32"(s59, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  v[28:31] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[46:49] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  SCC0 = "st.s_cmp_eq_u32"(s59, 0) { issueCycles = 1, latencyCycles = 1 }
+  s54 = "st.s_cselect_b32"(s58, BufferLimit, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_and_b32"(s54, 127) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_lshl_b32"(s8, 25) { issueCycles = 1, latencyCycles = 1 }
+  s53, SCC0 = "st.s_and_b32"(s53, 33554431) { issueCycles = 1, latencyCycles = 1 }
+  s53, SCC0 = "st.s_or_b32"(s53, s8) { issueCycles = 1, latencyCycles = 1 }
+  s54, SCC0 = "st.s_lshr_b32"(s54, 7) { issueCycles = 1, latencyCycles = 1 }
+  LDS0 = "st.ds_store_b128"(v10, v[50:53]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[50:53] = "st.buffer_load_b128"(v8, s[48:51], 0) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  LDS0 = "st.ds_store_b128"(v10, v[54:57]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[54:57] = "st.buffer_load_b128"(v8, s[48:51], s66) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[18:19], v[36:37], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  LDS0 = "st.ds_store_b128"(v11, v[58:61]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[58:61] = "st.buffer_load_b128"(v9, s[52:55], 0) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[20:21], v[38:39], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  LDS0 = "st.ds_store_b128"(v11, v[62:65]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[62:65] = "st.buffer_load_b128"(v9, s[52:55], s67) { issueCycles = 12, latencyCycles = 116, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[22:23], v[40:41], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v10 = "st.v_xor_b32"(0x4000, v10) { issueCycles = 1, latencyCycles = 1 }
+  v11 = "st.v_xor_b32"(0x4000, v11) { issueCycles = 1, latencyCycles = 1 }
+  v12 = "st.v_xor_b32"(0x4000, v12) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_xor_b32"(0x4000, v13) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[24:25], v[42:43], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[16:19] = "st.ds_load_b128"(v12, LDS1) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [1] } }
+  v[34:37] = "st.ds_load_b128"(v13, LDS1) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [1] } }
+  s12, SCC0 = "st.s_sub_u32"(s12, 1) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_i32"(s12, 0x2) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[26:27], v[44:45], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[28:29], v[46:47], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[30:31], v[48:49], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  "st.s_cbranch_scc0"(label_LoopBeginL, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_LoopBeginL, ^label_LoopEndL
+^label_LoopEndL:
+  v11 = "st.PHI"(v11, v11) { issueCycles = 0, latencyCycles = 0 }
+  v10 = "st.PHI"(v10, v10) { issueCycles = 0, latencyCycles = 0 }
+  v65 = "st.PHI"(v65, v[62:65]) { issueCycles = 0, latencyCycles = 0 }
+  v64 = "st.PHI"(v64, v[62:65]) { issueCycles = 0, latencyCycles = 0 }
+  v63 = "st.PHI"(v63, v[62:65]) { issueCycles = 0, latencyCycles = 0 }
+  v50 = "st.PHI"(v50, v[50:53]) { issueCycles = 0, latencyCycles = 0 }
+  v51 = "st.PHI"(v51, v[50:53]) { issueCycles = 0, latencyCycles = 0 }
+  v52 = "st.PHI"(v52, v[50:53]) { issueCycles = 0, latencyCycles = 0 }
+  v53 = "st.PHI"(v53, v[50:53]) { issueCycles = 0, latencyCycles = 0 }
+  v54 = "st.PHI"(v54, v[54:57]) { issueCycles = 0, latencyCycles = 0 }
+  v55 = "st.PHI"(v55, v[54:57]) { issueCycles = 0, latencyCycles = 0 }
+  v56 = "st.PHI"(v56, v[54:57]) { issueCycles = 0, latencyCycles = 0 }
+  v57 = "st.PHI"(v57, v[54:57]) { issueCycles = 0, latencyCycles = 0 }
+  v58 = "st.PHI"(v58, v[58:61]) { issueCycles = 0, latencyCycles = 0 }
+  v59 = "st.PHI"(v59, v[58:61]) { issueCycles = 0, latencyCycles = 0 }
+  s48 = "st.PHI"(0, s48) { issueCycles = 0, latencyCycles = 0 }
+  s57 = "st.PHI"(0, s57) { issueCycles = 0, latencyCycles = 0 }
+  s49 = "st.PHI"(0, s49) { issueCycles = 0, latencyCycles = 0 }
+  v7 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s12 = "st.PHI"(0, s12) { issueCycles = 0, latencyCycles = 0 }
+  v16 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v2 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v61 = "st.PHI"(v61, v[58:61]) { issueCycles = 0, latencyCycles = 0 }
+  v4 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v13 = "st.PHI"(0, v13) { issueCycles = 0, latencyCycles = 0 }
+  s58 = "st.PHI"(0, s58) { issueCycles = 0, latencyCycles = 0 }
+  v3 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v62 = "st.PHI"(v62, v[62:65]) { issueCycles = 0, latencyCycles = 0 }
+  s59 = "st.PHI"(0, s59) { issueCycles = 0, latencyCycles = 0 }
+  v6 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v12 = "st.PHI"(0, v12) { issueCycles = 0, latencyCycles = 0 }
+  s52 = "st.PHI"(0, s52) { issueCycles = 0, latencyCycles = 0 }
+  s53 = "st.PHI"(0, s53) { issueCycles = 0, latencyCycles = 0 }
+  v0 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s56 = "st.PHI"(0, s56) { issueCycles = 0, latencyCycles = 0 }
+  v1 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v60 = "st.PHI"(v60, v[58:61]) { issueCycles = 0, latencyCycles = 0 }
+  v5 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v17 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v18 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v19 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v34 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v35 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v36 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v37 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v[20:23] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[38:41] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  SCC0 = "st.s_cmp_eq_u32"(s12, s47) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s60, s64, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[16:17], v[34:35], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  s69 = "st.s_cselect_b32"(s61, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s48, SCC0 = "st.s_add_u32"(s48, s68) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_addc_u32"(s49, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s56, SCC0 = "st.s_sub_u32"(s56, s68) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[18:19], v[36:37], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  s57, SCC0 = "st.s_subb_u32"(s57, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s57, 0) { issueCycles = 1, latencyCycles = 1 }
+  s50 = "st.s_cselect_b32"(s56, BufferLimit, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_and_b32"(s50, 127) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[20:21], v[38:39], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  s8, SCC0 = "st.s_lshl_b32"(s8, 25) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_and_b32"(s49, 33554431) { issueCycles = 1, latencyCycles = 1 }
+  s49, SCC0 = "st.s_or_b32"(s49, s8) { issueCycles = 1, latencyCycles = 1 }
+  s50, SCC0 = "st.s_lshr_b32"(s50, 7) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[22:23], v[40:41], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  SCC0 = "st.s_cmp_eq_u32"(s12, s47) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s62, s65, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s69 = "st.s_cselect_b32"(s63, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s52, SCC0 = "st.s_add_u32"(s52, s68) { issueCycles = 1, latencyCycles = 1 }
+  v[24:27] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[42:45] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[24:25], v[42:43], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  s53, SCC0 = "st.s_addc_u32"(s53, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s58, SCC0 = "st.s_sub_u32"(s58, s68) { issueCycles = 1, latencyCycles = 1 }
+  s59, SCC0 = "st.s_subb_u32"(s59, s69, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  v[28:31] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[26:27], v[44:45], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[46:49] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  SCC0 = "st.s_cmp_eq_u32"(s59, 0) { issueCycles = 1, latencyCycles = 1 }
+  s54 = "st.s_cselect_b32"(s58, BufferLimit, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_and_b32"(s54, 127) { issueCycles = 1, latencyCycles = 1 }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[28:29], v[46:47], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  s8, SCC0 = "st.s_lshl_b32"(s8, 25) { issueCycles = 1, latencyCycles = 1 }
+  s53, SCC0 = "st.s_and_b32"(s53, 33554431) { issueCycles = 1, latencyCycles = 1 }
+  s53, SCC0 = "st.s_or_b32"(s53, s8) { issueCycles = 1, latencyCycles = 1 }
+  s54, SCC0 = "st.s_lshr_b32"(s54, 7) { issueCycles = 1, latencyCycles = 1 }
+  LDS0 = "st.ds_store_b128"(v10, v[50:53]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.ds_store_b128"(v10, v[54:57]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.ds_store_b128"(v11, v[58:61]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.ds_store_b128"(v11, v[62:65]) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 2304, gds = false }, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.s_barrier_signal"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  LDS0 = "st.s_barrier_wait"(-1, LDS0) { issueCycles = 1, latencyCycles = 1, mod.memtoken = { tokens = [0] } }
+  v10 = "st.v_xor_b32"(0x4000, v10) { issueCycles = 1, latencyCycles = 1 }
+  v11 = "st.v_xor_b32"(0x4000, v11) { issueCycles = 1, latencyCycles = 1 }
+  v12 = "st.v_xor_b32"(0x4000, v12) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_xor_b32"(0x4000, v13) { issueCycles = 1, latencyCycles = 1 }
+  v[16:19] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[34:37] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[30:31], v[48:49], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  Successors: ^label_toPGR1
+^label_toPGR1:
+  v11 = "st.PHI"(v11, v11) { issueCycles = 0, latencyCycles = 0 }
+  v10 = "st.PHI"(v10, v10) { issueCycles = 0, latencyCycles = 0 }
+  v24 = "st.PHI"(0, v[24:27]) { issueCycles = 0, latencyCycles = 0 }
+  s48 = "st.PHI"(0, s48) { issueCycles = 0, latencyCycles = 0 }
+  v21 = "st.PHI"(0, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v22 = "st.PHI"(0, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v23 = "st.PHI"(0, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v38 = "st.PHI"(0, v[38:41]) { issueCycles = 0, latencyCycles = 0 }
+  v39 = "st.PHI"(0, v[38:41]) { issueCycles = 0, latencyCycles = 0 }
+  v40 = "st.PHI"(0, v[38:41]) { issueCycles = 0, latencyCycles = 0 }
+  v41 = "st.PHI"(0, v[38:41]) { issueCycles = 0, latencyCycles = 0 }
+  s49 = "st.PHI"(0, s49) { issueCycles = 0, latencyCycles = 0 }
+  v27 = "st.PHI"(0, v[24:27]) { issueCycles = 0, latencyCycles = 0 }
+  v49 = "st.PHI"(0, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  v48 = "st.PHI"(0, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  v7 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s69 = "st.PHI"(0, s69) { issueCycles = 0, latencyCycles = 0 }
+  s12 = "st.PHI"(0, s12) { issueCycles = 0, latencyCycles = 0 }
+  v16 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v47 = "st.PHI"(0, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  v46 = "st.PHI"(0, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  v2 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v31 = "st.PHI"(0, v[28:31]) { issueCycles = 0, latencyCycles = 0 }
+  v4 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s68 = "st.PHI"(0, s68) { issueCycles = 0, latencyCycles = 0 }
+  v13 = "st.PHI"(0, v13) { issueCycles = 0, latencyCycles = 0 }
+  v44 = "st.PHI"(0, v[42:45]) { issueCycles = 0, latencyCycles = 0 }
+  s54 = "st.PHI"(0, s54) { issueCycles = 0, latencyCycles = 0 }
+  v30 = "st.PHI"(0, v[28:31]) { issueCycles = 0, latencyCycles = 0 }
+  v43 = "st.PHI"(0, v[42:45]) { issueCycles = 0, latencyCycles = 0 }
+  v29 = "st.PHI"(0, v[28:31]) { issueCycles = 0, latencyCycles = 0 }
+  v42 = "st.PHI"(0, v[42:45]) { issueCycles = 0, latencyCycles = 0 }
+  v28 = "st.PHI"(0, v[28:31]) { issueCycles = 0, latencyCycles = 0 }
+  v45 = "st.PHI"(0, v[42:45]) { issueCycles = 0, latencyCycles = 0 }
+  v20 = "st.PHI"(0, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v3 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v6 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s50 = "st.PHI"(0, s50) { issueCycles = 0, latencyCycles = 0 }
+  v26 = "st.PHI"(0, v[24:27]) { issueCycles = 0, latencyCycles = 0 }
+  v12 = "st.PHI"(0, v12) { issueCycles = 0, latencyCycles = 0 }
+  s52 = "st.PHI"(0, s52) { issueCycles = 0, latencyCycles = 0 }
+  s53 = "st.PHI"(0, s53) { issueCycles = 0, latencyCycles = 0 }
+  v0 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s56 = "st.PHI"(0, s56) { issueCycles = 0, latencyCycles = 0 }
+  v1 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v5 = "st.PHI"(0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v25 = "st.PHI"(0, v[24:27]) { issueCycles = 0, latencyCycles = 0 }
+  v17 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v18 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v19 = "st.PHI"(v[16:19], v[16:19]) { issueCycles = 0, latencyCycles = 0 }
+  v34 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v35 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v36 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  v37 = "st.PHI"(v[34:37], v[34:37]) { issueCycles = 0, latencyCycles = 0 }
+  s8, SCC0 = "st.s_and_b32"(s46, 0x3fff) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s8, 1) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_GSU_3, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_GSU_3, ^label_toPGR1_1
+^label_toPGR1_1:
+  s8 = "st.s_mov_b32"(0) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s45, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_OptNLL_End, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End, ^label_toPGR1_1_2
+^label_toPGR1_1_2:
+  SCC0 = "st.s_cmp_eq_u32"(s44, 1.000000) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_OptNLL_End, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End, ^label_toPGR1_1_2_3
+^label_toPGR1_1_2_3:
+  s68, SCC0 = "st.s_and_b32"(31, s24) { issueCycles = 1, latencyCycles = 1 }
+  s69, SCC0 = "st.s_add_u32"(-0x1, s14) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_ge_u32"(s2, s69) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s68, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mov_b32"(0) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_gt_u32"(s68, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_OptNLL_End, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End, ^label_toPGR1_1_2_3_4
+^label_toPGR1_1_2_3_4:
+  s68, SCC0 = "st.s_and_b32"(31, s25) { issueCycles = 1, latencyCycles = 1 }
+  s69, SCC0 = "st.s_add_u32"(-0x1, s15) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_ge_u32"(s3, s69) { issueCycles = 1, latencyCycles = 1 }
+  s68 = "st.s_cselect_b32"(s68, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mov_b32"(0) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_gt_u32"(s68, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_OptNLL_End, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End, ^label_toPGR1_1_2_3_4_5
+^label_toPGR1_1_2_3_4_5:
+  s69, SCC0 = "st.s_and_b32"(31, s27) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s69, 0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_OptNLL_End, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End, ^label_toPGR1_1_2_3_4_5_6
+^label_toPGR1_1_2_3_4_5_6:
+  v[20:23] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[38:41] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[24:27] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[42:45] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[16:17], v[34:35], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[28:31] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[46:49] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[18:19], v[36:37], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[20:21], v[38:39], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[22:23], v[40:41], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[24:25], v[42:43], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[26:27], v[44:45], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[28:29], v[46:47], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[30:31], v[48:49], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  Successors: ^label_toPGR1end_OptNLL
+^label_toPGR1end_OptNLL:
+  Successors: ^label_Summation_End_OptNLL
+^label_Summation_End_OptNLL:
+  "st.asm_directive"(".set", "sgprAddressScaleAlphaVec")
+  "st.asm_directive"(".set", "sgprAddressBias")
+  "st.asm_directive"(".set", "sgprBiasType")
+  "st.asm_directive"(".set", "sgprBiasStride")
+  "st.asm_directive"(".set", "sgpractivationAlpha")
+  "st.asm_directive"(".set", "sgpractivationBeta")
+  "st.asm_directive"(".set", "sgprActivationType")
+  SCC0 = "st.s_cmp_eq_u32"(s5, 2) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_LoadExternalEpilogueStruct, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_LoadExternalEpilogueStruct, ^label_Summation_End_OptNLL_1
+^label_Summation_End_OptNLL_1:
+  s[48:55] = "st.s_load_b256"(s[0:1], 88) { issueCycles = 1, latencyCycles = 1 }
+  s56 = "st.s_load_b32"(s[0:1], 120) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_LoadExternalEpilogueStructEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_LoadExternalEpilogueStructEnd
+^label_LoadExternalEpilogueStruct:
+  s[48:51] = "st.s_load_b128"(s[0:1], 144) { issueCycles = 1, latencyCycles = 1 }
+  s[52:53] = "st.s_load_b64"(s[0:1], 160) { issueCycles = 1, latencyCycles = 1 }
+  s[54:55] = "st.s_load_b64"(s[0:1], 184) { issueCycles = 1, latencyCycles = 1 }
+  s56 = "st.s_load_b32"(s[0:1], 192) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_LoadExternalEpilogueStructEnd
+^label_LoadExternalEpilogueStructEnd:
+  s56 = "st.PHI"(s56, s56) { issueCycles = 0, latencyCycles = 0 }
+  s53 = "st.PHI"(s[48:55], s[52:53]) { issueCycles = 0, latencyCycles = 0 }
+  s52 = "st.PHI"(s[48:55], s[52:53]) { issueCycles = 0, latencyCycles = 0 }
+  s50 = "st.PHI"(s[48:55], s[48:51]) { issueCycles = 0, latencyCycles = 0 }
+  s48 = "st.PHI"(s[48:55], s[48:51]) { issueCycles = 0, latencyCycles = 0 }
+  s49 = "st.PHI"(s[48:55], s[48:51]) { issueCycles = 0, latencyCycles = 0 }
+  s54 = "st.PHI"(s[48:55], s[54:55]) { issueCycles = 0, latencyCycles = 0 }
+  s55 = "st.PHI"(s[48:55], s[54:55]) { issueCycles = 0, latencyCycles = 0 }
+  s51 = "st.PHI"(s[48:55], s[48:51]) { issueCycles = 0, latencyCycles = 0 }
+  "st.asm_directive"(".set", "sgprSrdScaleAlphaVec")
+  "st.asm_directive"(".set", "sgprSrdBias")
+  v12 = "st.v_lshrrev_b32"(5, v66) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_lshrrev_b32"(1, v12) { issueCycles = 1, latencyCycles = 1 }
+  v9 = "st.v_mul_lo_u32"(0x10, v13) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_and_b32"(15, v66) { issueCycles = 1, latencyCycles = 1 }
+  v9 = "st.v_add_lshl_u32"(v13, v9, 0) { issueCycles = 1, latencyCycles = 1 }
+  v10 = "st.v_mul_lo_u32"(v9, s38) { issueCycles = 1, latencyCycles = 1 }
+  v11 = "st.v_mul_lo_u32"(v9, s36) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_and_b32"(1, v12) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_mul_lo_u32"(0x10, v13) { issueCycles = 1, latencyCycles = 1 }
+  v8 = "st.v_and_b32"(31, v66) { issueCycles = 1, latencyCycles = 1 }
+  v8 = "st.v_lshrrev_b32"(4, v8) { issueCycles = 1, latencyCycles = 1 }
+  v8 = "st.v_lshlrev_b32"(3, v8) { issueCycles = 1, latencyCycles = 1 }
+  v8 = "st.v_add_lshl_u32"(v13, v8, 0) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mul_i32"(32, s2) { issueCycles = 1, latencyCycles = 1 }
+  v8 = "st.v_add_nc_u32"(s8, v8) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mul_i32"(32, s3) { issueCycles = 1, latencyCycles = 1 }
+  v9 = "st.v_add_nc_u32"(s8, v9) { issueCycles = 1, latencyCycles = 1 }
+  s[32:33] = "st.s_mov_b64"(s[48:49]) { issueCycles = 1, latencyCycles = 1 }
+  s35 = "st.s_mov_b32"(Srd127_96) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u64"(s[48:49], 0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_ScaleAlphaVecAddrValid, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ScaleAlphaVecAddrValid, ^label_LoadExternalEpilogueStructEnd_1
+^label_LoadExternalEpilogueStructEnd_1:
+  s34 = "st.s_mov_b32"(0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ScaleAlphaVecAddrValid_End) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ScaleAlphaVecAddrValid_End
+^label_ScaleAlphaVecAddrValid:
+  s34 = "st.s_mov_b32"(s24) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ScaleAlphaVecAddrValid_End
+^label_ScaleAlphaVecAddrValid_End:
+  s34 = "st.PHI"(s34, s34) { issueCycles = 0, latencyCycles = 0 }
+  s34 = "st.s_mul_i32"(0x4, s34) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_u32"(s4, 0x1) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mul_i32"(s53, s8) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s8, 0) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_cselect_b32"(s24, s8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  s[40:41] = "st.s_mov_b64"(s[50:51]) { issueCycles = 1, latencyCycles = 1 }
+  s43 = "st.s_mov_b32"(Srd127_96) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u64"(s[50:51], 0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc0"(label_BiasAddrValid, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_BiasAddrValid, ^label_ScaleAlphaVecAddrValid_End_1
+^label_ScaleAlphaVecAddrValid_End_1:
+  s42 = "st.s_mov_b32"(0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_BiasAddrValid_End) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_BiasAddrValid_End
+^label_BiasAddrValid:
+  s42 = "st.s_mov_b32"(s8) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_BiasAddrValid_End
+^label_BiasAddrValid_End:
+  s42 = "st.PHI"(s42, s42) { issueCycles = 0, latencyCycles = 0 }
+  s8 = "st.s_mul_i32"(32, s2) { issueCycles = 1, latencyCycles = 1 }
+  v16 = "st.v_add_nc_u32"(s8, v66) { issueCycles = 1, latencyCycles = 1 }
+  s42 = "st.s_mul_i32"(0x4, s42) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_and_b32"(s42, 127) { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_lshl_b32"(s8, 25) { issueCycles = 1, latencyCycles = 1 }
+  s41, SCC0 = "st.s_and_b32"(s41, 33554431) { issueCycles = 1, latencyCycles = 1 }
+  s41, SCC0 = "st.s_or_b32"(s41, s8) { issueCycles = 1, latencyCycles = 1 }
+  s42, SCC0 = "st.s_lshr_b32"(s42, 7) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mul_i32"(s53, s4) { issueCycles = 1, latencyCycles = 1 }
+  v14 = "st.v_add_nc_u32"(s8, v16) { issueCycles = 1, latencyCycles = 1 }
+  v14 = "st.v_lshlrev_b32"(0x2, v14) { issueCycles = 1, latencyCycles = 1 }
+  v15 = "st.v_lshlrev_b32"(0x2, v16) { issueCycles = 1, latencyCycles = 1 }
+  s8 = "st.s_mul_i32"(32, s3) { issueCycles = 1, latencyCycles = 1 }
+  v16 = "st.v_add_nc_u32"(s8, v66) { issueCycles = 1, latencyCycles = 1 }
+  v12 = "st.buffer_load_b32"(v14, s[40:43], 0) { issueCycles = 12, latencyCycles = 108, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v13 = "st.buffer_load_b32"(v15, s[32:35], 0) { issueCycles = 12, latencyCycles = 108, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  v16 = "st.v_lshlrev_b32"(0x2, v66) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_barrier_signal"(-1) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_barrier_wait"(-1) { issueCycles = 1, latencyCycles = 1 }
+  "st.ds_store_b32"(v16, v12) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 0, gds = false } }
+  s48 = "st.v_cmp_gt_u32"(s34, 0) { issueCycles = 1, latencyCycles = 1 }
+  v13 = "st.v_cndmask_b32"(1.000000, v13, s48) { issueCycles = 1, latencyCycles = 1 }
+  "st.ds_store_b32"(v16, v13) { issueCycles = 1, latencyCycles = 52, mod.ds = { na = 1, offset = 512, gds = false } }
+  "st.asm_directive"(".set", "sgprAddressScaleAlphaVec")
+  "st.asm_directive"(".set", "sgprSrdScaleAlphaVec")
+  s8 = "st.s_mov_b32"(3) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s56, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_To_Activation_Gelu_VW8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_To_Activation_Gelu_VW8, ^label_BiasAddrValid_End_1
+^label_BiasAddrValid_End_1:
+  s8 = "st.s_mov_b32"(5) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s56, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_To_Activation_Relu_VW8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_To_Activation_Relu_VW8, ^label_BiasAddrValid_End_1_2
+^label_BiasAddrValid_End_1_2:
+  s8 = "st.s_mov_b32"(6) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s56, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_To_Activation_Sigmoid_VW8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_To_Activation_Sigmoid_VW8, ^label_BiasAddrValid_End_1_2_3
+^label_BiasAddrValid_End_1_2_3:
+  s8 = "st.s_mov_b32"(11) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s56, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_To_Activation_Silu_VW8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_To_Activation_Silu_VW8, ^label_BiasAddrValid_End_1_2_3_4
+^label_BiasAddrValid_End_1_2_3_4:
+  s8 = "st.s_mov_b32"(13) { issueCycles = 1, latencyCycles = 1 }
+  SCC0 = "st.s_cmp_eq_u32"(s56, s8) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_cbranch_scc1"(label_To_Activation_Clamp_VW8, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_To_Activation_Clamp_VW8, ^label_To_Activation_None_VW8
+^label_To_Activation_None_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_None_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_To_Activation_Gelu_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_Gelu_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_To_Activation_Relu_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_Relu_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_To_Activation_Sigmoid_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_Sigmoid_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_To_Activation_Silu_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_Silu_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_To_Activation_Clamp_VW8:
+  s[12:13] = "st.s_getpc_b64"() { issueCycles = 1, latencyCycles = 1 }
+  s8, SCC0 = "st.s_add_i32"(label_Activation_Clamp_VW8, 4) { issueCycles = 1, latencyCycles = 1 }
+  s12, SCC0 = "st.s_add_u32"(s12, s8) { issueCycles = 1, latencyCycles = 1 }
+  s13, SCC0 = "st.s_addc_u32"(s13, 0, SCC0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_ActivationSetPCAddrEnd) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_ActivationSetPCAddrEnd
+^label_ActivationSetPCAddrEnd:
+  SCC0 = "st.PHI"(s13, s13, s13, s13, s13, s13) { issueCycles = 0, latencyCycles = 0 }
+  s12 = "st.PHI"(s12, s12, s12, s12, s12, s12) { issueCycles = 0, latencyCycles = 0 }
+  s13 = "st.PHI"(s13, s13, s13, s13, s13, s13) { issueCycles = 0, latencyCycles = 0 }
+  Successors: ^label_GW_B0
+^label_GW_B0:
+  Successors: ^label_GW_B0_FD0
+^label_GW_B0_FD0:
+  Successors: ^label_GW_B0_FD0_VW8_Then
+^label_GW_B0_FD0_VW8_Then:
+  s8 = "st.s_mul_i32"(32, s2) { issueCycles = 1, latencyCycles = 1 }
+  v23 = "st.v_sub_nc_u32"(v8, s8) { issueCycles = 1, latencyCycles = 1 }
+  v23 = "st.v_lshlrev_b32"(0x2, v23) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_barrier_signal"(-1) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_barrier_wait"(-1) { issueCycles = 1, latencyCycles = 1 }
+  v[32:35] = "st.ds_load_b128"(v23, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 0, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[36:39] = "st.ds_load_b128"(v23, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 16, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[40:43] = "st.ds_load_b128"(v23, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 512, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[44:47] = "st.ds_load_b128"(v23, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 528, gds = false }, mod.memtoken = { tokens = [0] } }
+  v21 = "st.v_add_lshl_u32"(v11, v8, 2) { issueCycles = 1, latencyCycles = 1 }
+  v24 = "st.v_mov_b32"(v0) { issueCycles = 1, latencyCycles = 1 }
+  v25 = "st.v_mov_b32"(v1) { issueCycles = 1, latencyCycles = 1 }
+  v26 = "st.v_mov_b32"(v2) { issueCycles = 1, latencyCycles = 1 }
+  v27 = "st.v_mov_b32"(v3) { issueCycles = 1, latencyCycles = 1 }
+  v28 = "st.v_mov_b32"(v4) { issueCycles = 1, latencyCycles = 1 }
+  v29 = "st.v_mov_b32"(v5) { issueCycles = 1, latencyCycles = 1 }
+  v30 = "st.v_mov_b32"(v6) { issueCycles = 1, latencyCycles = 1 }
+  v31 = "st.v_mov_b32"(v7) { issueCycles = 1, latencyCycles = 1 }
+  v[24:25] = "st.v_pk_mul_f32"(v[40:41], v[24:25]) { issueCycles = 1, latencyCycles = 1 }
+  v[26:27] = "st.v_pk_mul_f32"(v[42:43], v[26:27]) { issueCycles = 1, latencyCycles = 1 }
+  v[28:29] = "st.v_pk_mul_f32"(v[44:45], v[28:29]) { issueCycles = 1, latencyCycles = 1 }
+  v[30:31] = "st.v_pk_mul_f32"(v[46:47], v[30:31]) { issueCycles = 1, latencyCycles = 1 }
+  v[12:13] = "st.v_pk_add_f32"(v[32:33], v[24:25]) { issueCycles = 1, latencyCycles = 1 }
+  v[14:15] = "st.v_pk_add_f32"(v[34:35], v[26:27]) { issueCycles = 1, latencyCycles = 1 }
+  v[16:17] = "st.v_pk_add_f32"(v[36:37], v[28:29]) { issueCycles = 1, latencyCycles = 1 }
+  v[18:19] = "st.v_pk_add_f32"(v[38:39], v[30:31]) { issueCycles = 1, latencyCycles = 1 }
+  s[30:31] = "st.s_swappc_b64"(s[12:13]) { issueCycles = 1, latencyCycles = 1 }
+  v[24:25] = "st.v_mov_b64"(v[12:13]) { issueCycles = 1, latencyCycles = 1 }
+  v[26:27] = "st.v_mov_b64"(v[14:15]) { issueCycles = 1, latencyCycles = 1 }
+  v[28:29] = "st.v_mov_b64"(v[16:17]) { issueCycles = 1, latencyCycles = 1 }
+  v[30:31] = "st.v_mov_b64"(v[18:19]) { issueCycles = 1, latencyCycles = 1 }
+  "st.buffer_store_b128"(v[24:27], v21, s[16:19], 0) { issueCycles = 1, latencyCycles = 1, mod.mubuf = { offen = true, offset12 = 0, glc = false, slc = false, nt = false, lds = false } }
+  "st.buffer_store_b128"(v[28:31], v21, s[16:19], 0) { issueCycles = 1, latencyCycles = 1, mod.mubuf = { offen = true, offset12 = 16, glc = false, slc = false, nt = false, lds = false } }
+  "st.s_nop"(0) { issueCycles = 1, latencyCycles = 1 }
+  "st.s_branch"(label_GW_End) { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_GW_End
+^label_GW_End:
+  "st.s_endpgm"() { issueCycles = 1, latencyCycles = 1 }
+  Successors: ^label_OptNLL_End
+^label_OptNLL_End:
+  SCC0 = "st.PHI"(SCC0, SCC0, SCC0, SCC0, SCC0, SCC0) { issueCycles = 0, latencyCycles = 0 }
+  v11 = "st.PHI"(v11, v11, v11, v11, v11, v11) { issueCycles = 0, latencyCycles = 0 }
+  v10 = "st.PHI"(v10, v10, v10, v10, v10, v10) { issueCycles = 0, latencyCycles = 0 }
+  v37 = "st.PHI"(v37, v37, v37, v37, v37, v[36:39]) { issueCycles = 0, latencyCycles = 0 }
+  v36 = "st.PHI"(v36, v36, v36, v36, v36, v[36:39]) { issueCycles = 0, latencyCycles = 0 }
+  v35 = "st.PHI"(v35, v35, v35, v35, v35, v[32:35]) { issueCycles = 0, latencyCycles = 0 }
+  v34 = "st.PHI"(v34, v34, v34, v34, v34, v[32:35]) { issueCycles = 0, latencyCycles = 0 }
+  v19 = "st.PHI"(v19, v19, v19, v19, v19, v[18:19]) { issueCycles = 0, latencyCycles = 0 }
+  v18 = "st.PHI"(v18, v18, v18, v18, v18, v[18:19]) { issueCycles = 0, latencyCycles = 0 }
+  v17 = "st.PHI"(v17, v17, v17, v17, v17, v[16:17]) { issueCycles = 0, latencyCycles = 0 }
+  v16 = "st.PHI"(v16, v16, v16, v16, v16, v[16:17]) { issueCycles = 0, latencyCycles = 0 }
+  s12 = "st.PHI"(s12, s12, s12, s12, s12, s12) { issueCycles = 0, latencyCycles = 0 }
+  v13 = "st.PHI"(v13, v13, v13, v13, v13, v[12:13]) { issueCycles = 0, latencyCycles = 0 }
+  v12 = "st.PHI"(v12, v12, v12, v12, v12, v[12:13]) { issueCycles = 0, latencyCycles = 0 }
+  v28 = "st.PHI"(v28, v28, v28, v28, v28, v[28:29]) { issueCycles = 0, latencyCycles = 0 }
+  v31 = "st.PHI"(v31, v31, v31, v31, v31, v[30:31]) { issueCycles = 0, latencyCycles = 0 }
+  v46 = "st.PHI"(v46, v46, v46, v46, v46, v[44:47]) { issueCycles = 0, latencyCycles = 0 }
+  s42 = "st.PHI"(0, 0, 0, 0, 0, s42) { issueCycles = 0, latencyCycles = 0 }
+  v30 = "st.PHI"(v30, v30, v30, v30, v30, v[30:31]) { issueCycles = 0, latencyCycles = 0 }
+  s54 = "st.PHI"(s54, s54, s54, s54, s54, s54) { issueCycles = 0, latencyCycles = 0 }
+  v29 = "st.PHI"(v29, v29, v29, v29, v29, v[28:29]) { issueCycles = 0, latencyCycles = 0 }
+  s51 = "st.PHI"(0, 0, 0, 0, 0, s51) { issueCycles = 0, latencyCycles = 0 }
+  s33 = "st.PHI"(0, 0, 0, 0, 0, s[32:33]) { issueCycles = 0, latencyCycles = 0 }
+  v39 = "st.PHI"(v39, v39, v39, v39, v39, v[36:39]) { issueCycles = 0, latencyCycles = 0 }
+  v32 = "st.PHI"(0, 0, 0, 0, 0, v[32:35]) { issueCycles = 0, latencyCycles = 0 }
+  s34 = "st.PHI"(0, 0, 0, 0, 0, s34) { issueCycles = 0, latencyCycles = 0 }
+  v38 = "st.PHI"(v38, v38, v38, v38, v38, v[36:39]) { issueCycles = 0, latencyCycles = 0 }
+  s55 = "st.PHI"(0, 0, 0, 0, 0, s55) { issueCycles = 0, latencyCycles = 0 }
+  v2 = "st.PHI"(v2, v2, v2, v2, v2, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v33 = "st.PHI"(0, 0, 0, 0, 0, v[32:35]) { issueCycles = 0, latencyCycles = 0 }
+  v49 = "st.PHI"(v49, v49, v49, v49, v49, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  s43 = "st.PHI"(0, 0, 0, 0, 0, s43) { issueCycles = 0, latencyCycles = 0 }
+  s13 = "st.PHI"(0, 0, 0, 0, 0, s13) { issueCycles = 0, latencyCycles = 0 }
+  v43 = "st.PHI"(v43, v43, v43, v43, v43, v[40:43]) { issueCycles = 0, latencyCycles = 0 }
+  v14 = "st.PHI"(0, 0, 0, 0, 0, v[14:15]) { issueCycles = 0, latencyCycles = 0 }
+  v47 = "st.PHI"(v47, v47, v47, v47, v47, v[44:47]) { issueCycles = 0, latencyCycles = 0 }
+  s41 = "st.PHI"(0, 0, 0, 0, 0, s41) { issueCycles = 0, latencyCycles = 0 }
+  v44 = "st.PHI"(v44, v44, v44, v44, v44, v[44:47]) { issueCycles = 0, latencyCycles = 0 }
+  s40 = "st.PHI"(0, 0, 0, 0, 0, s[40:41]) { issueCycles = 0, latencyCycles = 0 }
+  v15 = "st.PHI"(0, 0, 0, 0, 0, v[14:15]) { issueCycles = 0, latencyCycles = 0 }
+  v48 = "st.PHI"(v48, v48, v48, v48, v48, v[46:49]) { issueCycles = 0, latencyCycles = 0 }
+  v45 = "st.PHI"(v45, v45, v45, v45, v45, v[44:47]) { issueCycles = 0, latencyCycles = 0 }
+  v9 = "st.PHI"(0, 0, 0, 0, 0, v9) { issueCycles = 0, latencyCycles = 0 }
+  s35 = "st.PHI"(0, 0, 0, 0, 0, s35) { issueCycles = 0, latencyCycles = 0 }
+  v41 = "st.PHI"(v41, v41, v41, v41, v41, v[40:43]) { issueCycles = 0, latencyCycles = 0 }
+  s32 = "st.PHI"(0, 0, 0, 0, 0, s[32:33]) { issueCycles = 0, latencyCycles = 0 }
+  v8 = "st.PHI"(0, 0, 0, 0, 0, v8) { issueCycles = 0, latencyCycles = 0 }
+  v42 = "st.PHI"(v42, v42, v42, v42, v42, v[40:43]) { issueCycles = 0, latencyCycles = 0 }
+  v27 = "st.PHI"(v27, v27, v27, v27, v27, v[26:27]) { issueCycles = 0, latencyCycles = 0 }
+  s69 = "st.PHI"(s69, s69, s69, s69, s69, s69) { issueCycles = 0, latencyCycles = 0 }
+  v7 = "st.PHI"(v7, v7, v7, v7, v7, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s68 = "st.PHI"(s68, s68, s68, s68, s68, s68) { issueCycles = 0, latencyCycles = 0 }
+  v4 = "st.PHI"(v4, v4, v4, v4, v4, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v40 = "st.PHI"(v40, v40, v40, v40, v40, v[40:43]) { issueCycles = 0, latencyCycles = 0 }
+  s49 = "st.PHI"(s49, s49, s49, s49, s49, s49) { issueCycles = 0, latencyCycles = 0 }
+  v23 = "st.PHI"(v23, v23, v23, v23, v23, v23) { issueCycles = 0, latencyCycles = 0 }
+  v22 = "st.PHI"(v22, v22, v22, v22, v22, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v21 = "st.PHI"(v21, v21, v21, v21, v21, v21) { issueCycles = 0, latencyCycles = 0 }
+  s48 = "st.PHI"(s48, s48, s48, s48, s48, s48) { issueCycles = 0, latencyCycles = 0 }
+  v24 = "st.PHI"(v24, v24, v24, v24, v24, v[24:25]) { issueCycles = 0, latencyCycles = 0 }
+  v20 = "st.PHI"(v20, v20, v20, v20, v20, v[20:23]) { issueCycles = 0, latencyCycles = 0 }
+  v3 = "st.PHI"(v3, v3, v3, v3, v3, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v6 = "st.PHI"(v6, v6, v6, v6, v6, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s50 = "st.PHI"(s50, s50, s50, s50, s50, s50) { issueCycles = 0, latencyCycles = 0 }
+  v26 = "st.PHI"(v26, v26, v26, v26, v26, v[26:27]) { issueCycles = 0, latencyCycles = 0 }
+  s8 = "st.PHI"(s8, s8, s8, s8, s8, s8) { issueCycles = 0, latencyCycles = 0 }
+  s52 = "st.PHI"(s52, s52, s52, s52, s52, s52) { issueCycles = 0, latencyCycles = 0 }
+  s53 = "st.PHI"(s53, s53, s53, s53, s53, s53) { issueCycles = 0, latencyCycles = 0 }
+  v0 = "st.PHI"(v0, v0, v0, v0, v0, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  s56 = "st.PHI"(s56, s56, s56, s56, s56, s56) { issueCycles = 0, latencyCycles = 0 }
+  v1 = "st.PHI"(v1, v1, v1, v1, v1, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v5 = "st.PHI"(v5, v5, v5, v5, v5, v[0:7]) { issueCycles = 0, latencyCycles = 0 }
+  v25 = "st.PHI"(v25, v25, v25, v25, v25, v[24:25]) { issueCycles = 0, latencyCycles = 0 }
+  Successors: ^label_GSU_3
+^label_GSU_3:
+  v37 = "st.PHI"(v37, v37) { issueCycles = 0, latencyCycles = 0 }
+  v36 = "st.PHI"(v36, v36) { issueCycles = 0, latencyCycles = 0 }
+  v35 = "st.PHI"(v35, v35) { issueCycles = 0, latencyCycles = 0 }
+  v34 = "st.PHI"(v34, v34) { issueCycles = 0, latencyCycles = 0 }
+  v19 = "st.PHI"(v19, v19) { issueCycles = 0, latencyCycles = 0 }
+  v18 = "st.PHI"(v18, v18) { issueCycles = 0, latencyCycles = 0 }
+  v17 = "st.PHI"(v17, v17) { issueCycles = 0, latencyCycles = 0 }
+  v16 = "st.PHI"(v16, v16) { issueCycles = 0, latencyCycles = 0 }
+  v13 = "st.PHI"(v13, v13) { issueCycles = 0, latencyCycles = 0 }
+  v12 = "st.PHI"(v12, v12) { issueCycles = 0, latencyCycles = 0 }
+  v2 = "st.PHI"(v2, v2) { issueCycles = 0, latencyCycles = 0 }
+  v7 = "st.PHI"(v7, v7) { issueCycles = 0, latencyCycles = 0 }
+  v4 = "st.PHI"(v4, v4) { issueCycles = 0, latencyCycles = 0 }
+  v3 = "st.PHI"(v3, v3) { issueCycles = 0, latencyCycles = 0 }
+  v6 = "st.PHI"(v6, v6) { issueCycles = 0, latencyCycles = 0 }
+  v0 = "st.PHI"(v0, v0) { issueCycles = 0, latencyCycles = 0 }
+  v1 = "st.PHI"(v1, v1) { issueCycles = 0, latencyCycles = 0 }
+  v5 = "st.PHI"(v5, v5) { issueCycles = 0, latencyCycles = 0 }
+  v[20:23] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[38:41] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 32, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[24:27] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[42:45] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 64, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[16:17], v[34:35], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[28:31] = "st.ds_load_b128"(v12, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[46:49] = "st.ds_load_b128"(v13, LDS0) { issueCycles = 1, latencyCycles = 56, mod.ds = { na = 1, offset = 96, gds = false }, mod.memtoken = { tokens = [0] } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[18:19], v[36:37], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[20:21], v[38:39], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[22:23], v[40:41], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[24:25], v[42:43], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[26:27], v[44:45], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[28:29], v[46:47], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+  v[0:7] = "st.v_wmma_f32_16x16x4_f32"(v[30:31], v[48:49], v[0:7]) { issueCycles = 4, latencyCycles = 8, mod.mfma = { inputPermute = "", scaleStr = "", negStr = "", reuseA = false, reuseB = false, neg_lo = false, neg_hi = false } }
+}
