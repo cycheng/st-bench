@@ -288,10 +288,10 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     DOCKER_ENV_ARGS+=("-e" "${kv}")
   done
   docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
-    "${TENSILE_ARGS}" \
+    "${TENSILE_ARGS}" 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 else
-  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}") \
+  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}") 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 fi
 
