@@ -1,0 +1,48 @@
+================================================================================
+Register Allocation Benefit - GLOBAL TOP 20 potentialSaving across 66 test(s)
+================================================================================
+
+Top 20 VGPR potentialSaving (global):
+    [mxf8f4ss_gfx1250] [#6] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [mxf8f4ss_gfx1250] [#12] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [mxf8f4ss_gfx1250] [#18] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [mxf8f4ss_gfx1250] [#24] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [spmm_fp16_ml1] [#39] MT128x128x128  potentialSaving=600 (58.5938%)  peakLive=424  declared=1024
+    [1024_vgpr_gfx1250] [#3] MT64x64x512  potentialSaving=597 (58.5294%)  peakLive=423  declared=1020
+    [spmm_f8_ml] [#114] MT128x128x256  potentialSaving=536 (52.4462%)  peakLive=486  declared=1022
+    [1024_vgpr_gfx1250] [#14] MT128x128x512  potentialSaving=521 (50.9785%)  peakLive=501  declared=1022
+    [spmm_f8_ml] [#74] MT128x128x256  potentialSaving=483 (47.168%)  peakLive=541  declared=1024
+    [spmm_f8_ml] [#115] MT128x128x256  potentialSaving=483 (47.2603%)  peakLive=539  declared=1022
+    [largeLds_gfx1250] [#1] MT128x128x256  potentialSaving=481 (47.1569%)  peakLive=539  declared=1020
+    [largeLds_gfx1250] [#2] MT128x128x256  potentialSaving=465 (45.5882%)  peakLive=555  declared=1020
+    [b8b8s_gfx1250] [#4] MT256x64x64  potentialSaving=464 (45.4012%)  peakLive=558  declared=1022
+    [f8f8s_sr_gfx1250] [#1] MT256x64x64  potentialSaving=464 (45.4012%)  peakLive=558  declared=1022
+    [largeLds_gfx1250] [#3] MT128x128x256  potentialSaving=461 (45.1076%)  peakLive=561  declared=1022
+    [largeLds_gfx1250] [#4] MT128x128x256  potentialSaving=461 (45.1076%)  peakLive=561  declared=1022
+    [spmm_f8] [#57] MT128x128x256  potentialSaving=406 (39.6872%)  peakLive=617  declared=1023
+    [spmm_f8_ml] [#57] MT128x128x256  potentialSaving=406 (39.6872%)  peakLive=617  declared=1023
+    [spmm_b8bs] [#57] MT128x128x256  potentialSaving=405 (39.6282%)  peakLive=617  declared=1022
+    [spmm_f8hs] [#57] MT128x128x256  potentialSaving=405 (39.6282%)  peakLive=617  declared=1022
+
+Top 20 SGPR potentialSaving (global):
+    [mxf6_tdm_gfx1250] [#2] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6_tdm_gfx1250] [#4] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6_tdm_gfx1250] [#6] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6_tdm_gfx1250] [#8] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#2] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#4] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#6] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#8] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#10] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#12] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#14] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf6f4ss_tdm_gfx1250] [#16] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#1] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#2] MT64x64x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#3] MT128x128x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#4] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#5] MT64x64x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#6] MT128x128x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#7] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [mxf8f4ss_gfx1250] [#8] MT64x64x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+
