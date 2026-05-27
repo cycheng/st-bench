@@ -1,0 +1,724 @@
+================================================================================
+Register Allocation Benefit - TOP 3 potentialSaving per yaml  (66 test(s))
+================================================================================
+
+### 1024_vgpr_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/1024_vgpr_gfx1250/1024_vgpr_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#3] MT64x64x512  potentialSaving=597 (58.5294%)  peakLive=423  declared=1020
+    [#14] MT128x128x512  potentialSaving=521 (50.9785%)  peakLive=501  declared=1022
+    [#8] MT64x64x256  potentialSaving=397 (38.8454%)  peakLive=625  declared=1022
+  Top 3 SGPR potentialSaving:
+    [#12] MT256x256x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#13] MT128x128x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#14] MT128x128x512  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+
+### b6f4ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/b6f4ss_gfx1250/b6f4ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#5] MT16x16x128  potentialSaving=145 (72.5%)  peakLive=55  declared=200
+    [#13] MT16x16x128  potentialSaving=145 (72.5%)  peakLive=55  declared=200
+    [#1] MT16x16x128  potentialSaving=144 (72.3618%)  peakLive=55  declared=199
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+    [#2] MT64x64x128  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+    [#3] MT16x16x256  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+
+### b8b8s_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/b8b8s_gfx1250/b8b8s_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#4] MT256x64x64  potentialSaving=464 (45.4012%)  peakLive=558  declared=1022
+    [#1] MT256x32x64  potentialSaving=240 (35.3461%)  peakLive=439  declared=679
+    [#3] MT16x32x64  potentialSaving=233 (45.6863%)  peakLive=277  declared=510
+  Top 3 SGPR potentialSaving:
+    [#1] MT256x32x64  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT16x16x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT16x32x64  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+
+### bf16_activation
+log: /data1/cycheng2/tickets/st-codegen-test/asm/bf16_activation/bf16_activation.log
+  Top 2 VGPR potentialSaving:
+    [#2] MT128x128x128  potentialSaving=236 (34.7059%)  peakLive=444  declared=680
+    [#1] MT128x128x64  potentialSaving=38 (11.3095%)  peakLive=298  declared=336
+  Top 2 SGPR potentialSaving:
+    [#1] MT128x128x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### bf16_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/bf16_gfx1250/bf16_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+    [#5] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+    [#26] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#2] MT32x16x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#3] MT16x16x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+
+### bf6_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/bf6_gfx1250/bf6_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#52] MT64x64x256  potentialSaving=171 (33.3984%)  peakLive=341  declared=512
+    [#1] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#2] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+    [#2] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#3] MT32x32x128  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+
+### bf6_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/bf6_tdm_gfx1250/bf6_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=221 (86.3281%)  peakLive=35  declared=256
+    [#3] MT16x16x256  potentialSaving=197 (76.9531%)  peakLive=59  declared=256
+    [#2] MT32x32x128  potentialSaving=165 (82.5%)  peakLive=35  declared=200
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#4] MT32x32x256  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#1] MT16x16x128  potentialSaving=20 (23.8095%)  peakLive=64  declared=84
+
+### f16_activation
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f16_activation/f16_activation.log
+  Top 2 VGPR potentialSaving:
+    [#2] MT128x128x128  potentialSaving=236 (34.7059%)  peakLive=444  declared=680
+    [#1] MT128x128x64  potentialSaving=38 (11.3095%)  peakLive=298  declared=336
+  Top 2 SGPR potentialSaving:
+    [#1] MT128x128x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### f32_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f32_gfx1250/f32_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT32x32x4  potentialSaving=165 (82.5%)  peakLive=35  declared=200
+    [#8] MT32x32x4  potentialSaving=165 (82.5%)  peakLive=35  declared=200
+    [#14] MT32x32x4  potentialSaving=165 (82.5%)  peakLive=35  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x4  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#2] MT32x32x4  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#3] MT16x16x32  potentialSaving=13 (16.6667%)  peakLive=65  declared=78
+
+### f4_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f4_gfx1250/f4_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=161 (80.5%)  peakLive=39  declared=200
+    [#13] MT32x32x128  potentialSaving=160 (80%)  peakLive=40  declared=200
+    [#23] MT32x32x128  potentialSaving=160 (80%)  peakLive=40  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+    [#2] MT32x32x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT32x32x128  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+
+### f4b8ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f4b8ss_gfx1250/f4b8ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#14] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#2] MT16x16x128  potentialSaving=160 (71.7489%)  peakLive=63  declared=223
+  Top 3 SGPR potentialSaving:
+    [#1] MT64x64x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#3] MT64x64x256  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+
+### f4f6ss_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f4f6ss_tdm_gfx1250/f4f6ss_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=225 (87.8906%)  peakLive=31  declared=256
+    [#5] MT16x16x128  potentialSaving=225 (87.8906%)  peakLive=31  declared=256
+    [#3] MT16x16x256  potentialSaving=205 (80.0781%)  peakLive=51  declared=256
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#4] MT32x32x256  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#6] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+
+### f64_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f64_gfx1250/f64_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#25] MT?  potentialSaving=215 (83.9844%)  peakLive=41  declared=256
+    [#26] MT?  potentialSaving=215 (83.9844%)  peakLive=41  declared=256
+    [#59] MT?  potentialSaving=215 (83.9844%)  peakLive=41  declared=256
+  Top 3 SGPR potentialSaving:
+    [#3] MT?  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+    [#4] MT?  potentialSaving=15 (19.2308%)  peakLive=63  declared=78
+    [#7] MT?  potentialSaving=15 (17.8571%)  peakLive=69  declared=84
+
+### f6_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f6_gfx1250/f6_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#81] MT64x64x256  potentialSaving=171 (33.3984%)  peakLive=341  declared=512
+    [#3] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#65] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT16x16x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+
+### f6_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f6_tdm_gfx1250/f6_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=221 (86.3281%)  peakLive=35  declared=256
+    [#11] MT16x16x256  potentialSaving=197 (76.9531%)  peakLive=59  declared=256
+    [#2] MT32x32x128  potentialSaving=165 (82.5%)  peakLive=35  declared=200
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#7] MT256x256x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#8] MT256x256x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+
+### f6b6ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f6b6ss_gfx1250/f6b6ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT32x32x128  potentialSaving=149 (74.5%)  peakLive=51  declared=200
+    [#12] MT32x32x128  potentialSaving=149 (74.5%)  peakLive=51  declared=200
+    [#27] MT32x32x128  potentialSaving=149 (74.5%)  peakLive=51  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT16x16x128  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+    [#3] MT32x32x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+
+### f6b8ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f6b8ss_gfx1250/f6b8ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#40] MT64x64x256  potentialSaving=397 (38.7695%)  peakLive=627  declared=1024
+    [#36] MT64x64x256  potentialSaving=391 (38.2209%)  peakLive=632  declared=1023
+    [#32] MT64x64x256  potentialSaving=163 (31.8359%)  peakLive=349  declared=512
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT64x64x128  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+    [#3] MT16x16x256  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+
+### f8b6ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f8b6ss_gfx1250/f8b6ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#32] MT64x64x256  potentialSaving=243 (35.7353%)  peakLive=437  declared=680
+    [#28] MT64x64x256  potentialSaving=241 (35.5457%)  peakLive=437  declared=678
+    [#5] MT16x16x128  potentialSaving=153 (68.3036%)  peakLive=71  declared=224
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT64x64x128  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+    [#3] MT16x16x256  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+
+### f8b8ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f8b8ss_gfx1250/f8b8ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#17] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+    [#18] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+    [#19] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+  Top 3 SGPR potentialSaving:
+    [#1] MT64x64x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT64x64x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT64x64x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+
+### f8f4ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f8f4ss_gfx1250/f8f4ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#14] MT16x16x128  potentialSaving=161 (71.875%)  peakLive=63  declared=224
+    [#2] MT16x16x128  potentialSaving=160 (71.7489%)  peakLive=63  declared=223
+  Top 3 SGPR potentialSaving:
+    [#1] MT64x64x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT16x16x128  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#3] MT64x64x256  potentialSaving=15 (18.2927%)  peakLive=67  declared=82
+
+### f8f8s_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f8f8s_gfx1250/f8f8s_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT256x32x64  potentialSaving=240 (35.3461%)  peakLive=439  declared=679
+    [#4] MT32x64x64  potentialSaving=224 (43.9216%)  peakLive=286  declared=510
+    [#2] MT16x32x64  potentialSaving=171 (41.9118%)  peakLive=237  declared=408
+  Top 3 SGPR potentialSaving:
+    [#1] MT256x32x64  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT16x32x64  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT32x16x64  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+
+### f8f8s_sr_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/f8f8s_sr_gfx1250/f8f8s_sr_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT256x64x64  potentialSaving=464 (45.4012%)  peakLive=558  declared=1022
+    [#2] MT32x32x64  potentialSaving=147 (36.0294%)  peakLive=261  declared=408
+    [#4] MT64x64x64  potentialSaving=86 (43%)  peakLive=114  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT256x64x64  potentialSaving=15 (19.7368%)  peakLive=61  declared=76
+    [#2] MT32x32x64  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT64x64x64  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+
+### fp16_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/fp16_gfx1250/fp16_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+    [#5] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+    [#8] MT32x16x32  potentialSaving=156 (78%)  peakLive=44  declared=200
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#2] MT32x16x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#3] MT16x16x32  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+
+### fp16_use_e_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/fp16_use_e_gfx1250/fp16_use_e_gfx1250.log
+  Top 2 VGPR potentialSaving:
+    [#2] MT32x32x32  potentialSaving=125 (63.1313%)  peakLive=73  declared=198
+    [#1] MT32x32x32  potentialSaving=119 (59.5%)  peakLive=81  declared=200
+  Top 2 SGPR potentialSaving:
+    [#1] MT32x32x32  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT32x32x32  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+
+### fp4_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/fp4_tdm_gfx1250/fp4_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=229 (89.4531%)  peakLive=27  declared=256
+    [#11] MT16x16x256  potentialSaving=213 (83.2031%)  peakLive=43  declared=256
+    [#2] MT32x32x128  potentialSaving=173 (86.5%)  peakLive=27  declared=200
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#7] MT256x256x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#8] MT256x256x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+
+### fp8_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/fp8_gfx1250/fp8_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#9] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+    [#10] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+    [#11] MT64x64x128  potentialSaving=88 (39.4619%)  peakLive=135  declared=223
+  Top 3 SGPR potentialSaving:
+    [#1] MT64x64x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT64x64x128  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT64x64x128  potentialSaving=15 (20.2703%)  peakLive=59  declared=74
+
+### i8ii_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/i8ii_gfx1250/i8ii_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT16x16x64  potentialSaving=149 (75.2525%)  peakLive=49  declared=198
+    [#10] MT16x16x128  potentialSaving=143 (64.4144%)  peakLive=79  declared=222
+    [#12] MT16x16x128  potentialSaving=143 (64.4144%)  peakLive=79  declared=222
+  Top 3 SGPR potentialSaving:
+    [#1] MT64x64x64  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#2] MT16x16x64  potentialSaving=13 (18.0556%)  peakLive=59  declared=72
+    [#3] MT64x64x64  potentialSaving=13 (17.5676%)  peakLive=61  declared=74
+
+### largeLds_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/largeLds_gfx1250/largeLds_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT128x128x256  potentialSaving=481 (47.1569%)  peakLive=539  declared=1020
+    [#2] MT128x128x256  potentialSaving=465 (45.5882%)  peakLive=555  declared=1020
+    [#3] MT128x128x256  potentialSaving=461 (45.1076%)  peakLive=561  declared=1022
+  Top 3 SGPR potentialSaving:
+    [#1] MT128x128x256  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#2] MT128x128x256  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+    [#3] MT128x128x256  potentialSaving=15 (20.8333%)  peakLive=57  declared=72
+
+### mxf4_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/mxf4_gfx1250/mxf4_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#27] MT128x128x256  potentialSaving=293 (43.0882%)  peakLive=387  declared=680
+    [#29] MT128x128x256  potentialSaving=293 (43.0882%)  peakLive=387  declared=680
+    [#42] MT128x128x256  potentialSaving=293 (43.0882%)  peakLive=387  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x128  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+    [#2] MT32x32x128  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+    [#3] MT32x32x128  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+
+### mxf6_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/mxf6_tdm_gfx1250/mxf6_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=249 (86.4583%)  peakLive=39  declared=288  [OVERFLOW: too many sgprs]
+    [#2] MT32x32x128  potentialSaving=249 (86.4583%)  peakLive=39  declared=288
+    [#5] MT16x16x128  potentialSaving=247 (85.7639%)  peakLive=41  declared=288  [OVERFLOW: too many sgprs]
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#4] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#6] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+
+### mxf6f4ss_tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/mxf6f4ss_tdm_gfx1250/mxf6f4ss_tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=253 (87.8472%)  peakLive=35  declared=288  [OVERFLOW: too many sgprs]
+    [#2] MT32x32x128  potentialSaving=253 (87.8472%)  peakLive=35  declared=288
+    [#5] MT16x16x128  potentialSaving=253 (87.8472%)  peakLive=35  declared=288  [OVERFLOW: too many sgprs]
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#4] MT32x32x256  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#6] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+
+### mxf8_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/mxf8_gfx1250/mxf8_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT256x128x256  potentialSaving=257 (25.1468%)  peakLive=765  declared=1022
+    [#2] MT256x128x256  potentialSaving=257 (25.1468%)  peakLive=765  declared=1022
+    [#3] MT256x128x256  potentialSaving=257 (25.1468%)  peakLive=765  declared=1022
+  Top 3 SGPR potentialSaving:
+    [#1] MT256x128x256  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+    [#2] MT256x128x256  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+    [#3] MT256x128x256  potentialSaving=34 (36.9565%)  peakLive=58  declared=92
+
+### mxf8f4ss_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/mxf8f4ss_gfx1250/mxf8f4ss_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [#12] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+    [#18] MT128x128x256  potentialSaving=635 (62.1331%)  peakLive=387  declared=1022
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#2] MT64x64x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+    [#3] MT128x128x128  potentialSaving=36 (36%)  peakLive=64  declared=100
+
+### spmm_b8
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8/spmm_b8.log
+  Top 3 VGPR potentialSaving:
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#2] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+    [#8] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8_sb/spmm_b8_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8bs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8bs/spmm_b8bs.log
+  Top 3 VGPR potentialSaving:
+    [#57] MT128x128x256  potentialSaving=405 (39.6282%)  peakLive=617  declared=1022
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#30] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8bs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8bs_sb/spmm_b8bs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8f8
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8f8/spmm_b8f8.log
+  Top 3 VGPR potentialSaving:
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#2] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+    [#8] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8f8_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8f8_sb/spmm_b8f8_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8hs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8hs/spmm_b8hs.log
+  Top 3 VGPR potentialSaving:
+    [#12] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+    [#18] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+    [#2] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_b8hs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_b8hs_sb/spmm_b8hs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_bf16
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_bf16/spmm_bf16.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT128x128x128  potentialSaving=236 (34.7059%)  peakLive=444  declared=680
+    [#47] MT128x128x128  potentialSaving=204 (30%)  peakLive=476  declared=680
+    [#16] MT32x32x64  potentialSaving=199 (77.7344%)  peakLive=57  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_bf16_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_bf16_sb/spmm_bf16_sb.log
+  Top 3 VGPR potentialSaving:
+    [#47] MT128x128x128  potentialSaving=215 (31.6176%)  peakLive=465  declared=680
+    [#16] MT32x32x64  potentialSaving=199 (77.7344%)  peakLive=57  declared=256
+    [#38] MT32x32x64  potentialSaving=191 (74.6094%)  peakLive=65  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f16
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f16/spmm_f16.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT128x128x128  potentialSaving=236 (34.7059%)  peakLive=444  declared=680
+    [#47] MT128x128x128  potentialSaving=204 (30%)  peakLive=476  declared=680
+    [#16] MT32x32x64  potentialSaving=199 (77.7344%)  peakLive=57  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f16_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f16_sb/spmm_f16_sb.log
+  Top 3 VGPR potentialSaving:
+    [#47] MT128x128x128  potentialSaving=215 (31.6176%)  peakLive=465  declared=680
+    [#16] MT32x32x64  potentialSaving=199 (77.7344%)  peakLive=57  declared=256
+    [#38] MT32x32x64  potentialSaving=191 (74.6094%)  peakLive=65  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT32x32x64  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8/spmm_f8.log
+  Top 3 VGPR potentialSaving:
+    [#57] MT128x128x256  potentialSaving=406 (39.6872%)  peakLive=617  declared=1023
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#30] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8_ml
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8_ml/spmm_f8_ml.log
+  Top 3 VGPR potentialSaving:
+    [#114] MT128x128x256  potentialSaving=536 (52.4462%)  peakLive=486  declared=1022
+    [#74] MT128x128x256  potentialSaving=483 (47.168%)  peakLive=541  declared=1024
+    [#115] MT128x128x256  potentialSaving=483 (47.2603%)  peakLive=539  declared=1022
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8_sb/spmm_f8_sb.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#7] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+    [#18] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8b8
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8b8/spmm_f8b8.log
+  Top 3 VGPR potentialSaving:
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#30] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#19] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8b8_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8b8_sb/spmm_f8b8_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8bs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8bs/spmm_f8bs.log
+  Top 3 VGPR potentialSaving:
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#2] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+    [#8] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8bs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8bs_sb/spmm_f8bs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#2] MT64x64x128  potentialSaving=36 (14.0625%)  peakLive=220  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8hs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8hs/spmm_f8hs.log
+  Top 3 VGPR potentialSaving:
+    [#57] MT128x128x256  potentialSaving=405 (39.6282%)  peakLive=617  declared=1022
+    [#13] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#30] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_f8hs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_f8hs_sb/spmm_f8hs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#6] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#2] MT64x64x128  potentialSaving=36 (14.0625%)  peakLive=220  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_fp16_ml1
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_fp16_ml1/spmm_fp16_ml1.log
+  Top 3 VGPR potentialSaving:
+    [#39] MT128x128x128  potentialSaving=600 (58.5938%)  peakLive=424  declared=1024
+    [#6] MT128x128x128  potentialSaving=236 (34.7059%)  peakLive=444  declared=680
+    [#38] MT64x64x128  potentialSaving=228 (55.8824%)  peakLive=180  declared=408
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+    [#2] MT64x64x64  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+    [#3] MT128x128x64  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+
+### spmm_i8
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8/spmm_i8.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#27] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#49] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_i8_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8_sb/spmm_i8_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#10] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+    [#13] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_i8bs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8bs/spmm_i8bs.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#2] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+    [#6] MT16x16x128  potentialSaving=158 (61.7188%)  peakLive=98  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_i8bs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8bs_sb/spmm_i8bs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#1] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+    [#4] MT16x16x128  potentialSaving=134 (52.3438%)  peakLive=122  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_i8hs
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8hs/spmm_i8hs.log
+  Top 3 VGPR potentialSaving:
+    [#11] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#25] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+    [#46] MT64x64x256  potentialSaving=184 (27.0588%)  peakLive=496  declared=680
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_i8hs_sb
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_i8hs_sb/spmm_i8hs_sb.log
+  Top 3 VGPR potentialSaving:
+    [#8] MT128x128x256  potentialSaving=389 (37.9883%)  peakLive=635  declared=1024
+    [#10] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+    [#13] MT16x16x128  potentialSaving=182 (71.0938%)  peakLive=74  declared=256
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#2] MT64x64x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+    [#3] MT128x128x128  potentialSaving=16 (19.0476%)  peakLive=68  declared=84
+
+### spmm_tdm_all
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_tdm_all/spmm_tdm_all.log
+  Top 3 VGPR potentialSaving:
+    [#4] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+    [#6] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+    [#8] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x64  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+    [#2] MT64x64x64  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+    [#3] MT32x32x128  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+
+### spmm_tdm_f16_transposes
+log: /data1/cycheng2/tickets/st-codegen-test/asm/spmm_tdm_f16_transposes/spmm_tdm_f16_transposes.log
+  Top 3 VGPR potentialSaving:
+    [#2] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+    [#4] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+    [#6] MT64x64x128  potentialSaving=272 (66.6667%)  peakLive=136  declared=408
+  Top 3 SGPR potentialSaving:
+    [#1] MT32x32x128  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+    [#2] MT64x64x128  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+    [#3] MT32x32x128  potentialSaving=28 (30.4348%)  peakLive=64  declared=92
+
+### tdm_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/tdm_gfx1250/tdm_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT16x16x64  potentialSaving=211 (83.0709%)  peakLive=43  declared=254
+    [#5] MT16x16x64  potentialSaving=211 (83.0709%)  peakLive=43  declared=254
+    [#9] MT16x16x64  potentialSaving=211 (83.0709%)  peakLive=43  declared=254
+  Top 3 SGPR potentialSaving:
+    [#2] MT32x32x64  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#4] MT32x32x128  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+    [#6] MT32x32x64  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+
+### tdm_multicast_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/tdm_multicast_gfx1250/tdm_multicast_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#1] MT64x16x256  potentialSaving=275 (82.3353%)  peakLive=59  declared=334
+    [#3] MT64x16x256  potentialSaving=275 (82.3353%)  peakLive=59  declared=334
+    [#5] MT64x16x256  potentialSaving=275 (82.3353%)  peakLive=59  declared=334
+  Top 3 SGPR potentialSaving:
+    [#11] MT16x16x64  potentialSaving=22 (25.5814%)  peakLive=64  declared=86
+    [#13] MT16x16x64  potentialSaving=22 (25.5814%)  peakLive=64  declared=86
+    [#10] MT32x32x64  potentialSaving=21 (29.1667%)  peakLive=51  declared=72
+
+### xfp32_gfx1250
+log: /data1/cycheng2/tickets/st-codegen-test/asm/xfp32_gfx1250/xfp32_gfx1250.log
+  Top 3 VGPR potentialSaving:
+    [#13] MT256x128x32  potentialSaving=404 (39.5303%)  peakLive=618  declared=1022
+    [#15] MT256x128x32  potentialSaving=404 (39.5303%)  peakLive=618  declared=1022
+    [#19] MT64x64x64  potentialSaving=396 (58.4071%)  peakLive=282  declared=678
+  Top 3 SGPR potentialSaving:
+    [#1] MT16x16x32  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+    [#3] MT128x64x32  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+    [#20] MT16x16x64  potentialSaving=18 (21.4286%)  peakLive=66  declared=84
+
