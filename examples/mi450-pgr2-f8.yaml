@@ -14,8 +14,6 @@ GlobalParameters:
   CpuThreads: 1
   ROCmAgentEnumeratorPath: rocm_agent_enumerator
   PrintSolutionRejectionReason: True
-  StinkyTofuOptLevel: 3
-  StinkyTofuDebugLevel: 1
 
 BenchmarkProblems:
   #######################################
@@ -31,7 +29,7 @@ BenchmarkProblems:
       TransposeA: True
       TransposeB: False
       UseBeta: True
-      Batched: True
+      Batched: TrueStinkyTofuDebugLevel
       SupportUserArgs: True
       UseBias: 0
       Activation: False
@@ -56,7 +54,7 @@ BenchmarkProblems:
         # - LdsBlockSizePerPadB: [256]
         - LdsPadMetadata: [0]
         - StaggerU: [0]
-        - ScheduleIterAlg: [0]
+        - ScheduleIterAlg: [4]
         - PrefetchLocalRead: [1]
         - PrefetchGlobalRead: [2]
         - GlobalSplitU: [1]

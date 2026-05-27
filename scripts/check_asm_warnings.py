@@ -51,11 +51,15 @@ class TestReport:
     name: str
     log_path: Path
     build_impl_dep: list[str] = field(default_factory=list)
-    asm_verifier: list[str] = field(default_factory=list)
+    asm_verifier: list[tuple[str, int]] = field(default_factory=list)
 
     @property
     def has_issue(self) -> bool:
         return bool(self.build_impl_dep or self.asm_verifier)
+
+    @property
+    def asm_verifier_total(self) -> int:
+        return sum(count for _, count in self.asm_verifier)
 
 
 def _dedupe_preserve_order(items: list[str]) -> list[str]:
@@ -69,8 +73,54 @@ def _dedupe_preserve_order(items: list[str]) -> list[str]:
     return out
 
 
-def parse_log(log_path: Path) -> tuple[list[str], list[str]]:
-    """Return (unique BuildImplicitDep warnings, unique AsmVerifier warnings)."""
+# Normalizers for register operands so two AsmVerifier warnings that point at
+# "the same instruction" modulo register indices collapse into one entry.
+#
+# Examples:
+#   v[16:23]  -> v[?:?]
+#   v[4]      -> v[?]
+#   v132      -> v?
+#   s[12:15]  -> s[?:?]
+#   s7        -> s?
+#   acc[0:3]  -> acc[?:?]
+_REG_RANGE_RE = re.compile(r"\b([vsa]|acc)\[(\d+):(\d+)\]")
+_REG_SINGLE_BRACKET_RE = re.compile(r"\b([vsa]|acc)\[(\d+)\]")
+_REG_BARE_RE = re.compile(r"\b([vsa])(\d+)\b")
+
+
+def _normalize_instruction(text: str) -> str:
+    text = _REG_RANGE_RE.sub(r"\1[?:?]", text)
+    text = _REG_SINGLE_BRACKET_RE.sub(r"\1[?]", text)
+    text = _REG_BARE_RE.sub(r"\1?", text)
+    return text
+
+
+def _dedupe_asm_verifier(items: list[str]) -> list[tuple[str, int]]:
+    """Dedupe AsmVerifier warnings by register-normalized form.
+
+    Returns a list of ``(representative_message, occurrence_count)`` in the
+    order of first appearance.
+    """
+    order: list[str] = []
+    first: dict[str, str] = {}
+    counts: dict[str, int] = {}
+    for raw in items:
+        key = _normalize_instruction(raw)
+        if key not in first:
+            first[key] = raw
+            counts[key] = 1
+            order.append(key)
+        else:
+            counts[key] += 1
+    return [(first[k], counts[k]) for k in order]
+
+
+def parse_log(log_path: Path) -> tuple[list[str], list[tuple[str, int]]]:
+    """Return (unique BuildImplicitDep warnings, deduped AsmVerifier warnings).
+
+    AsmVerifier warnings are deduped by register-normalized form; each entry
+    is ``(representative_message, occurrence_count)``.
+    """
     build_impl_dep: list[str] = []
     asm_verifier: list[str] = []
 
@@ -114,7 +164,7 @@ def parse_log(log_path: Path) -> tuple[list[str], list[str]]:
 
         i += 1
 
-    return _dedupe_preserve_order(build_impl_dep), _dedupe_preserve_order(asm_verifier)
+    return _dedupe_preserve_order(build_impl_dep), _dedupe_asm_verifier(asm_verifier)
 
 
 def discover_tests(asm_dir: Path, filter_names: list[str] | None = None) -> list[TestReport]:
@@ -155,7 +205,8 @@ def render_text(reports: list[TestReport], asm_dir: Path) -> str:
             lines.append(
                 f"  - {r.name:<32} "
                 f"BuildImplicitDep={len(r.build_impl_dep):<3} "
-                f"AsmVerifier={len(r.asm_verifier)}"
+                f"AsmVerifier={len(r.asm_verifier):<3} "
+                f"(raw {r.asm_verifier_total})"
             )
     lines.append("")
 
@@ -176,9 +227,14 @@ def render_text(reports: list[TestReport], asm_dir: Path) -> str:
             lines.append(f"  {msg}")
 
         lines.append("")
-        lines.append(f"AsmVerifier unique warnings: {len(r.asm_verifier)}")
-        for idx, msg in enumerate(r.asm_verifier, 1):
-            lines.append(f"  [{idx}]")
+        lines.append(
+            f"AsmVerifier unique warnings: {len(r.asm_verifier)} "
+            f"(raw occurrences: {r.asm_verifier_total}, "
+            f"deduped by register-normalized instruction)"
+        )
+        for idx, (msg, count) in enumerate(r.asm_verifier, 1):
+            header = f"  [{idx}]" if count == 1 else f"  [{idx}] (x{count})"
+            lines.append(header)
             for sub in msg.splitlines():
                 lines.append(f"    {sub}")
 
@@ -193,7 +249,8 @@ def render_json(reports: list[TestReport]) -> str:
             {
                 "name": r.name,
                 "build_impl_dep_count": len(r.build_impl_dep),
-                "asm_verifier_count": len(r.asm_verifier),
+                "asm_verifier_unique_count": len(r.asm_verifier),
+                "asm_verifier_raw_count": r.asm_verifier_total,
             }
             for r in reports
             if r.has_issue
@@ -202,7 +259,10 @@ def render_json(reports: list[TestReport]) -> str:
             r.name: {
                 "log": str(r.log_path),
                 "build_impl_dep": r.build_impl_dep,
-                "asm_verifier": r.asm_verifier,
+                "asm_verifier": [
+                    {"message": msg, "count": count}
+                    for msg, count in r.asm_verifier
+                ],
             }
             for r in reports
             if r.has_issue

@@ -14,7 +14,6 @@ GlobalParameters:
   CpuThreads: 1
   ROCmAgentEnumeratorPath: rocm_agent_enumerator
   PrintSolutionRejectionReason: True
-  StinkyTofuOptLevel: 3
   StinkyTofuPrintAfterPass: "StinkyBuildImplicitDependencyPass"
   ISA: [[12, 5, 0]]
 
@@ -62,7 +61,7 @@ BenchmarkProblems:
         - LdsBlockSizePerPadB: [-1]
         - LdsPadMetadata: [0]
         - StaggerU: [0]
-        - ScheduleIterAlg: [0]
+        - ScheduleIterAlg: [4]
         - PrefetchLocalRead: [1]
         - PrefetchGlobalRead: [2]
         - GlobalSplitU: [1]
