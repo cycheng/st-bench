@@ -79,7 +79,7 @@ BenchmarkProblems:
         - LdsPadMetadata: [0]
         - LDSTrInst: [False]
         - StaggerU: [0]
-        - ScheduleIterAlg: [0]
+        - ScheduleIterAlg: [4]
         - PrefetchLocalRead: [1]
         - PrefetchGlobalRead: [2] #[1,2]
         - StoreRemapVectorWidth: [0]
@@ -105,8 +105,8 @@ BenchmarkProblems:
       BenchmarkJoinParameters:
       BenchmarkFinalParameters:
         - ProblemSizes:
-          - Exact: [256, 256, 1, 128]
-          # - Exact: [256, 256, 1, 384]
+          #- Exact: [256, 256, 1, 128]
+          - Exact: [256, 256, 1, 384]
           # - Exact: [256, 256, 1, 640]
           # - Exact: [256, 256, 1, 896]
           # - Exact: [256, 256, 1, 2048]
