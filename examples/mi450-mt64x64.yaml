@@ -30,7 +30,7 @@ GlobalParameters:
   UseGPUTimer: False
   MaxLDS: 327680
   DeviceLDS: 327680
-
+  CpuThreads: 1
 
 BenchmarkProblems:
   -
