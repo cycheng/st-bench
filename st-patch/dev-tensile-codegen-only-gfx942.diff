@@ -1,0 +1,180 @@
+diff --git a/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py b/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
+index d367287895e..19d24e1d42c 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
++++ b/projects/hipblaslt/tensilelite/Tensile/BenchmarkProblems.py
+@@ -527,6 +527,8 @@ def _benchmarkProblemType(problemTypeConfig, problemSizeGroupConfig, problemSize
+         # run benchmarking client
+         if buildOnly:
+             print1("# Build-only mode: skipping benchmark.")
++        elif globalParameters["GenerateSourcesAndExit"]:
++            print1("# GenerateSourcesAndExit is True; skipping client execution.")
+         elif not os.path.exists(resultsFileName) or globalParameters["ForceRedoBenchmarkProblems"]:
+             libraryLogicPath = None
+             forBenchmark = True
+@@ -626,6 +628,8 @@ def main(
+ 
+                 if buildOnly:
+                     print1("# Build-only mode: skipping result collection.")
++                elif globalParameters["GenerateSourcesAndExit"]:
++                    print1("# GenerateSourcesAndExit is True; skipping result collection.")
+                 else:
+                     print("clientExit={} {} for {}" \
+                             .format(totalTestFails, "(ERROR)" if totalTestFails else "(PASS)", \
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+index 854aa268967..5ffd9b0e4a8 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+@@ -261,10 +261,11 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+     Raises:
+         Exception if both tools fail to detect ISA.
+     """
+-    result = _detectGlobalCurrentISA(enumerator, deviceId)
+-    if not isinstance(result, IsaVersion):
+-        raise Exception("Failed to detect currect ISA")
+-    return result
++    # result = _detectGlobalCurrentISA(enumerator, deviceId)
++    # if not isinstance(result, IsaVersion):
++    #     raise Exception("Failed to detect currect ISA")
++    # return result
++    return IsaVersion(9, 4, 2)
+ 
+ 
+ class ArchInfo(NamedTuple):
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+index 74caa9c8cbe..f2c780d0f6b 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+@@ -114,7 +114,7 @@ globalParameters["ShowProgressBar"] = (
+ globalParameters["SolutionSelectionAlg"] = (
+     1  # algorithm to determine which solutions to keep. 0=removeLeastImportantSolutions, 1=keepWinnerSolutions (faster)
+ )
+-globalParameters["GenerateSourcesAndExit"] = False  # Exit after kernel source generation.
++globalParameters["GenerateSourcesAndExit"] = True  # Exit after kernel source generation.
+ globalParameters["ExitOnFails"] = (
+     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
+ )
+diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+index 84f3b0887a9..34371158ae9 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+@@ -56,6 +56,7 @@ from Tensile.Toolchain.Component import Assembler
+ 
+ import math
+ import abc
++import os
+ import sys
+ import collections
+ from copy import deepcopy
+@@ -255,7 +256,7 @@ class StateValues:
+   startVgprAddressDbg: int               = -1
+   startVgprAlphaTmp: int                 = -1
+   startVgprSerial: int                   = -1
+-  startVgprIdentityMatrix: int           = -1 
++  startVgprIdentityMatrix: int           = -1
+ 
+   numSgprSizesSum: int                   = 0
+   numSgprSizesFree: int                  = 0
+@@ -722,7 +723,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         elif mfmaBlockCount >= 2 and mfmaCount == 2:
+           # interleave case, we still need nop 0
+           waitState = 0
+-      
++
+     if waitState >= 0:
+       dstPackItems.append(SNop(waitState=waitState, comment="nop for x32f emulation"))
+ 
+@@ -5128,7 +5129,27 @@ class KernelWriter(metaclass=abc.ABCMeta):
+     error = self.states.overflowedResources
+     print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
+ 
+-    return (error, str(moduleKernelBody))
++    asm_str = str(moduleKernelBody)
++    if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM"):
++      import hashlib, fcntl
++      os.makedirs("cmpasm/orig", exist_ok=True)
++      kernel_name = self.states.kernelName
++      name_hash = hashlib.sha256(kernel_name.encode()).hexdigest()[:8]
++      base_name = f"{name_hash}"
++      path = f"cmpasm/orig/{base_name}.s"
++      suffix = 0
++      while os.path.exists(path):
++        path = f"cmpasm/orig/{base_name}_{suffix}.s"
++        suffix += 1
++      with open(path, "w") as f:
++        f.write(asm_str)
++      manifest = f"cmpasm/orig/manifest.txt"
++      with open(manifest, "a") as f:
++        fcntl.flock(f, fcntl.LOCK_EX)
++        f.write(f"{os.path.basename(path)} -> {kernel_name}\n")
++        fcntl.flock(f, fcntl.LOCK_UN)
++
++    return (error, asm_str)
+ 
+   ##############################################################################
+   # Init Kernel
+@@ -6156,7 +6177,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         maxOffsetMXSA += kernel["LdsOffsetA_Blk"]
+         maxOffsetMXSB += kernel["LdsOffsetA_Blk"]
+         maxOffsetMetadata += kernel["LdsOffsetA_Blk"]
+-        
++
+       numVgprMultiplierA = maxOffsetA // maxLDSConstOffset + 1
+       numVgprMultiplierB = maxOffsetB // maxLDSConstOffset + 1
+       numVgprMultiplierMXSA = maxOffsetMXSA // maxLDSConstOffset + 1
+@@ -6280,7 +6301,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         * kernel["NumLoadsPerpendicularB"] * kernel["GlobalReadVectorWidthB"]
+     numGlobalReadInstructionsB = int(numGlobalReadsB * tensorParametersB["bpeGR"])// \
+         (tensorParametersB["globalReadInstruction"].blockWidth * 4)
+-    
++
+     if kernel["enableTDMB"]:
+       self.states.b.numVgprGlobalReadOffsets = 0
+     elif kernel["BufferLoad"]:
+@@ -6648,7 +6669,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+ 
+     self.states.a.startVgprValu = vgprIdx
+     vgprIdx += self.states.a.numVgprValu
+-    
++
+     numVgprValuPackA = 0
+     if tensorParametersA["bpe"] < 4 and not kernel["UnrollMajorLDSA"] and not kernel["enableLDSTrA"]:
+       self.states.a.startVgprValuPack = vgprIdx
+@@ -6686,7 +6707,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         vgprIdx = ((vgprIdx+1)//2)*2
+     else:
+       vgprIdx = ((vgprIdx+1)//2)*2
+-      
++
+     self.states.b.startVgprValu = vgprIdx
+     vgprIdx += self.states.b.numVgprValu
+     numVgprValuPackB = 0
+@@ -6747,7 +6768,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         if(self.states.archCaps["VgprBank"]):
+           vgprIdx += 1
+         # gfx1250
+-        if self.states.m.numVgprValu >= 2: 
++        if self.states.m.numVgprValu >= 2:
+           vgprIdx = ((vgprIdx+1)//2)*2
+         self.states.m.startVgprValu = vgprIdx
+         vgprIdx += self.states.m.numVgprValu
+@@ -6831,7 +6852,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+ 
+     # for cgemm or zgemm + MIAV case, allocate 2 or 4 vgpr for alpha calculation (cannot use tmp vgpr in write batch)
+     if kernel["ProblemType"]["DataType"].isComplex() \
+-      and kernel["MIArchVgpr"]: 
++      and kernel["MIArchVgpr"]:
+ 
+       # need proper alignment
+       vgprIdx = ((vgprIdx+2 - 1)//2)*2
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Tensile.py b/projects/hipblaslt/tensilelite/Tensile/Tensile.py
+index 30f76e952be..07fc71bee3e 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Tensile.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Tensile.py
+@@ -322,6 +322,7 @@ def get_gpu_max_frequency_smi(device_id):
+        return None
+ 
+ def get_gpu_max_frequency(device_id):
++    return 1800
+     try:
+         from hip import hip
+     except ImportError:
