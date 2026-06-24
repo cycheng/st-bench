@@ -1,0 +1,163 @@
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+index 7d396d9c3fd..463f24a7cd1 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
+@@ -267,11 +267,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+     Raises:
+         Exception if both tools fail to detect ISA.
+     """
+-    result = _detectGlobalCurrentISA(enumerator, deviceId)
+-    if not isinstance(result, IsaVersion):
+-        raise Exception("Failed to detect currect ISA")
+-    return result
+-
++    return IsaVersion(12, 5, 0)
+ 
+ class ArchInfo(NamedTuple):
+     Name: str
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+index 1d19ff89fb3..8d5ea3cd23b 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+@@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
+     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
+ )
+ globalParameters["CpuThreads"] = (
+-    -1
++    0
+ )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
+ # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
+ # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
+diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+index 4395fed2db9..adf33f8c8ae 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+@@ -921,7 +921,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           macItems = []
+         iterCode.add(pointerLWCode)
+         iterCode.add(pointerLRCode)
+-        if kernel["PrefetchGlobalRead"] >= 2: 
++        if kernel["PrefetchGlobalRead"] >= 2:
+           iterCode.add(globalReadCode)
+         # add rest of the mac here
+         iterCode.addItems(macItems)
+@@ -4181,7 +4181,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+       self.codes.gl2PrefetchIncrement.add(self.gl2PrefetchIncrementAddr(kernel, tensorParametersA, tensorParametersB))
+       self.codes.gl2Prefetch = Module()
+       self.codes.gl2Prefetch.add(self.gl2PrefetchIssueLoad(kernel, tensorParametersA, tensorParametersB))
+-      
++
+ 
+     if not kernel["NoLdsWriteCode"]:
+       self.codes.localWriteA = self.localWriteDo(kernel, tensorParametersA)
+@@ -6645,13 +6645,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           st_path = f"cmpasm/st/{base_name}_{suffix}.s"
+           suffix += 1
+ 
+-        t_str_start = time.perf_counter()
+-        orig_asm_str = str(moduleKernelBody)
+-        t_str_end = time.perf_counter()
+-        print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
++        # t_str_start = time.perf_counter()
++        # orig_asm_str = str(moduleKernelBody)
++        # t_str_end = time.perf_counter()
++        # print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
+ 
+-        with open(orig_path, "w") as f:
+-          f.write(orig_asm_str)
++        # with open(orig_path, "w") as f:
++        #   f.write(orig_asm_str)
+         with open(st_path, "w") as f:
+           f.write(st_asm)
+ 
+@@ -8844,7 +8844,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         vgprIdx += 1
+         self.states.b.tmpVgprCvtSub = vgprIdx
+         vgprIdx += 1
+-  
++
+       if kernel["PrefetchGL2"]:
+         vgprIdx = int((vgprIdx + 1) / 2) * 2
+         self.states.a.startVgprGL2PrefetchAddr = vgprIdx
+@@ -8856,7 +8856,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           vgprIdx += tensorParametersA["MX"]["gl2nl"] * self.states.rpga
+         if kernel["ProblemType"]["MXBlockB"]:
+           self.states.mxsb.startVgprGL2PrefetchAddr = vgprIdx
+-          vgprIdx += tensorParametersB["MX"]["gl2nl"] * self.states.rpga      
++          vgprIdx += tensorParametersB["MX"]["gl2nl"] * self.states.rpga
+ 
+       # TODO: Serial is always the first/last register in the pool so the store
+       # code doesn't have to deal with fragmentation
+@@ -8870,7 +8870,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+       agprLimit = self.states.regCaps["PhysicalMaxVgpr"] - self.states.regCaps["MaxVgpr"]
+       if self.states.totalAgprs > agprLimit:
+         raise RuntimeError("Generating asm kernel error: total agpr: %u not in [0, %u].\n" % (self.states.totalAgprs, agprLimit) )
+-  
++
+       # VGPR alloc marker
+ 
+ 
+@@ -10740,19 +10740,19 @@ class KernelWriter(metaclass=abc.ABCMeta):
+ 
+   def tdmSetupIncrementWaveSeparated(self, kernel, tPA, tPB) -> Module:
+     assert False, "Should be overrided"
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchInit(self, kernel, tPA, tPB):
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchCalcAddr(self, kernel, tPA, tPB) -> Module:
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchIssueLoad(self, kernel, tPA, tPB) -> Module:
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchIncrementAddr(self, kernel, tPA, tPB) -> Module:
+     return ""
+diff --git a/shared/stinkytofu/src/pipeline/backend/Gfx1250Backend.cpp b/shared/stinkytofu/src/pipeline/backend/Gfx1250Backend.cpp
+index c25e2033e07..79782c48d1b 100644
+--- a/shared/stinkytofu/src/pipeline/backend/Gfx1250Backend.cpp
++++ b/shared/stinkytofu/src/pipeline/backend/Gfx1250Backend.cpp
+@@ -32,6 +32,7 @@
+ #include "stinkytofu/analysis/AnalysisRegistration.hpp"
+ #include "stinkytofu/analysis/asm/AsmVerifierPass.hpp"
+ #include "stinkytofu/bindings/python/Module.hpp"
++#include "stinkytofu/ir/DumpStinkyFunctionPass.hpp"
+ #include "stinkytofu/pipeline/BackendRegistry.hpp"
+ #include "stinkytofu/pipeline/OptimizationPasses.hpp"
+ #include "stinkytofu/pipeline/ScopeAdaptor.hpp"
+@@ -98,7 +99,7 @@ bool buildGfx1250Pipeline(PassManager& pm, StinkyAsmModule& module, const PassBu
+     auto debugStreams = createDebugOutputStreams(moduleOptions);
+     configureDebugOutput(pm, moduleOptions, "kernel-OuterPM", debugStreams);
+ 
+-    const bool runScheduler = optLevel != OptLevel::O0;
++    const bool runScheduler = false;  // optLevel != OptLevel::O0;
+     if (runScheduler || moduleOptions.EnableESM2) {
+         // strip delay_alu before scheduling
+         pm.addPass(createRemoveDelayAluPass());
+@@ -136,6 +137,10 @@ bool buildGfx1250Pipeline(PassManager& pm, StinkyAsmModule& module, const PassBu
+         PB.applyExtensionPoint(PipelineExtensionPoint::InnerRegionEnd, innerPM, module);
+         if (moduleOptions.EnableWaitCntInsertion) {
+             innerPM.addPass(createStinkyWaitCntInsertionPass());
++            innerPM.addPass(createDumpStinkyFunctionPass(DumpStinkyFunctionPassConfig{
++                .stirPath = "after_waitcnt_insertion.stir",
++                .emitAsm = false,
++            }));
+         }
+         pm.addPass(createKernelToRegionsPassAdaptor(module, {"loopWithPrefetch", "noLoadLoopBody"},
+                                                     std::move(innerPM)));
+@@ -155,6 +160,7 @@ bool buildGfx1250Pipeline(PassManager& pm, StinkyAsmModule& module, const PassBu
+     }
+ 
+     pm.addPass(createInsertVgprMsbPass());
++    return true;
+ 
+     if (moduleOptions.EnableESM2) {
+         // expertScheduleMode2 region (label_ASM_Start..noLoadLoopBody): wait-alu + mode2
