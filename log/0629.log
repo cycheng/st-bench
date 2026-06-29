@@ -1,0 +1,81 @@
+rocm lib: 2a897535f974ae + users/pochang/enable_st_waitcnt 
+platform: f06-1
+
+./scripts/run-all-yaml.sh ./examples/test-silicon.cfg ./test-lists/gfx1250.list
+
+==========================================
+YAML run summary
+==========================================
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/mxf8_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f64_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/fp16_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/b8b8s_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f6b8ss_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/nt_th_nv_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/fp16_use_e_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8f8s_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/tdm_multicast_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8f8s_fuse_alpha_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/bf6_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f32_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f4_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/b6f4ss_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/mxf8f4ss_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f6_tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8f8s_sr_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/mxf4_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8f4ss_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/bf6_tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f4b8ss_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/bf16_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/i8ii_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8b8ss_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/1024_vgpr_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/largeLds_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/fp4_tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f4f6ss_tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/fp8_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f6b6ss_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/mxf6f4ss_tdm_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/xfp32_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f8b6ss_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/bf16_CLS_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/f6_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/subtile_bf16_gfx1250.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/mxf6_tdm_gfx1250.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/bf16_activation.yaml
+[FAIL exit=0] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/f16_activation.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8bs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8bs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8f8_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8f8.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8hs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8hs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_b8.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_bf16_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_bf16.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f16_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f16.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8b8_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8b8.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8bs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8bs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8hs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8hs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8_ml.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_f8.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_fp16_ml1.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8bs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8bs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8hs_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8hs.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8_sb.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_i8.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_tdm_all.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_tdm_f16_transposes.yaml
+[PASS] /home/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250/spmm_tdm_multicast.yaml
+Total YAML runs: 71, passed: 59, failed: 12
+Batch run complete with failures.
