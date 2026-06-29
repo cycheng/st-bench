@@ -22,6 +22,7 @@ Config file format (key=value):
   env=TARGET_ARCH=gfx1250               # repeatable
   env_file=./my-env.list                # repeatable
   build_only=true                       # default true; set false to skip --build-only
+  continue_on_failure=false             # keep running remaining YAMLs after a failure
   docker_auto_start=true
   keep_container_out=false
   hipblaslt_repo_path=${rocm_libraries_path}/projects/hipblaslt
@@ -45,6 +46,7 @@ EXTRA_ENVS=()
 ENV_FILES=()
 DOCKER_AUTO_START=1
 BUILD_ONLY=1
+CONTINUE_ON_FAILURE=0
 KEEP_CONTAINER_OUT=0
 TASK_TYPE="yaml"
 EXECUTION_MODE="docker"
@@ -118,6 +120,7 @@ parse_config_file() {
       docker_auto_start) DOCKER_AUTO_START="$(parse_bool "${value}")" ;;
       no_start) DOCKER_AUTO_START="$((1 - $(parse_bool "${value}")))" ;;
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
+      continue_on_failure) CONTINUE_ON_FAILURE="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       hipblaslt_repo_path) HIPBLASLT_REPO_PATH="${value}" ;;
       hipblaslt_install_flags) HIPBLASLT_INSTALL_FLAGS="${value}" ;;
@@ -292,6 +295,57 @@ run_hipblaslt_install() {
 
 declare -A seen_yamls=()
 total_runs=0
+passed_runs=0
+failed_runs=0
+summary_yamls=()
+summary_statuses=()
+summary_exit_codes=()
+
+print_yaml_summary() {
+  local i yaml status exit_code
+
+  echo "=========================================="
+  echo "YAML run summary"
+  echo "=========================================="
+  for i in "${!summary_yamls[@]}"; do
+    yaml="${summary_yamls[${i}]}"
+    status="${summary_statuses[${i}]}"
+    exit_code="${summary_exit_codes[${i}]}"
+    if [[ "${status}" == "PASS" ]]; then
+      printf '[PASS] %s\n' "${yaml}"
+    else
+      printf '[FAIL exit=%s] %s\n' "${exit_code}" "${yaml}"
+    fi
+  done
+  echo "Total YAML runs: ${total_runs}, passed: ${passed_runs}, failed: ${failed_runs}"
+}
+
+run_yaml_and_record() {
+  local yaml_file="$1"
+  local exit_code=0
+
+  if run_yaml "${yaml_file}"; then
+    passed_runs=$((passed_runs + 1))
+    summary_yamls+=("${yaml_file}")
+    summary_statuses+=("PASS")
+    summary_exit_codes+=(0)
+    return 0
+  fi
+
+  exit_code=$?
+  failed_runs=$((failed_runs + 1))
+  summary_yamls+=("${yaml_file}")
+  summary_statuses+=("FAIL")
+  summary_exit_codes+=("${exit_code}")
+
+  if [[ ${CONTINUE_ON_FAILURE} -eq 1 ]]; then
+    echo "YAML failed with exit code ${exit_code}; continuing because continue_on_failure=true: ${yaml_file}" >&2
+    return 0
+  fi
+
+  print_yaml_summary
+  exit "${exit_code}"
+}
 
 collect_and_run_from_target() {
   local list_file="$1"
@@ -308,7 +362,7 @@ collect_and_run_from_target() {
       [[ -n "${seen_yamls[${yaml_file}]:-}" ]] && continue
       seen_yamls["${yaml_file}"]=1
       total_runs=$((total_runs + 1))
-      run_yaml "${yaml_file}"
+      run_yaml_and_record "${yaml_file}"
     done < <(find "${target}" -type f -name "*.yaml" -print0 | sort -z)
     return
   fi
@@ -317,7 +371,7 @@ collect_and_run_from_target() {
     if [[ -z "${seen_yamls[${target}]:-}" ]]; then
       seen_yamls["${target}"]=1
       total_runs=$((total_runs + 1))
-      run_yaml "${target}"
+      run_yaml_and_record "${target}"
     fi
     return
   fi
@@ -334,13 +388,13 @@ collect_and_run_from_target() {
         [[ -n "${seen_yamls[${yaml_file}]:-}" ]] && continue
         seen_yamls["${yaml_file}"]=1
         total_runs=$((total_runs + 1))
-        run_yaml "${yaml_file}"
+        run_yaml_and_record "${yaml_file}"
       done < <(find "${match}" -type f -name "*.yaml" -print0 | sort -z)
     elif [[ -f "${match}" && "${match}" == *.yaml ]]; then
       [[ -n "${seen_yamls[${match}]:-}" ]] && continue
       seen_yamls["${match}"]=1
       total_runs=$((total_runs + 1))
-      run_yaml "${match}"
+      run_yaml_and_record "${match}"
     fi
   done
 }
@@ -377,6 +431,11 @@ if [[ "${TASK_TYPE}" == "yaml" ]]; then
 
   if [[ ${total_runs} -eq 0 ]]; then
     echo "No YAML files were selected by list files." >&2
+    exit 1
+  fi
+  print_yaml_summary
+  if [[ ${failed_runs} -gt 0 ]]; then
+    echo "Batch run complete with failures."
     exit 1
   fi
   echo "Batch run complete. Total YAML runs: ${total_runs}"
