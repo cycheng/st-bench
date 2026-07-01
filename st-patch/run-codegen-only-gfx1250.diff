@@ -1,8 +1,8 @@
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-index 7d396d9c3f..463f24a7cd 100644
+index ff735233a2..dcf059b9d7 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-@@ -267,11 +267,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+@@ -281,11 +281,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
      Raises:
          Exception if both tools fail to detect ISA.
      """
@@ -16,7 +16,7 @@ index 7d396d9c3f..463f24a7cd 100644
  class ArchInfo(NamedTuple):
      Name: str
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index b351023d6d..39a16262e5 100644
+index cbf790d9a7..ef99dbb14f 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 @@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
@@ -28,3 +28,93 @@ index b351023d6d..39a16262e5 100644
  )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
+index f0a8d12689..d7d92ae9ce 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
++++ b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
+@@ -161,35 +161,35 @@ __device__ char
+     llvm_amdgcn_raw_buffer_load_i8(int32x4_t buffer_resource,
+                                    uint32_t  voffset,
+                                    uint32_t  soffset,
+-                                   int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.i8");
++                                   int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.i8.v4i32");
+ 
+ // 2 bytes
+ __device__ float16_t
+     llvm_amdgcn_raw_buffer_load_f16(int32x4_t buffer_resource,
+                                     uint32_t  voffset,
+                                     uint32_t  soffset,
+-                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f16");
++                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f16.v4i32");
+ 
+ // 4 bytes
+ __device__ float32_t
+     llvm_amdgcn_raw_buffer_load_f32(int32x4_t buffer_resource,
+                                     uint32_t  voffset,
+                                     uint32_t  soffset,
+-                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f32");
++                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f32.v4i32");
+ 
+ // 8 bytes
+ __device__ float32x2_t
+     llvm_amdgcn_raw_buffer_load_f32x2(int32x4_t buffer_resource,
+                                       uint32_t  voffset,
+                                       uint32_t  soffset,
+-                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v2f32");
++                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v2f32.v4i32");
+ 
+ // 16 bytes
+ __device__ float32x4_t
+     llvm_amdgcn_raw_buffer_load_f32x4(int32x4_t buffer_resource,
+                                       uint32_t  voffset,
+                                       uint32_t  soffset,
+-                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v4f32");
++                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v4f32.v4i32");
+ 
+ // 4 bytes
+ __device__ int32_t
+@@ -219,7 +219,7 @@ __device__ void
+                                     int32x4_t buffer_resource,
+                                     uint32_t  voffset,
+                                     uint32_t  soffset,
+-                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.i8");
++                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.i8.v4i32");
+ 
+ // 2 bytes
+ __device__ void
+@@ -227,7 +227,7 @@ __device__ void
+                                      int32x4_t buffer_resource,
+                                      uint32_t  voffset,
+                                      uint32_t  soffset,
+-                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f16");
++                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f16.v4i32");
+ 
+ // 4 bytes
+ __device__ void
+@@ -235,7 +235,7 @@ __device__ void
+                                      int32x4_t buffer_resource,
+                                      uint32_t  voffset,
+                                      uint32_t  soffset,
+-                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f32");
++                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f32.v4i32");
+ 
+ // 8 bytes
+ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
+@@ -243,7 +243,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
+     int32x4_t   buffer_resource,
+     uint32_t    voffset,
+     uint32_t    soffset,
+-    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v2f32");
++    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v2f32.v4i32");
+ 
+ // 16 bytes
+ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
+@@ -251,7 +251,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
+     int32x4_t   buffer_resource,
+     uint32_t    voffset,
+     uint32_t    soffset,
+-    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v4f32");
++    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v4f32.v4i32");
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
