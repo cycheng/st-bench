@@ -30,7 +30,6 @@ GlobalParameters:
   PrintLevel: 2
   UseGPUTimer: False
   MaxLDS: 327680
-  DeviceLDS: 327680
   SkipSlowSolutionRatio: 0.8
 
 
