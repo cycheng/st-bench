@@ -1,0 +1,368 @@
+DEPRECATED: Tensile.sh will be removed in a future release.
+Run directly: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/Tensile/bin/Tensile /data1/cycheng2/tickets/st-codegen-test/examples/1024vgpr_tn.yaml 1024vgpr_tn.out --build-only --prebuilt-client=/data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/client/tensilelite-client
+-- ROCmCMakeBuildTools not found. Fetching from source...
+-- Added ROCm CMake modules path: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/_deps/rocm-cmake-src/share/rocmcmakebuildtools/cmake
+-- Enable mxDataGenerator for MX format data generation: ON
+-- Building for GPU targets: gfx1250
+-- Found OpenMP_C: -fopenmp=libomp (found version "5.1") 
+-- Found OpenMP_CXX: -fopenmp=libomp (found version "5.1") 
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- Could NOT find CURL (missing: CURL_LIBRARY CURL_INCLUDE_DIR) 
+-- ROCmCMakeBuildTools not found. Fetching from source...
+-- Found OpenMP_C: -fopenmp=libomp (found version "5.1") 
+-- Found OpenMP_CXX: -fopenmp=libomp (found version "5.1") 
+CMake Warning at /data1/cycheng2/rocm-libraries/shared/stinkytofu/CMakeLists.txt:23 (message):
+  ROCmCMakeBuildTools not found — version TWEAK (git hash) will be empty.
+
+
+-- StinkyTofu version: 0.1.0 ()
+-- Using archs: Gfx1250
+-- Python module build disabled (STINKYTOFU_BUILD_PYTHON=OFF) - skipping Python tests
+--   - Registered 70 FileCheck tests
+-- Found clang-tidy version 20 at /usr/bin/clang-tidy-20 -- Ubuntu LLVM version 20.1.2
+  Optimized build.
+-- Found run-clang-tidy at /usr/bin/run-clang-tidy-20
+-- Script created: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/TensileMergeLibrary.sh. Please run the Tensile bin command as usual under the build folder.
+-- Configuring done (1.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450
+[  1%] Built target hipblaslt-mxdatagen
+[  2%] Building CXX object tensilelite/rocisa/stinkytofu/tools/tablegen/CMakeFiles/tablegen_inst_gen.dir/GenInstructions.cpp.o
+[  7%] Built target origami
+[ 13%] Built target nanobind-static
+[ 23%] Built target tensilelite-host
+[ 33%] Built target tensilelite-client-common
+[ 35%] Built target tensilelite-client
+[ 35%] Built target cpu-gemm-driver
+[ 35%] Linking CXX executable tablegen_inst_gen
+[ 35%] Built target tablegen_inst_gen
+[ 35%] Generating instruction metadata and ISA from .def files...
+Gfx1250Formats.def: parsed 53 formats
+Gfx1250Instructions.def: parsed 551 instructions
+Successfully generated instruction metadata and ISA for all archs
+[ 35%] Generate instruction metadata from .def files
+[ 35%] Built target instruction_generated
+[ 35%] Building CXX object tensilelite/rocisa/stinkytofu/hardware/CMakeFiles/gfxisa.dir/src/gfx/GpuArchManager.cpp.o
+[ 36%] Building CXX object tensilelite/rocisa/stinkytofu/hardware/CMakeFiles/gfxisa.dir/src/gfx/InstDefDSL.cpp.o
+[ 36%] Building CXX object tensilelite/rocisa/stinkytofu/hardware/CMakeFiles/gfxisa.dir/src/gfx/Gfx1250/Gfx1250.cpp.o
+[ 36%] Building CXX object tensilelite/rocisa/stinkytofu/hardware/CMakeFiles/gfxisa.dir/generated/GfxArchDefines.cpp.o
+[ 38%] Building CXX object tensilelite/rocisa/stinkytofu/hardware/CMakeFiles/gfxisa.dir/generated/GfxLogicalMaps.cpp.o
+[ 38%] Linking CXX static library libgfxisa.a
+[ 38%] Built target gfxisa
+[ 39%] Building CXX object tensilelite/rocisa/stinkytofu/tools/tablegen/CMakeFiles/tablegen.dir/tablegen.cpp.o
+[ 39%] Building CXX object tensilelite/rocisa/stinkytofu/tools/tablegen/CMakeFiles/tablegen.dir/GenInstructions.cpp.o
+[ 39%] Building CXX object tensilelite/rocisa/stinkytofu/tools/tablegen/CMakeFiles/tablegen.dir/GenRocisaHwMapping.cpp.o
+[ 39%] Building CXX object tensilelite/rocisa/stinkytofu/tools/tablegen/CMakeFiles/tablegen.dir/GenLogicalToAsmMapping.cpp.o
+[ 39%] Linking CXX executable tablegen
+[ 42%] Built target tablegen
+[ 42%] Generating ISA definitions, IR classes, and pattern matchers with tablegen...
+Generating Rocisa mappings for Gfx1250 in "/data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/rocisa/stinkytofu/stinkytofu/ir/rocisa/RocisaGfx1250Mappings.inc"
+Generating Logical IR -> ASM mappings in "/data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/rocisa/stinkytofu/stinkytofu/ir/LogicalToAsmMappings_generated.inc"
+Parsing patterns from: /data1/cycheng2/rocm-libraries/shared/stinkytofu/tools/tablegen/../../hardware/../src/transforms/asm/PeepholePatterns.pattern
+Found 12 pattern(s)
+Generated 12 pattern matchers: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/rocisa/stinkytofu/PeepholePatterns.inc
+Parsing patterns from: /data1/cycheng2/rocm-libraries/shared/stinkytofu/tools/tablegen/../../hardware/../src/transforms/logical/LogicalIRPatterns.pattern
+Found 12 pattern(s)
+Generated 12 pattern matchers: /data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/rocisa/stinkytofu/LogicalIRPatterns.inc
+
+=== Generating High-Level IR ===
+Generated 274 opcode enum values -> LogicalOpcodes_generated.inc
+Generated opcode mapping functions -> LogicalOpcode.cpp
+Generated 274 LogicalInstruction factory functions + 5 special instruction factories (MFMA/MXMFMA/SMFMA/Label/IntrinsicCall) -> LogicalInstructions_generated.hpp
+Generated Python bindings for 274 IR instructions -> PythonBindings_generated.inc
+=== High-Level IR generation completed successfully ===
+
+[ 44%] Generate all tablegen outputs
+[ 44%] Built target tablegen_generated
+[ 45%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/stinkytofu/ir/logical/LogicalOpcode.cpp.o
+[ 47%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/core/BasicBlock.cpp.o
+[ 48%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/core/PassManager.cpp.o
+[ 47%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/core/Function.cpp.o
+[ 48%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/core/DebugPrintInstrumentation.cpp.o
+[ 48%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/bindings/python/LogicalModule.cpp.o
+[ 51%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/logical/LogicalOpcode.cpp.o
+[ 51%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/bindings/python/Module.cpp.o
+[ 51%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/DumpStinkyFunctionPass.cpp.o
+[ 51%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/logical/LogicalToFunctionConverter.cpp.o
+[ 52%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/logical/IntrinsicPatternConverter.cpp.o
+[ 52%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/asm/AsmSetSymbolMap.cpp.o
+[ 52%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/asm/StinkyAsmIR.cpp.o
+[ 54%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/asm/StinkyModifiers.cpp.o
+[ 54%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/ir/asm/StinkySignature.cpp.o
+[ 54%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/logical/CompositeInstructionLoweringPass.cpp.o
+[ 54%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/logical/IntrinsicExpansionPass.cpp.o
+[ 55%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/logical/ToStinkyAsmPass.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/InstructionSizeCosting.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/SwPrefetchInsertionPass.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/CFGBuilderPass.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/logical/LogicalPeepholePass.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/AccumulateInstructionSizePass.cpp.o
+[ 57%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/BuildDefUseChain.cpp.o
+[ 58%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/PhiPlacement.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/LongBranchLoweringPass.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RedundantMovEliminationPass.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/DeadCodeEliminationPass.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/PeepholeOptimizationPass.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/LegalizationUtils.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyDAGSchedulerPass.cpp.o
+[ 61%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/waitcnt/WaitDataflow.cpp.o
+[ 63%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/SetMatrixReusePass.cpp.o
+[ 63%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyWaitCntInsertionPass.cpp.o
+[ 64%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/waitcnt/ShallowPredPromotion.cpp.o
+[ 66%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyBuildImplicitDependencyPass.cpp.o
+[ 66%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyRemoveWaitCntPass.cpp.o
+[ 66%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyRemoveNopPass.cpp.o
+[ 67%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/InsertVgprMsbPass.cpp.o
+[ 67%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/MemTokenConsistencyCheckPass.cpp.o
+[ 67%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RegionClonePass.cpp.o
+[ 67%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RaiseVgprMsbPass.cpp.o
+[ 67%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/InsertClusterBarrierPass.cpp.o
+[ 69%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RemoveDelayAluPass.cpp.o
+[ 69%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RemoveWaitAluPass.cpp.o
+[ 69%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RemoveInstructionPass.cpp.o
+[ 69%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/InsertWaitAluPass.cpp.o
+[ 69%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/InsertDelayAluPass.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/LoopRegionRemarkPass.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/StinkyWmmaVgprReorderPass.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/pipeline/backend/Backend.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/IRParser.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/pipeline/backend/BackendRegistry.cpp.o
+[ 70%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/StinkyAsmPrinter.cpp.o
+[ 72%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/RederiveExpertScopePass.cpp.o
+[ 72%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/transforms/asm/EstimateAsmCyclesPass.cpp.o
+[ 73%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/pipeline/PassBuilder.cpp.o
+[ 76%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/StinkyAsmEmitter.cpp.o
+[ 76%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/pipeline/backend/Gfx1250Backend.cpp.o
+[ 76%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/ModifierSerializer.cpp.o
+[ 79%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/RawAsmParser.cpp.o
+[ 79%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/serialization/asm/IRConverter.cpp.o
+[ 79%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/analysis/controlflow/Dominance.cpp.o
+[ 80%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/analysis/asm/AsmVerifierPass.cpp.o
+[ 80%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/analysis/logical/IRVerifierPass.cpp.o
+[ 82%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/hardware/HwReg.cpp.o
+[ 82%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/hardware/ArchHelper.cpp.o
+[ 82%] Building CXX object tensilelite/rocisa/stinkytofu/CMakeFiles/stinkytofu_objs.dir/src/hardware/ToolchainCaps.cpp.o
+[ 82%] Built target stinkytofu_objs
+[ 83%] Linking CXX shared library libstinkytofu.so
+[ 83%] Built target stinkytofu
+[ 83%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/main.cpp.o
+[ 85%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/code.cpp.o
+[ 85%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/container.cpp.o
+[ 85%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/count.cpp.o
+[ 86%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/register.cpp.o
+[ 86%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/macro.cpp.o
+[ 88%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/instruction/extension.cpp.o
+[ 88%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/instruction/branch.cpp.o
+[ 88%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/pass.cpp.o
+[ 89%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/graph.cpp.o
+[ 89%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/insert_delay_alu.cpp.o
+[ 91%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/composite.cpp.o
+[ 91%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/remove.cpp.o
+[ 91%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/cycle.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/functions/f_math.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/functions/argument.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/pass/macro_inline.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/functions/functions.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/data1/cycheng2/rocm-libraries/shared/stinkytofu/src/conversion/rocisa/AllHwMappings.cpp.o
+[ 92%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/functions/f_branch.cpp.o
+[ 94%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/data1/cycheng2/rocm-libraries/shared/stinkytofu/src/conversion/rocisa/ToStinkyTofuUtils.cpp.o
+[ 94%] Building CXX object tensilelite/rocisa/CMakeFiles/_rocisa.dir/rocisa/src/functions/f_cast.cpp.o
+/data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/rocisa/rocisa/src/count.cpp:149:34: warning: expression with side effects will be evaluated despite being used as an operand to 'typeid' [-Wpotentially-evaluated-expression]
+  149 |         const auto& tid = typeid(*item);
+      |                                  ^
+1 warning generated.
+[ 95%] Linking CXX shared module rocisa/_rocisa.cpython-312-x86_64-linux-gnu.so
+[100%] Built target _rocisa
+
+################################################################################
+#
+#  Tensile v5.0.0
+#  OutputPath: /data1/cycheng2/tickets/st-codegen-test/1024vgpr_tn.out
+#  Config: /data1/cycheng2/tickets/st-codegen-test/examples/1024vgpr_tn.yaml
+#  Date & Time: 02/07/2026 04:23:12
+#
+################################################################################
+
+# Restoring default globalParameters
+# Code Object Version: 4
+Tensile::WARNING: HardwareMonitor currently disabled for gfx950 and gfx1250
+Capability                  gfx1250
+HasMFMA_bf16_1k             -      
+HasWMMA_AccImmZero          1      
+HasAddLshl                  1      
+HasAtomicAdd                1      
+HasBF16CVT                  1      
+HasClusterBarrier           1      
+HasCvtFP8toF16              1      
+HasCvtScalePk8Bf8F32        1      
+HasCvtScalePk8Fp8F32        1      
+HasDLCModifier              -      
+HasDirectToLds              -      
+HasDirectToLdsx4            -      
+HasExplicitCO               1      
+HasExplicitNC               1      
+HasGLCModifier              -      
+HasGLTr16B128               -      
+HasGLTr8B64                 -      
+HasGlobalPrefetch           1      
+HasLDSTr                    1      
+HasLDSTrB128B16             1      
+HasLDSTrB64B16              -      
+HasLDSTrB64B4               1      
+HasLDSTrB64B8               1      
+HasLDSTrB96B6               1      
+HasLshlOr                   1      
+HasMFMA                     -      
+HasMUBUFConst               -      
+HasMovRelsD2B32             1      
+HasNTModifier               -      
+HasNVModifier               1      
+HasNewBarrier               1      
+HasPartialOOB               -      
+HasPkF16CVT                 1      
+HasSAtomic                  -      
+HasSC0Modifier              -      
+HasSCMPK                    -      
+HasSCOPEModifier            1      
+HasSMFMA                    -      
+HasSMulHi                   1      
+HasSWMMAC                   1      
+HasScalarStore              -      
+HasScaleSRPk8Cvt            1      
+HasTDM                      1      
+HasTHModifier               1      
+HasVgprMSB                  1      
+HasVgprMSB16                1      
+HasWMMA                     1      
+HasXcnt                     1      
+MaxDscnt                    1      
+MaxKmcnt                    1      
+MaxLoadcnt                  1      
+MaxStorecnt                 1      
+MaxXcnt                     1      
+SeparateLGKMcnt             1      
+SeparateVMcnt               1      
+SeparateVscnt               -      
+ShortBranchMaxLength        1      
+SupportedISA                1      
+SupportedSource             1      
+HasWMMA_V1                  -      
+HasWMMA_V2                  -      
+HasWMMA_V3                  1      
+s_delay_alu                 1      
+v_prng_b32                  1      
+v_mov_b64                   1      
+HasMFMA_b8                  -      
+v_dot2_f32_bf16             -      
+v_dot2c_f32_bf16            -      
+HasMFMA_explictB            -      
+Hascvtfp8_f16               -      
+v_dot2_f32_f16              -      
+v_dot2c_f32_f16             -      
+v_fma_f16                   1      
+v_fmac_f16                  -      
+v_mac_f16                   -      
+v_pk_fma_f16                1      
+v_pk_fmac_f16               -      
+v_dual_fmac_f32             1      
+v_fma_f32                   1      
+v_fma_mix_f32               1      
+v_fmac_f32                  1      
+v_mac_f32                   -      
+v_mad_mix_f32               -      
+v_pk_add_f32                1      
+v_pk_mul_f32                1      
+HasMFMA_f64                 -      
+HasWMMA_V3_f64              -      
+v_fma_f64                   1      
+HasMFMA_f8                  -      
+HasMFMA_f8f6f4              -      
+HasWMMA_f8f6f4              1      
+HasSWMMAC_gfx1250           1      
+HasAdd_PC_i64               -      
+VOP3v_dot4_i32_i8           1      
+v_dot4_i32_i8               -      
+v_dot4c_i32_i8              -      
+Hascvtf16_fp8_sf32          -      
+s_add_u64                   1      
+s_sub_u64                   1      
+v_add_nc_u64                1      
+HasMFMA_xf32                -      
+ArchAccUnifiedRegs          -      
+CMPXWritesSGPR              -      
+CrosslaneWait               -      
+DSLow16NotPreserve          1      
+DefaultScopeIsCULocal       1      
+DeviceLDS                   1      
+HasAccCD                    -      
+HasEccHalf                  1      
+HasF32XEmulation            1      
+HasFP8_OCP                  1      
+HasInvWbDevFences           1      
+HasMXScaleSwizzle           1      
+HasSchedMode                1      
+HasWave32                   1      
+HasWmmaArbStallBit          1      
+LDSBankCount                1      
+LDSBankWidth                1      
+MaxSgprPreload              1      
+MaxWavesPerSimd             1      
+NoSDWA                      1      
+RequiresXCntForVolatileVMEM 1      
+SDWAWait                    1      
+SgprPreloadPad              -      
+TransOpWait                 1      
+VOP3ByteSel                 1      
+VgprBank                    1      
+Waitcnt0Disabled            -      
+WorkGroupIdFromTTM          1      
+# Found hipcc version 7.2.53150-33030090af
+# Command-line override: CodeObjectVersion
+Overriding CodeObjectVersion=4
+Overriding PrebuiltClient=/data1/cycheng2/rocm-libraries/projects/hipblaslt/tensilelite/new_dbg_build_mi450/tensilelite/client/tensilelite-client
+
+################################################################################
+# Converting Config to BenchmarkProcess Object
+################################################################################
+
+# Filling in Parameters With Defaults
+# Convert Parameters to Benchmark Step(s)
+# Benchmark Final
+# NumBenchmarkSteps: 1
+
+################################################################################
+# Done Creating BenchmarkProcess Object
+################################################################################
+
+
+################################################################################
+# Benchmark Step: Cijk_Alik_Bljk_F6SS_BH_UserArgs_00 - 00_Final 3.679s
+# Num Sizes: 1
+# Factor Dim steps: 0
+# Bias Type steps: 0
+# Activation steps: 0
+# ICacheFlush steps: 1
+# Fork Parameters:
+#     DepthU: [128, 512]
+# Enumerating Solutions (Parallel)
+|/*
+[||||||||||||||||||||||||||||||||||||                                     ]  50%[|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||] 100% (0.0 secs elapsed)
+# Actual Solutions: 2 / 2 after SolutionStructs
+
+[||||||||||||||||||||||||||||||||||||                                     ]  50%[|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||] 100% (0.0 secs elapsed)
+Number of duplicate kernels: 0
+|/*
+|/*
+[||||||||||||||||||||||||||||||||||||                                     ]  50%[|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||] 100% (0.1 secs elapsed)
+buildSourceCodeObjectFile time (s): 0.01  [cache hit]
+# Actual Solutions: 2 / 2 after KernelWriter
+
+# Build-only mode: skipping benchmark.
+################################################################################
+# Cijk_Alik_Bljk_F6SS_BH_UserArgs_00
+# 00_Final: End - 6.872s
+################################################################################
+
+# Build-only mode: skipping result collection.
+
+# Build-only mode: skipping LibraryLogic and LibraryClient.
