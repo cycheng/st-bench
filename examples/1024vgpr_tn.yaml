@@ -6,6 +6,8 @@ GlobalParameters:
   NumElementsToValidate: -1
   Architecture: gfx1250
   PrintSolutionRejectionReason: True
+  StinkyTofuPrintAfterPass: "InsertWaitAluPass"
+  StinkyTofuPrintBeforePass: "InsertWaitAluPass"
 
 BenchmarkProblems:
   #######################################
