@@ -1,8 +1,8 @@
 diff --git a/projects/hipblaslt/clients/CMakeLists.txt b/projects/hipblaslt/clients/CMakeLists.txt
-index 1caeef7919..81c7d1b665 100755
+index a47a1600c76..5e4aa25f746 100755
 --- a/projects/hipblaslt/clients/CMakeLists.txt
 +++ b/projects/hipblaslt/clients/CMakeLists.txt
-@@ -114,7 +114,23 @@ if(HIPBLASLT_ENABLE_YAML)
+@@ -127,7 +127,23 @@ if(HIPBLASLT_ENABLE_YAML)
      target_include_directories(hipblaslt-sequence PRIVATE ${LLVM_INCLUDE_DIRS})
  endif()
  if(BUILD_TESTING OR HIPBLASLT_BUILD_TESTING)
@@ -22,12 +22,12 @@ index 1caeef7919..81c7d1b665 100755
 +        IMPORTED_LOCATION_RELEASE "${_gtest_location}"
 +        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
 +        IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
-+    )    
++    )
      add_executable(hipblaslt-test)
      if(amd_smi_FOUND)
          target_link_libraries(hipblaslt-test PRIVATE amd_smi)
 diff --git a/projects/hipblaslt/tasks.py b/projects/hipblaslt/tasks.py
-index 941c357d71..427a8b3232 100644
+index 317aee1f02c..ac4eb9699fc 100644
 --- a/projects/hipblaslt/tasks.py
 +++ b/projects/hipblaslt/tasks.py
 @@ -475,7 +475,10 @@ def build(
@@ -38,7 +38,7 @@ index 941c357d71..427a8b3232 100644
 +        #f"-DCMAKE_PREFIX_PATH={deps_prefix.as_posix()}",
 +        # "-DCMAKE_MAP_IMPORTED_CONFIG_RELEASE=NOCONFIG",
 +        # "-DCMAKE_MAP_IMPORTED_CONFIG_DEBUG=NOCONFIG",
-+        #"-DCMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO=NOCONFIG",        
++        #"-DCMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO=NOCONFIG",
          "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
          "-DMSGPACK_USE_BOOST=OFF",
      ]
@@ -51,7 +51,7 @@ index 941c357d71..427a8b3232 100644
  
      if relocatable:
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index a91d0d0db9..d8aa26cd8d 100644
+index d6517a2763b..57d3e92bbb3 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 @@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
@@ -64,23 +64,23 @@ index a91d0d0db9..d8aa26cd8d 100644
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
 diff --git a/projects/hipblaslt/tensilelite/Tensile/SolutionStructs/Solution.py b/projects/hipblaslt/tensilelite/Tensile/SolutionStructs/Solution.py
-index 56a5e381a1..d36ce359d9 100644
+index d06d896dbfd..1fc0597f2e2 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/SolutionStructs/Solution.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/SolutionStructs/Solution.py
-@@ -975,7 +975,7 @@ class Solution(collections.abc.Mapping):
-     state["Multicast"] = False
-     state["ClusterBarrier"] = False
-     if state["ClusterDim"] != [1, 1]:
+@@ -1028,7 +1028,7 @@ class Solution(collections.abc.Mapping):
+     # each WG's tile per iteration, so the broadcast would target the wrong partner.
+     # Keep the cluster WG-id decode (gated on ClusterDim) but leave multicast off for Stream-K.
+     if state["ClusterDim"] != [1, 1] and state["StreamK"] == 0:
 -      state["Multicast"] = True
 +      state["Multicast"] = False
        # ClusterBarrier emits SCmp/branch on sgpr("WaveIdx"), which is only allocated when TDM is enabled.
        if state["TDMInst"] != 0 and isaInfoMap[state["ISA"]].asmCaps.get("HasClusterBarrier", False):
          state["ClusterBarrier"] = True
 diff --git a/projects/hipblaslt/tensilelite/rocisa/rocisa/include/hardware_caps.hpp b/projects/hipblaslt/tensilelite/rocisa/rocisa/include/hardware_caps.hpp
-index 4a52d1435a..b6a1410fc8 100644
+index a6d5f122e51..1ab4997a744 100644
 --- a/projects/hipblaslt/tensilelite/rocisa/rocisa/include/hardware_caps.hpp
 +++ b/projects/hipblaslt/tensilelite/rocisa/rocisa/include/hardware_caps.hpp
-@@ -574,7 +574,7 @@ inline std::map<std::string, int> initArchCaps(const IsaVersion& isaVersion)
+@@ -579,7 +579,7 @@ inline std::map<std::string, int> initArchCaps(const IsaVersion& isaVersion)
      rv["HasFP8_OCP"]         = isaVersion[0] == 12;
      rv["HasWmmaArbStallBit"] = isaVersion[0] == 12 && isaVersion[1] == 5;
      rv["HasF32XEmulation"]   = checkInList(isaVersion, {{9, 5, 0}, {12, 5, 0}});
@@ -90,7 +90,7 @@ index 4a52d1435a..b6a1410fc8 100644
  
      // True on archs whose MFMA-scale path can consume a swizzled MX scale
 diff --git a/shared/stinkytofu/python_module/src/HardwareCaps.cpp b/shared/stinkytofu/python_module/src/HardwareCaps.cpp
-index d7ce8af991..166ad09a18 100644
+index 52f74a25485..44d630ebbf4 100644
 --- a/shared/stinkytofu/python_module/src/HardwareCaps.cpp
 +++ b/shared/stinkytofu/python_module/src/HardwareCaps.cpp
 @@ -262,7 +262,7 @@ std::map<std::string, int> initArchCaps(const IsaVersion& v) {
