@@ -11,8 +11,8 @@ index c19f92875f2..e1922fda492 100644
 -        raise Exception("Failed to detect currect ISA")
 -    return result
 +    return IsaVersion(12, 5, 0)
-
-
+ 
+ 
  def detectHostGfxArchs() -> List[str]:
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 index d6517a2763b..2cc663b8e1b 100644
@@ -27,17 +27,119 @@ index d6517a2763b..2cc663b8e1b 100644
  )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
+diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+index 01aa1c7226d..03c51d4df53 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+@@ -923,7 +923,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           macItems = []
+         iterCode.add(pointerLWCode)
+         iterCode.add(pointerLRCode)
+-        if kernel["PrefetchGlobalRead"] >= 2: 
++        if kernel["PrefetchGlobalRead"] >= 2:
+           iterCode.add(globalReadCode)
+         # add rest of the mac here
+         iterCode.addItems(macItems)
+@@ -4258,7 +4258,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+       self.codes.gl2PrefetchIncrement.add(self.gl2PrefetchIncrementAddr(kernel, tensorParametersA, tensorParametersB))
+       self.codes.gl2Prefetch = Module()
+       self.codes.gl2Prefetch.add(self.gl2PrefetchIssueLoad(kernel, tensorParametersA, tensorParametersB))
+-      
++
+ 
+     if not kernel["NoLdsWriteCode"]:
+       self.codes.localWriteA = self.localWriteDo(kernel, tensorParametersA)
+@@ -6748,13 +6748,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           st_path = f"cmpasm/st/{base_name}_{suffix}.s"
+           suffix += 1
+ 
+-        t_str_start = time.perf_counter()
+-        orig_asm_str = str(moduleKernelBody)
+-        t_str_end = time.perf_counter()
+-        print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
++        # t_str_start = time.perf_counter()
++        # orig_asm_str = str(moduleKernelBody)
++        # t_str_end = time.perf_counter()
++        # print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
+ 
+-        with open(orig_path, "w") as f:
+-          f.write(orig_asm_str)
++        # with open(orig_path, "w") as f:
++        #   f.write(orig_asm_str)
+         with open(st_path, "w") as f:
+           f.write(st_asm)
+ 
+@@ -6943,7 +6943,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+        disableStaggerForMxPap or \
+        kernel["UseSubtileImpl"]:
+       self.states.staggerUCode = False
+-    
++
+     self.states.tailloopInNllmaxUnit = 1
+     if self.states.tailloopInNll:
+       tluA = kernel["ProblemType"]["TLUA"]
+@@ -9015,7 +9015,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+         vgprIdx += 1
+         self.states.b.tmpVgprCvtSub = vgprIdx
+         vgprIdx += 1
+-  
++
+       if kernel["PrefetchGL2"]:
+         vgprIdx = int((vgprIdx + 1) / 2) * 2
+         self.states.a.startVgprGL2PrefetchAddr = vgprIdx
+@@ -9027,7 +9027,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           vgprIdx += tensorParametersA["MX"]["gl2nl"] * self.states.rpga
+         if kernel["ProblemType"]["MXBlockB"]:
+           self.states.mxsb.startVgprGL2PrefetchAddr = vgprIdx
+-          vgprIdx += tensorParametersB["MX"]["gl2nl"] * self.states.rpga      
++          vgprIdx += tensorParametersB["MX"]["gl2nl"] * self.states.rpga
+ 
+       # TODO: Serial is always the first/last register in the pool so the store
+       # code doesn't have to deal with fragmentation
+@@ -9041,7 +9041,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+       agprLimit = self.states.regCaps["PhysicalMaxVgpr"] - self.states.regCaps["MaxVgpr"]
+       if self.states.totalAgprs > agprLimit:
+         raise RuntimeError("Generating asm kernel error: total agpr: %u not in [0, %u].\n" % (self.states.totalAgprs, agprLimit) )
+-  
++
+       # VGPR alloc marker
+ 
+ 
+@@ -10955,19 +10955,19 @@ class KernelWriter(metaclass=abc.ABCMeta):
+ 
+   def tdmSetupIncrementWaveSeparated(self, kernel, tPA, tPB) -> Module:
+     assert False, "Should be overrided"
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchInit(self, kernel, tPA, tPB):
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchCalcAddr(self, kernel, tPA, tPB) -> Module:
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchIssueLoad(self, kernel, tPA, tPB) -> Module:
+     return ""
+-  
++
+   @abc.abstractmethod
+   def gl2PrefetchIncrementAddr(self, kernel, tPA, tPB) -> Module:
+     return ""
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-index f0a8d12689..d7d92ae9ce 100644
+index beeb90043b0..dcbf4d87d17 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
 +++ b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-@@ -161,35 +161,35 @@ __device__ char
+@@ -170,35 +170,35 @@ __device__ char
      llvm_amdgcn_raw_buffer_load_i8(int32x4_t buffer_resource,
                                     uint32_t  voffset,
                                     uint32_t  soffset,
 -                                   int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.i8");
 +                                   int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.i8.v4i32");
-
+ 
  // 2 bytes
  __device__ float16_t
      llvm_amdgcn_raw_buffer_load_f16(int32x4_t buffer_resource,
@@ -45,7 +147,7 @@ index f0a8d12689..d7d92ae9ce 100644
                                      uint32_t  soffset,
 -                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f16");
 +                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f16.v4i32");
-
+ 
  // 4 bytes
  __device__ float32_t
      llvm_amdgcn_raw_buffer_load_f32(int32x4_t buffer_resource,
@@ -53,7 +155,7 @@ index f0a8d12689..d7d92ae9ce 100644
                                      uint32_t  soffset,
 -                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f32");
 +                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.load.f32.v4i32");
-
+ 
  // 8 bytes
  __device__ float32x2_t
      llvm_amdgcn_raw_buffer_load_f32x2(int32x4_t buffer_resource,
@@ -61,7 +163,7 @@ index f0a8d12689..d7d92ae9ce 100644
                                        uint32_t  soffset,
 -                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v2f32");
 +                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v2f32.v4i32");
-
+ 
  // 16 bytes
  __device__ float32x4_t
      llvm_amdgcn_raw_buffer_load_f32x4(int32x4_t buffer_resource,
@@ -69,51 +171,51 @@ index f0a8d12689..d7d92ae9ce 100644
                                        uint32_t  soffset,
 -                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v4f32");
 +                                      int32_t cache_op) __asm("llvm.amdgcn.raw.buffer.load.v4f32.v4i32");
-
+ 
  // 4 bytes
  __device__ int32_t
-@@ -219,7 +219,7 @@ __device__ void
+@@ -228,7 +228,7 @@ __device__ void
                                      int32x4_t buffer_resource,
                                      uint32_t  voffset,
                                      uint32_t  soffset,
 -                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.i8");
 +                                    int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.i8.v4i32");
-
+ 
  // 2 bytes
  __device__ void
-@@ -227,7 +227,7 @@ __device__ void
+@@ -236,7 +236,7 @@ __device__ void
                                       int32x4_t buffer_resource,
                                       uint32_t  voffset,
                                       uint32_t  soffset,
 -                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f16");
 +                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f16.v4i32");
-
+ 
  // 4 bytes
  __device__ void
-@@ -235,7 +235,7 @@ __device__ void
+@@ -244,7 +244,7 @@ __device__ void
                                       int32x4_t buffer_resource,
                                       uint32_t  voffset,
                                       uint32_t  soffset,
 -                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f32");
 +                                     int32_t   cache_op) __asm("llvm.amdgcn.raw.buffer.store.f32.v4i32");
-
+ 
  // 8 bytes
  __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
-@@ -243,7 +243,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
+@@ -252,7 +252,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
      int32x4_t   buffer_resource,
      uint32_t    voffset,
      uint32_t    soffset,
 -    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v2f32");
 +    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v2f32.v4i32");
-
+ 
  // 16 bytes
  __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
-@@ -251,7 +251,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
+@@ -260,7 +260,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
      int32x4_t   buffer_resource,
      uint32_t    voffset,
      uint32_t    soffset,
 -    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v4f32");
 +    int32_t     cache_op) __asm("llvm.amdgcn.raw.buffer.store.v4f32.v4i32");
-
+ 
  ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+ 
