@@ -1,0 +1,17 @@
+# for PR9540 https://github.com/ROCm/rocm-libraries/pull/9540
+# or branch: users/cycheng2/teach-st-xcnt-drain
+
+# Below is streamK reviewer's comments.
+
+`addRequiredXcntDrains` only re-emits `s_wait_xcnt 0` before ops matched by `isVolatileVmemAtomic` (MUBUF/FLAT/GLOBAL atomics). That is narrower than StreamK's actual policy ("drain before volatile VMEM", not just atomics), so correctness today rests on an implicit, unenforced region invariant rather than on this predicate. I verified the mechanics in generated gfx1250 assembly (dynamic-StreamK SGEMM, built `stinkytofu-opt` on both develop and this PR head).
+
+- Empirically, the one in-region volatile-VMEM site is the dynamic work-queue atomic `global_atomic_inc_u32`. Pre-PR develop with the ST pass ON strips its hand-written `s_wait_xcnt` and never regenerates it (a real latent dropped-drain bug); this PR restores it tightly immediately before the atomic. So the PR also fixes a pre-existing dropped-drain, and that site is covered precisely because it is an atomic.
+
+- The 2 non-atomic volatile flag ops — `buffer_store_b32` (partial-tile release) and `buffer_load_b32` (acquire/poll) — retain their `s_wait_xcnt` in every build I generated (pass on/off, develop/PR) only because they sit in the epilogue, OUTSIDE the `{loopWithPrefetch, noLoadLoopBody}` region this pass processes. They are `IF_MUBUFStore`/`IF_MUBUFLoad`, so `isVolatileVmemAtomic` excludes them; region scoping, not the predicate, is the guardrail.
+
+- The gap is silent and I reproduced it: a crafted in-region non-atomic flag store has its hand-written drain stripped by `StinkyRemoveWaitCntPass` and NOT regenerated. If any volatile-VMEM flag op ever moves into the covered region (in-loop variant, or code pulled into `noLoadLoopBody`), XNACK-replay reordering around the partial-tile release/acquire handshake -> cross-workgroup data race. The added FileCheck (`buffer_store_b32` -> `CHECK-NOT: s_wait_xcnt`) codifies this hole.
+
+- Recommendation: broaden the predicate from "volatile VMEM atomics" to true "volatile VMEM" (atomics plus glc/dlc/dev-scope buffer/flat/global load/store), decoupling correctness from the region invariant. Beyond that, the current tests only cover the in-region atomic path; add positive-regression coverage for the out-of-region non-atomic sites so a refactor that pulls them in-region or drops their drain is caught:
+  - Add an end-to-end TensileLite StreamK gfx1250 codegen regression (golden `.s` / FileCheck via the Tensile path) asserting `s_wait_xcnt` is present before ALL 5 sites — the 3 RMW atomics AND the 2 non-atomic flag ops (`buffer_store_b32` release, `buffer_load_b32` acquire) — so the invariant that these flag ops stay out-of-region and keep their drains is actually guarded, not assumed.
+  - Add a guard/assert encoding the invariant directly: fail if a volatile-VMEM op requiring an xcnt drain appears inside a processed region without a regenerated drain (an in-region assert/XFAIL for a volatile non-atomic store/load).
+  - Reconcile the PR's own unit FileCheck (`buffer_store_b32` -> `CHECK-NOT: s_wait_xcnt`): it currently asserts the opposite of what StreamK needs should that op ever be in-region. Scope it explicitly to the out-of-region/no-drain-required case (or flip it once the predicate is broadened) so the two tests don't encode contradictory invariants.
