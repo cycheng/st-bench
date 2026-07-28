@@ -79,6 +79,34 @@ parse_bool() {
   esac
 }
 
+git_commit_id_for_path() {
+  local path="$1"
+  local dir
+
+  if [[ -d "${path}" ]]; then
+    dir="${path}"
+  else
+    dir="$(dirname -- "${path}")"
+  fi
+
+  git -C "${dir}" rev-parse HEAD 2>/dev/null || true
+}
+
+detect_git_commit_id() {
+  local commit_id=""
+  local candidate
+
+  for candidate in "${ABS_YAML}" "${WORKDIR}" "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"; do
+    commit_id="$(git_commit_id_for_path "${candidate}")"
+    if [[ -n "${commit_id}" ]]; then
+      echo "${commit_id}"
+      return
+    fi
+  done
+
+  echo "unknown"
+}
+
 parse_config_file() {
   local cfg="$1"
   local line key value
@@ -248,6 +276,7 @@ BASE_NAME="$(basename "${YAML_FILE}" .yaml)"
 ABS_YAML="$(readlink -f "${YAML_FILE}")"
 HOST_OUTPUT_DIR="${OUTPUT_ROOT}/${BASE_NAME}"
 mkdir -p "${HOST_OUTPUT_DIR}"
+GIT_COMMIT_ID="$(detect_git_commit_id)"
 
 RUNTIME_ENV_VARS=()
 for kv in "${EXTRA_ENVS[@]}"; do
@@ -287,11 +316,25 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
   for kv in "${RUNTIME_ENV_VARS[@]}"; do
     DOCKER_ENV_ARGS+=("-e" "${kv}")
   done
-  docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
-    "${TENSILE_ARGS}" 2>&1 \
+  {
+    echo "Git commit: ${GIT_COMMIT_ID}"
+    echo "YAML: ${ABS_YAML}"
+    echo "Execution mode: ${EXECUTION_MODE}"
+    echo "Container: ${CONTAINER_NAME}"
+    echo
+    docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
+      "${TENSILE_ARGS}"
+  } 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 else
-  (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}") 2>&1 \
+  {
+    echo "Git commit: ${GIT_COMMIT_ID}"
+    echo "YAML: ${ABS_YAML}"
+    echo "Execution mode: ${EXECUTION_MODE}"
+    echo "Workdir: ${WORKDIR}"
+    echo
+    (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
+  } 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 fi
 
