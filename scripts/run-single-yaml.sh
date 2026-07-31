@@ -25,6 +25,8 @@ Optional:
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
   --no-build-only        Disable --build-only (default: --build-only is enabled).
   --no-start             Do not auto-start container.
+  --isolate-run-dir      Run inside a private subdir of workdir. Required for
+                         concurrent runs, which otherwise share cmpasm/.out.
   --keep-container-out   Keep <yaml-base>.out in container workdir.
   -h, --help             Show help.
 
@@ -51,6 +53,8 @@ OUTPUT_ROOT="$(pwd)/artifacts"
 AUTO_START=1
 BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
+ISOLATE_RUN_DIR=0
+RUN_DIR=""
 EXTRA_ENVS=()
 ENV_FILES=()
 
@@ -149,6 +153,7 @@ parse_config_file() {
       no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      jobs) : ;;  # accepted for shared config compatibility
       hipblaslt_repo_path) : ;;      # accepted for shared config compatibility
       hipblaslt_install_flags) : ;;  # accepted for shared config compatibility
       hipblaslt_build_type) : ;;     # accepted for shared config compatibility
@@ -221,6 +226,10 @@ while [[ $# -gt 0 ]]; do
       AUTO_START=0
       shift
       ;;
+    --isolate-run-dir)
+      ISOLATE_RUN_DIR=1
+      shift
+      ;;
     --keep-container-out)
       KEEP_CONTAINER_OUT=1
       shift
@@ -278,6 +287,36 @@ HOST_OUTPUT_DIR="${OUTPUT_ROOT}/${BASE_NAME}"
 mkdir -p "${HOST_OUTPUT_DIR}"
 GIT_COMMIT_ID="$(detect_git_commit_id)"
 
+# Tensile writes cmpasm/ and <base>.out relative to its working directory, so
+# concurrent runs must not share one. Everything handed to Tensile below is an
+# absolute path, which lets each run own a private directory instead.
+if [[ ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+  RUN_DIR="${WORKDIR}/.runs/${BASE_NAME}.$$"
+else
+  RUN_DIR="${WORKDIR}"
+fi
+
+runtime_sh() {
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "$1"
+  else
+    (cd "${WORKDIR}" && /bin/bash -lc "$1")
+  fi
+}
+
+remove_run_dir() {
+  [[ ${ISOLATE_RUN_DIR} -eq 1 && -n "${RUN_DIR}" ]] || return 0
+  runtime_sh "rm -rf '${RUN_DIR}'" >/dev/null 2>&1 || true
+}
+
+if [[ ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+  runtime_sh "mkdir -p '${RUN_DIR}'"
+  if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
+    # Also clean up when Tensile fails and set -e aborts the script.
+    trap remove_run_dir EXIT
+  fi
+fi
+
 RUNTIME_ENV_VARS=()
 for kv in "${EXTRA_ENVS[@]}"; do
   RUNTIME_ENV_VARS+=("${kv}")
@@ -295,15 +334,15 @@ for env_file in "${ENV_FILES[@]}"; do
 done
 
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
-  docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
+  docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
 else
-  (cd "${WORKDIR}" && rm -rf "${BASE_NAME}.out" "cmpasm")
+  (cd "${RUN_DIR}" && rm -rf "${BASE_NAME}.out" "cmpasm")
 fi
 
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
   echo "Running ${ABS_YAML} in container ${CONTAINER_NAME}"
 else
-  echo "Running ${ABS_YAML} on host at ${WORKDIR}"
+  echo "Running ${ABS_YAML} on host at ${RUN_DIR}"
 fi
 TENSILE_ARGS="'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out'"
 if [[ ${BUILD_ONLY} -eq 1 ]]; then
@@ -322,7 +361,7 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     echo "Execution mode: ${EXECUTION_MODE}"
     echo "Container: ${CONTAINER_NAME}"
     echo
-    docker exec -w "${WORKDIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
+    docker exec -w "${RUN_DIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
       "${TENSILE_ARGS}"
   } 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
@@ -331,9 +370,9 @@ else
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
     echo "Execution mode: ${EXECUTION_MODE}"
-    echo "Workdir: ${WORKDIR}"
+    echo "Workdir: ${RUN_DIR}"
     echo
-    (cd "${WORKDIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
+    (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
   } 2>&1 \
     | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 fi
@@ -344,36 +383,36 @@ if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
 fi
 
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
-  if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
+  if docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
     rm -rf "${HOST_OUTPUT_DIR}/orig"
-    docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+    docker cp "${CONTAINER_NAME}:${RUN_DIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
   fi
-  if docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
+  if docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
     rm -rf "${HOST_OUTPUT_DIR}/st"
-    docker cp "${CONTAINER_NAME}:${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
+    docker cp "${CONTAINER_NAME}:${RUN_DIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
   fi
   # Keep workspace clean after artifact copy.
-  docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
+  docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
 else
-  if [[ -d "${WORKDIR}/cmpasm/orig" ]]; then
+  if [[ -d "${RUN_DIR}/cmpasm/orig" ]]; then
     rm -rf "${HOST_OUTPUT_DIR}/orig"
-    cp -a "${WORKDIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
+    cp -a "${RUN_DIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
   fi
-  if [[ -d "${WORKDIR}/cmpasm/st" ]]; then
+  if [[ -d "${RUN_DIR}/cmpasm/st" ]]; then
     rm -rf "${HOST_OUTPUT_DIR}/st"
-    cp -a "${WORKDIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
+    cp -a "${RUN_DIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
   fi
   # Keep workspace clean after artifact copy.
-  rm -rf "${WORKDIR}/cmpasm"
+  rm -rf "${RUN_DIR}/cmpasm"
 fi
 
 cp "${ABS_YAML}" "${HOST_OUTPUT_DIR}/"
 
 if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
-    docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out'"
+    docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out'"
   else
-    rm -rf "${WORKDIR}/${BASE_NAME}.out"
+    rm -rf "${RUN_DIR}/${BASE_NAME}.out"
   fi
 fi
 

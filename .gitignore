@@ -10,3 +10,4 @@ asm/
 __pycache__/
 *.pyc
 cmpasm
+.runs/

@@ -52,6 +52,30 @@ TARGET_ARCH=gfx1250
 ENABLE_DEBUG_STINKYTOFU_ASM=1
 ```
 
+### Parallel YAML runs
+
+`jobs=N` in config controls how many YAMLs run concurrently (default `16`). Set
+`jobs=1` to run serially.
+
+Tensile writes `cmpasm/` and `<yaml-base>.out` relative to its working
+directory, so concurrent runs in a shared `workdir` would overwrite each
+other's assembly. With `jobs>1` each run therefore gets a private directory
+under `<workdir>/.runs/`, which is removed when the run finishes. Nothing else
+changes: `Tensile.sh`, the YAML, and the client are all passed as absolute
+paths, and artifacts still land in `<output_root>/<yaml-base>/`.
+
+Notes:
+- Each run's output is buffered and printed as one block in list order, so the
+  batch log stays readable and reproducible regardless of finish order. The
+  per-YAML `<output_root>/<yaml-base>/<yaml-base>.log` files are unaffected.
+  `[start i/N]` markers go to stderr as jobs launch, for progress.
+- Two YAMLs with the same basename write to the same `<output_root>` directory.
+  That is a hard error when `jobs>1`; serially it only warns, as before.
+- With `continue_on_failure=false` a failure stops new runs from launching,
+  waits for in-flight ones, then exits with the failing run's exit code.
+- Tensile already forks a worker pool per YAML, so useful concurrency is
+  usually well below the core count.
+
 ## hipblaslt install task
 
 Use this mode for tests that are not YAML-driven.

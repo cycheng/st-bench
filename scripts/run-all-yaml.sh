@@ -23,6 +23,7 @@ Config file format (key=value):
   env_file=./my-env.list                # repeatable
   build_only=true                       # default true; set false to skip --build-only
   continue_on_failure=false             # keep running remaining YAMLs after a failure
+  jobs=16                               # concurrent YAML runs; 1 runs serially
   docker_auto_start=true
   keep_container_out=false
   hipblaslt_repo_path=${rocm_libraries_path}/projects/hipblaslt
@@ -48,6 +49,8 @@ DOCKER_AUTO_START=1
 BUILD_ONLY=1
 CONTINUE_ON_FAILURE=0
 KEEP_CONTAINER_OUT=0
+JOBS=16
+PARALLEL=0
 TASK_TYPE="yaml"
 EXECUTION_MODE="docker"
 HIPBLASLT_REPO_PATH=""
@@ -66,6 +69,15 @@ parse_bool() {
       exit 1
       ;;
   esac
+}
+
+parse_jobs() {
+  local raw="$1"
+  if [[ ! "${raw}" =~ ^[0-9]+$ || "${raw}" -lt 1 ]]; then
+    echo "Invalid jobs value: ${raw}. Use a positive integer." >&2
+    exit 1
+  fi
+  echo "${raw}"
 }
 
 normalize_execution_mode() {
@@ -122,6 +134,7 @@ parse_config_file() {
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       continue_on_failure) CONTINUE_ON_FAILURE="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      jobs) JOBS="$(parse_jobs "${value}")" ;;
       hipblaslt_repo_path) HIPBLASLT_REPO_PATH="${value}" ;;
       hipblaslt_install_flags) HIPBLASLT_INSTALL_FLAGS="${value}" ;;
       hipblaslt_build_type) HIPBLASLT_BUILD_TYPE="${value}" ;;
@@ -207,14 +220,18 @@ run_yaml() {
   echo "YAML: ${yaml_file}"
   echo "=========================================="
 
+  local args=()
   args=(--yaml "${yaml_file}" --build-dir "${BUILD_DIR}")
   args+=(--execution-mode "${EXECUTION_MODE}")
   [[ -n "${CONTAINER_NAME}" ]] && args+=(--container "${CONTAINER_NAME}")
   [[ -n "${WORKDIR}" ]] && args+=(--workdir "${WORKDIR}")
   [[ -n "${OUTPUT_ROOT}" ]] && args+=(--output-root "${OUTPUT_ROOT}")
   [[ ${BUILD_ONLY} -eq 0 ]] && args+=(--no-build-only)
-  [[ ${DOCKER_AUTO_START} -eq 0 ]] && args+=(--no-start)
   [[ ${KEEP_CONTAINER_OUT} -eq 1 ]] && args+=(--keep-container-out)
+  # Concurrent runs would otherwise share cmpasm/ and <base>.out in workdir.
+  [[ ${PARALLEL} -eq 1 ]] && args+=(--isolate-run-dir)
+  # In parallel mode the container is started once up front instead.
+  [[ ${DOCKER_AUTO_START} -eq 0 || ${PARALLEL} -eq 1 ]] && args+=(--no-start)
 
   for kv in "${EXTRA_ENVS[@]}"; do
     args+=(--env "${kv}")
@@ -294,15 +311,19 @@ run_hipblaslt_install() {
 }
 
 declare -A seen_yamls=()
+declare -A seen_basenames=()
+selected_yamls=()
 total_runs=0
 passed_runs=0
 failed_runs=0
 summary_yamls=()
 summary_statuses=()
 summary_exit_codes=()
+HARD_FAILURE_EXIT=""
 
 print_yaml_summary() {
   local i yaml status exit_code
+  local ran=$((passed_runs + failed_runs))
 
   echo "=========================================="
   echo "YAML run summary"
@@ -317,40 +338,71 @@ print_yaml_summary() {
       printf '[FAIL exit=%s] %s\n' "${exit_code}" "${yaml}"
     fi
   done
-  echo "Total YAML runs: ${total_runs}, passed: ${passed_runs}, failed: ${failed_runs}"
+  echo "Total YAML runs: ${ran}, passed: ${passed_runs}, failed: ${failed_runs}"
+  if (( ran < total_runs )); then
+    echo "Skipped after failure: $((total_runs - ran)) of ${total_runs} selected YAMLs"
+  fi
 }
 
-run_yaml_and_record() {
+record_result() {
   local yaml_file="$1"
-  local exit_code=0
+  local exit_code="$2"
 
-  if run_yaml "${yaml_file}"; then
-    passed_runs=$((passed_runs + 1))
-    summary_yamls+=("${yaml_file}")
-    summary_statuses+=("PASS")
-    summary_exit_codes+=(0)
-    return 0
-  fi
-
-  exit_code=$?
-  failed_runs=$((failed_runs + 1))
   summary_yamls+=("${yaml_file}")
-  summary_statuses+=("FAIL")
   summary_exit_codes+=("${exit_code}")
+  if [[ "${exit_code}" -eq 0 ]]; then
+    passed_runs=$((passed_runs + 1))
+    summary_statuses+=("PASS")
+  else
+    failed_runs=$((failed_runs + 1))
+    summary_statuses+=("FAIL")
+  fi
+}
+
+# Returns non-zero when the caller should stop starting new YAMLs.
+handle_failure() {
+  local yaml_file="$1"
+  local exit_code="$2"
 
   if [[ ${CONTINUE_ON_FAILURE} -eq 1 ]]; then
     echo "YAML failed with exit code ${exit_code}; continuing because continue_on_failure=true: ${yaml_file}" >&2
     return 0
   fi
 
-  print_yaml_summary
-  exit "${exit_code}"
+  HARD_FAILURE_EXIT="${exit_code}"
+  return 1
 }
 
-collect_and_run_from_target() {
+select_yaml() {
+  local yaml_file="$1"
+  local base
+
+  [[ -n "${seen_yamls[${yaml_file}]:-}" ]] && return 0
+  seen_yamls["${yaml_file}"]=1
+
+  # Artifacts land in <output_root>/<basename>, so two YAMLs sharing a basename
+  # overwrite each other serially and race outright in parallel.
+  base="$(basename "${yaml_file}" .yaml)"
+  if [[ -n "${seen_basenames[${base}]:-}" ]]; then
+    if [[ ${JOBS} -gt 1 ]]; then
+      echo "Duplicate YAML basename '${base}' cannot run concurrently:" >&2
+      echo "  ${seen_basenames[${base}]}" >&2
+      echo "  ${yaml_file}" >&2
+      echo "Both write to ${OUTPUT_ROOT:-./artifacts}/${base}. Rename one or set jobs=1." >&2
+      exit 1
+    fi
+    echo "Warning: duplicate YAML basename '${base}'; ${yaml_file} overwrites artifacts from ${seen_basenames[${base}]}" >&2
+  fi
+  seen_basenames["${base}"]="${yaml_file}"
+
+  selected_yamls+=("${yaml_file}")
+  total_runs=$((total_runs + 1))
+}
+
+collect_from_target() {
   local list_file="$1"
   local raw_target="$2"
-  local target
+  local target yaml_file match
   target="$(expand_vars "${raw_target}")"
 
   if [[ -z "${target}" ]]; then
@@ -359,20 +411,13 @@ collect_and_run_from_target() {
 
   if [[ -d "${target}" ]]; then
     while IFS= read -r -d '' yaml_file; do
-      [[ -n "${seen_yamls[${yaml_file}]:-}" ]] && continue
-      seen_yamls["${yaml_file}"]=1
-      total_runs=$((total_runs + 1))
-      run_yaml_and_record "${yaml_file}"
+      select_yaml "${yaml_file}"
     done < <(find "${target}" -type f -name "*.yaml" -print0 | sort -z)
     return
   fi
 
   if [[ -f "${target}" && "${target}" == *.yaml ]]; then
-    if [[ -z "${seen_yamls[${target}]:-}" ]]; then
-      seen_yamls["${target}"]=1
-      total_runs=$((total_runs + 1))
-      run_yaml_and_record "${target}"
-    fi
+    select_yaml "${target}"
     return
   fi
 
@@ -385,18 +430,101 @@ collect_and_run_from_target() {
   for match in "${glob_matches[@]}"; do
     if [[ -d "${match}" ]]; then
       while IFS= read -r -d '' yaml_file; do
-        [[ -n "${seen_yamls[${yaml_file}]:-}" ]] && continue
-        seen_yamls["${yaml_file}"]=1
-        total_runs=$((total_runs + 1))
-        run_yaml_and_record "${yaml_file}"
+        select_yaml "${yaml_file}"
       done < <(find "${match}" -type f -name "*.yaml" -print0 | sort -z)
     elif [[ -f "${match}" && "${match}" == *.yaml ]]; then
-      [[ -n "${seen_yamls[${match}]:-}" ]] && continue
-      seen_yamls["${match}"]=1
-      total_runs=$((total_runs + 1))
-      run_yaml_and_record "${match}"
+      select_yaml "${match}"
     fi
   done
+}
+
+run_serial() {
+  local yaml_file exit_code
+
+  for yaml_file in "${selected_yamls[@]}"; do
+    exit_code=0
+    run_yaml "${yaml_file}" || exit_code=$?
+    record_result "${yaml_file}" "${exit_code}"
+    if [[ ${exit_code} -ne 0 ]]; then
+      handle_failure "${yaml_file}" "${exit_code}" || return 0
+    fi
+  done
+}
+
+JOB_DIR=""
+
+cleanup_job_dir() {
+  [[ -n "${JOB_DIR}" ]] && rm -rf "${JOB_DIR}"
+  return 0
+}
+
+launch_job() {
+  local idx="$1"
+  local yaml_file="${selected_yamls[${idx}]}"
+
+  printf '[start %d/%d] %s\n' "$((idx + 1))" "${total_runs}" "${yaml_file}" >&2
+  (
+    local_exit=0
+    run_yaml "${yaml_file}" >"${JOB_DIR}/${idx}.out" 2>&1 || local_exit=$?
+    # Published last, and via rename, so the parent only ever sees a complete
+    # status file once the matching .out file is fully written.
+    echo "${local_exit}" >"${JOB_DIR}/${idx}.status.part"
+    mv "${JOB_DIR}/${idx}.status.part" "${JOB_DIR}/${idx}.status"
+  ) &
+}
+
+flush_job() {
+  local idx="$1"
+  local yaml_file="${selected_yamls[${idx}]}"
+  local exit_code
+
+  exit_code="$(<"${JOB_DIR}/${idx}.status")"
+  cat "${JOB_DIR}/${idx}.out"
+  rm -f "${JOB_DIR}/${idx}.out" "${JOB_DIR}/${idx}.status"
+
+  record_result "${yaml_file}" "${exit_code}"
+  if [[ ${exit_code} -ne 0 ]]; then
+    handle_failure "${yaml_file}" "${exit_code}" || return 1
+  fi
+  return 0
+}
+
+run_parallel() {
+  local next_launch=0 next_print=0 running=0 stop_launching=0
+
+  JOB_DIR="$(mktemp -d)"
+  trap cleanup_job_dir EXIT
+
+  # Each run would otherwise start the container itself, concurrently.
+  if [[ "${EXECUTION_MODE}" == "docker" && ${DOCKER_AUTO_START} -eq 1 && -n "${CONTAINER_NAME}" ]]; then
+    docker start "${CONTAINER_NAME}" >/dev/null
+  fi
+
+  echo "Running ${total_runs} YAMLs, up to ${JOBS} at a time."
+  echo "Each run's output is buffered and printed in list order as it completes."
+
+  while (( next_print < next_launch )) || (( stop_launching == 0 && next_launch < total_runs )); do
+    while (( stop_launching == 0 && running < JOBS && next_launch < total_runs )); do
+      launch_job "${next_launch}"
+      next_launch=$((next_launch + 1))
+      running=$((running + 1))
+    done
+
+    if (( running > 0 )); then
+      # Exit status is read from the status file, so ignore the one wait reports.
+      wait -n 2>/dev/null || true
+      running=$((running - 1))
+    fi
+
+    while (( next_print < next_launch )) && [[ -f "${JOB_DIR}/${next_print}.status" ]]; do
+      flush_job "${next_print}" || stop_launching=1
+      next_print=$((next_print + 1))
+    done
+  done
+
+  if (( stop_launching == 1 && next_launch < total_runs )); then
+    echo "Skipped $((total_runs - next_launch)) remaining YAMLs because continue_on_failure=false." >&2
+  fi
 }
 
 EXECUTION_MODE="$(normalize_execution_mode "${EXECUTION_MODE}")"
@@ -425,7 +553,7 @@ if [[ "${TASK_TYPE}" == "yaml" ]]; then
       line="${raw_line#"${raw_line%%[![:space:]]*}"}"
       line="${line%"${line##*[![:space:]]}"}"
       [[ -z "${line}" || "${line}" == \#* ]] && continue
-      collect_and_run_from_target "${list_file}" "${line}"
+      collect_from_target "${list_file}" "${line}"
     done < "${list_file}"
   done
 
@@ -433,7 +561,18 @@ if [[ "${TASK_TYPE}" == "yaml" ]]; then
     echo "No YAML files were selected by list files." >&2
     exit 1
   fi
+
+  if [[ ${JOBS} -gt 1 && ${total_runs} -gt 1 ]]; then
+    PARALLEL=1
+    run_parallel
+  else
+    run_serial
+  fi
+
   print_yaml_summary
+  if [[ -n "${HARD_FAILURE_EXIT}" ]]; then
+    exit "${HARD_FAILURE_EXIT}"
+  fi
   if [[ ${failed_runs} -gt 0 ]]; then
     echo "Batch run complete with failures."
     exit 1
