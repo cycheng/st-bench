@@ -25,13 +25,13 @@ Examples:
   scripts/parse_xcnt_stats.py asm --tensor-load-to-lds
 
   # Top 25 kernels across all yamls by a selected metric.
-  scripts/parse_xcnt_stats.py asm --top 25 --sort noLoadLoopBody
+  scripts/parse_xcnt_stats.py asm --top 25 --sort other
 
   # Group non-repairable SMEM self-overwrite warnings across all yamls.
   scripts/parse_xcnt_stats.py asm --warning-summary
 
-METRIC is one of: total, loopWithPrefetch, noLoadLoopBody, outsideRegions,
-atomic, smem, flat, foreverSleep, scalarPrefetch, vgprMsb.
+METRIC is one of: total, loop+matrix, loop, matrix, other, atomic, smem,
+flat, foreverSleep, scalarPrefetch, vgprMsb.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ from pathlib import Path
 XCNT_DRAINS_RE = re.compile(r"\[Gfx1250HazardPass\]\s+xcnt drains:\s*(.*)$")
 XCNT_RULES_RE = re.compile(r"\[Gfx1250HazardPass\]\s+xcnt drain rules:\s*(.*)$")
 TENSOR_LOAD_RE = re.compile(r"\[Gfx1250HazardPass\]\s+tensor_load_to_lds:\s*(.*)$")
-KEY_VALUE_RE = re.compile(r"(\w+)=(-?\d+)")
+KEY_VALUE_RE = re.compile(r"([^=,\s]+)=(-?\d+)")
 SELF_OVERWRITE_RE = re.compile(
     r'\[Gfx1250HazardPass\]\s+warning:\s+SMEM instruction "([^"]+)" '
     r'in block "([^"]+)" overwrites one of its own source registers; '
@@ -55,7 +55,13 @@ SELF_OVERWRITE_RE = re.compile(
 )
 KERNEL_NAME_RE = re.compile(r"^\.protected\s+(\S+)")
 
-DRAIN_METRICS = ("total", "loopWithPrefetch", "noLoadLoopBody", "outsideRegions")
+DRAIN_METRICS = (
+    "total",
+    "loop+matrix",
+    "loop",
+    "matrix",
+    "other",
+)
 RULE_METRICS = ("atomic", "smem", "flat", "foreverSleep", "scalarPrefetch", "vgprMsb")
 SORT_METRICS = DRAIN_METRICS + RULE_METRICS
 
@@ -193,13 +199,29 @@ def load_records(path: Path) -> tuple[list[XcntRecord], list[str]]:
     return records, mapping_issues
 
 
-def format_stats(record: XcntRecord) -> list[str]:
-    drain_fields = ", ".join(
-        f"{metric}={record.drains.get(metric, 0)}" for metric in DRAIN_METRICS
-    )
-    rule_fields = ", ".join(
-        f"{metric}={record.rules.get(metric, 0)}" for metric in RULE_METRICS
-    )
+def ordered_metric_names(
+    metric_dicts: list[dict[str, int]], preferred_order: tuple[str, ...]
+) -> tuple[str, ...]:
+    """Order present metrics predictably while preserving future log fields."""
+    present = {metric for metrics in metric_dicts for metric in metrics}
+    known = tuple(metric for metric in preferred_order if metric in present)
+    unknown = tuple(sorted(present.difference(preferred_order)))
+    return known + unknown
+
+
+def format_stats(record: XcntRecord, omit_zero: bool = False) -> list[str]:
+    drain_metrics = ordered_metric_names([record.drains], DRAIN_METRICS)
+    rule_metrics = ordered_metric_names([record.rules], RULE_METRICS)
+    drain_values = [
+        f"{metric}={record.drains.get(metric, 0)}" for metric in drain_metrics
+        if not omit_zero or record.drains.get(metric, 0) != 0
+    ]
+    rule_values = [
+        f"{metric}={record.rules.get(metric, 0)}" for metric in rule_metrics
+        if not omit_zero or record.rules.get(metric, 0) != 0
+    ]
+    drain_fields = ", ".join(drain_values) or "(all zero)"
+    rule_fields = ", ".join(rule_values) or "(all zero)"
     return [
         f"  xcnt drains: {drain_fields}",
         f"  xcnt drain rules: {rule_fields}",
@@ -224,14 +246,24 @@ def print_top(records: list[XcntRecord], top: int, metric: str) -> None:
         key=lambda record: (record.metric(metric), record.yaml, -record.record_id),
         reverse=True,
     )[:top]
+    drain_metrics = ordered_metric_names(
+        [record.drains for record in records], DRAIN_METRICS
+    )
+    rule_metrics = ordered_metric_names([record.rules for record in records], RULE_METRICS)
     print(f"Top {len(ranked)} kernels by {metric}:")
+    print(f"Drain regions (zero values omitted below): {', '.join(drain_metrics)}")
+    print(f"Drain rules (zero values omitted below): {', '.join(rule_metrics)}")
+    print()
     for rank, record in enumerate(ranked, 1):
         asm_name = record.asm_path.name if record.asm_path else "<unmapped>"
         print(
             f"{rank:>3}. {record.yaml}  id={record.record_id}  {asm_name}  "
             f"{metric}={record.metric(metric)}  {record.kernel_name}"
         )
-    print()
+        # Keep top-N output actionable: show the complete drain and rule
+        # breakdown, rather than only the metric used for ranking.
+        print("\n".join(format_stats(record, omit_zero=True)[:2]))
+        print()
 
 
 def print_warning_summary(records: list[XcntRecord]) -> None:
