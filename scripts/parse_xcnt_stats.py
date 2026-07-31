@@ -9,6 +9,7 @@ file in <asm-dir>/<yaml>/st by its one-based write order.  That order matches
 Usage:
   scripts/parse_xcnt_stats.py [PATH] [--tensor-load-to-lds]
                               [--top N] [--sort METRIC]
+                              [--warning-summary]
 
 PATH may be an asm root (for all yamls), a single yaml directory, or a log
 file.  It defaults to this repository's asm/ directory.
@@ -26,6 +27,9 @@ Examples:
   # Top 25 kernels across all yamls by a selected metric.
   scripts/parse_xcnt_stats.py asm --top 25 --sort noLoadLoopBody
 
+  # Group non-repairable SMEM self-overwrite warnings across all yamls.
+  scripts/parse_xcnt_stats.py asm --warning-summary
+
 METRIC is one of: total, loopWithPrefetch, noLoadLoopBody, outsideRegions,
 atomic, smem, flat, foreverSleep, scalarPrefetch, vgprMsb.
 """
@@ -33,6 +37,7 @@ atomic, smem, flat, foreverSleep, scalarPrefetch, vgprMsb.
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict
 import re
 import sys
 from dataclasses import dataclass, field
@@ -229,6 +234,38 @@ def print_top(records: list[XcntRecord], top: int, metric: str) -> None:
     print()
 
 
+def print_warning_summary(records: list[XcntRecord]) -> None:
+    """Group each SMEM self-overwrite root cause by affected yaml and kernel."""
+    causes: dict[tuple[str, str], dict[str, set[int]]] = defaultdict(
+        lambda: defaultdict(set)
+    )
+    for record in records:
+        for warning in record.overwrites:
+            causes[(warning.block, warning.instruction)][record.yaml].add(record.record_id)
+
+    if not causes:
+        print("No non-repairable SMEM self-overwrite warnings found.")
+        return
+
+    print("Non-repairable SMEM self-overwrite warning summary:")
+    for (block, instruction), yaml_kernels in sorted(
+        causes.items(),
+        key=lambda item: (
+            -sum(len(kernel_ids) for kernel_ids in item[1].values()),
+            item[0],
+        ),
+    ):
+        yaml_names = sorted(yaml_kernels)
+        kernel_count = sum(len(kernel_ids) for kernel_ids in yaml_kernels.values())
+        print(f"\nRoot cause: {block} with {instruction}")
+        print(f"  Number of yamls: {len(yaml_names)}; {', '.join(yaml_names)}")
+        print(f"  Total kernels: {kernel_count}")
+        print("  Per yaml:")
+        for yaml in yaml_names:
+            print(f"    {yaml}: {len(yaml_kernels[yaml])} kernel(s)")
+    print()
+
+
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
@@ -259,12 +296,19 @@ def main() -> None:
         default="total",
         help="Metric for --top (default: total).",
     )
+    parser.add_argument(
+        "--warning-summary",
+        action="store_true",
+        help="Group SMEM self-overwrite warnings by block and instruction.",
+    )
     args = parser.parse_args()
 
     if not args.path.exists():
         parser.error(f"path does not exist: {args.path}")
     if args.top is not None and args.top <= 0:
         parser.error("--top must be positive")
+    if args.warning_summary and args.top is not None:
+        parser.error("--warning-summary cannot be combined with --top")
 
     records, mapping_issues = load_records(args.path)
     if args.tensor_load_to_lds:
@@ -274,7 +318,9 @@ def main() -> None:
         filter_description = " matching the requested filter" if args.tensor_load_to_lds else ""
         raise SystemExit(f"No xcnt records found{filter_description}.")
 
-    if args.top is None:
+    if args.warning_summary:
+        print_warning_summary(records)
+    elif args.top is None:
         for record in records:
             print_record(record)
     else:
