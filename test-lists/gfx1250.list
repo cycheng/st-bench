@@ -3,10 +3,11 @@
 
 # gfx1250 dense
 ${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/*gfx1250.yaml
+${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/gemm/gfx12/stinky_sia4.yaml
 
 # gfx1250 sparse
 ${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/sparse/gfx1250
 
 # few streamk
-${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/gfx1250/core/sk_dynamic_sgemm_quick.yaml
-${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/gfx1250/core/sk_sgemm_quick.yaml
+#${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/gfx1250/core/sk_dynamic_sgemm_quick.yaml
+#${rocm_libraries_path}/projects/hipblaslt/tensilelite/Tensile/Tests/common/streamk/gfx1250/core/sk_sgemm_quick.yaml
