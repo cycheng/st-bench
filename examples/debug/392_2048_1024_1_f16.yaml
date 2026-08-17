@@ -16,6 +16,10 @@ GlobalParameters:
 BenchmarkProblems:
 - - OperationType: GEMM
     Activation: true
+    # TensileLibLogicToYaml drops ActivationType (absent from _defaultProblemType);
+    # without it Activation: true degrades to 'none' and the kernel name loses HA_S.
+    ActivationType: hipblaslt_all
+    ActivationComputeDataType: 0
     Batched: true
     ComputeDataType: 0
     DataType: 4
