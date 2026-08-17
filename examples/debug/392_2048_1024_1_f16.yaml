@@ -1,0 +1,75 @@
+GlobalParameters:
+  MinimumRequiredVersion: 5.0.0
+  SleepPercent: 0
+  KernelTime: true
+  NumElementsToValidate: -1
+  DataInitTypeBeta: 1
+  DataInitTypeAlpha: 1
+  DataInitTypeA: 12
+  DataInitTypeB: 13
+  DataInitTypeC: 12
+  DataInitTypeD: 12
+  PreciseKernelTime: false
+  Device: 0
+  SkipSlowSolutionRatio: 0.0
+  KeepBuildTmp: false
+BenchmarkProblems:
+- - OperationType: GEMM
+    Activation: true
+    Batched: true
+    ComputeDataType: 0
+    DataType: 4
+    DataTypeA: 4
+    DataTypeB: 4
+    DataTypeE: 4
+    DestDataType: 4
+    HighPrecisionAccumulate: true
+    IndexAssignmentsA: [0, 3, 2]
+    IndexAssignmentsB: [3, 1, 2]
+    IndexAssignmentsLD: [4, 5, 6, 7]
+    NumIndicesC: 3
+    TransposeA: false
+    TransposeB: false
+    UseBias: 1
+    UseScaleAlphaVec: 1
+  - InitialSolutionParameters:
+    BenchmarkCommonParameters:
+    - KernelLanguage: [Assembly]
+    ForkParameters:
+    - DepthU: [32]
+    - ExpandPointerSwap: [false]
+    - GlobalReadVectorWidthA: [1]
+    - GlobalReadVectorWidthB: [1]
+    - LdsBlockSizePerPadA: [512]
+    - LdsBlockSizePerPadB: [128]
+    - LdsPadA: [16]
+    - LdsPadB: [16]
+    - LocalReadVectorWidth: [8]
+    - MIArchVgpr: [true]
+    - PrefetchGlobalRead: [2]
+    - PrefetchLocalRead: [0]
+    - StaggerU: [0]
+    - StaggerUStride: [64]
+    - StoreVectorWidth: [8]
+    - ThreadTile: [[1, 1]]
+    - TransposeLDS: [1]
+    - TransposeLDSMetadata: [1]
+    - VectorWidthA: [1]
+    - VectorWidthB: [1]
+    - WavefrontSize: [32]
+    - WorkGroupMapping: [1]
+    - Groups:
+      - - MatrixInstruction: [16, 16, 32, 1, 1, 1, 1, 2, 1]
+          WorkGroup: [32, 2, 1]
+          MIArchVgpr: true
+    BenchmarkJoinParameters:
+    BenchmarkFinalParameters:
+    - ProblemSizes:
+      #- Exact: [128, 128, 1, 128, 128, 128, 128, 128]
+      - Exact: [392, 2048, 1, 1024]  
+    - BiasTypeArgs: [0, 4]
+#LibraryLogic:
+#  ScheduleName: "gfx1250"
+#  DeviceNames: ["Device 73f0"]
+#  ArchitectureName: "gfx1250"
+#
