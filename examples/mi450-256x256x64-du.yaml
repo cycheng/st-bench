@@ -1,18 +1,15 @@
 GlobalParameters:
   NumElementsToValidate: -1
   KernelTime: True
-  NewClient: 2
-  BoundsCheck: False
+  BoundsCheck: 0
   ValidationMaxToPrint: 4
   ValidationPrintValids: False
   DataInitTypeA: 3
   DataInitTypeB: 3
   NumWarmups: 1
   EnqueuesPerSync: 1
-  MinKForGSU: 1
   Architecture: gfx1250
   CpuThreads: 1
-  ROCmAgentEnumeratorPath: rocm_agent_enumerator
   PrintSolutionRejectionReason: True
 
 BenchmarkProblems:
@@ -70,8 +67,8 @@ BenchmarkProblems:
         - TDMInst: [3]
         - VectorWidthA: [1]
         - VectorWidthB: [1]
-        - SourceSwap: [0]
-        - DirectToVgprSparseMetadata: [0]
+        - SourceSwap: [False]
+        - DirectToVgprSparseMetadata: [False]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - DirectToVgprA: [False]

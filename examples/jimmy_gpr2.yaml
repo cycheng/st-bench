@@ -5,8 +5,7 @@ GlobalParameters:
   NumElementsToValidate: -1
   NumElementsToValidateWinner: -1
   KernelTime: False
-  NewClient: 2
-  BoundsCheck: False
+  BoundsCheck: 0
   PrintSolutionRejectionReason: True
   ValidationMaxToPrint: 4      # maximum number of mismatches to print
   ValidationPrintValids: False # print matches too
@@ -24,12 +23,9 @@ GlobalParameters:
   NumWarmups: 2
   EnqueuesPerSync: 10
   PrintWinnersOnly: True
-  MinKForGSU: 1
   Architecture: gfx1250
   KeepBuildTmp: True
   PrintLevel: 2
-  UseGPUTimer: False
-  MaxLDS: 327680
   SkipSlowSolutionRatio: 0.8
 
 
@@ -55,7 +51,7 @@ BenchmarkProblems:
         - KernelLanguage: ["Assembly"]
       ForkParameters:
         - UseSgprForGRO: [0]
-        - ForceDisableShadowInit: [1]
+        - ForceDisableShadowInit: [True]
         - MatrixInstruction:
           #- [16, 16, 128, 1,  1,  2, 2,  2, 2]
           #- [16, 16, 32, 1,  1,  1, 1,  2, 2]
@@ -92,12 +88,12 @@ BenchmarkProblems:
         - VectorWidthB: [-1]
         - LocalReadVectorWidth: [-1]
         - 1LDSBuffer: [0]
-        - SourceSwap: [1]
+        - SourceSwap: [True]
         - ClusterDim: [[1,1],[2,2],[2,4], [4,2],[4,4]]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - WavefrontSize: [32]
-        - ExpandPointerSwap: [0]
+        - ExpandPointerSwap: [False]
       BenchmarkForkParameters:
       JoinParameters:
       BenchmarkJoinParameters:

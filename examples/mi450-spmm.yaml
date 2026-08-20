@@ -3,10 +3,9 @@ TestParameters:
 
 GlobalParameters:
   SleepPercent: 50
-  CSVExportWinner: 1
-  CSVMergeSameProblemID: 1
+  CSVExportWinner: True
+  CSVMergeSameProblemID: True
   Device: 0
-  MaxFileName: 256
   # PrintTensorD: 0x2
   DataInitTypeA: 1
   DataInitTypeB: 8
@@ -25,7 +24,6 @@ GlobalParameters:
   SyncsPerBenchmark: 1
   NumBenchmarks: 1
   # KernelTime: False
-  MinKForGSU: 1
   # PrintCodeCommands: True
   # CpuThreads: 1
   # GenerateSourcesAndExit: True
@@ -36,7 +34,6 @@ GlobalParameters:
   #PruneSparseMode: 1
 #PrintTensorD: 1
   #PrintTensorRef: 1
-  StinkyTofuOptLevel: 3
   StinkyTofuPrintAfterPass: "CFG Builder"
   CpuThreads: 1
 
@@ -52,8 +49,8 @@ BenchmarkProblems:
       DestDataType: H
       ComputeDataType: s
       HighPrecisionAccumulate:  True
-      TransposeA: 0
-      TransposeB: 0
+      TransposeA: False
+      TransposeB: False
       UseBeta: True
       Sparse: 0
       Batched: True
@@ -100,11 +97,11 @@ BenchmarkProblems:
         # - GlobalSplitU: [2]
         # - GlobalSplitUAlgorithm: [MultipleBuffer]
         - 1LDSBuffer: [0]
-        - DirectToVgprSparseMetadata: [0]
+        - DirectToVgprSparseMetadata: [False]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         # - LocalReadVectorWidth: [4,8]
-        - SourceSwap: [0]
+        - SourceSwap: [False]
         - UseSgprForGRO: [0]
       BenchmarkForkParameters:
       JoinParameters:

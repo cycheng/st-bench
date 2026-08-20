@@ -4,8 +4,7 @@ GlobalParameters:
   SyncsPerBenchmark: 0
   NumElementsToValidate: -1
   KernelTime: False
-  NewClient: 2
-  BoundsCheck: False
+  BoundsCheck: 0
   PrintSolutionRejectionReason: True
   ValidationMaxToPrint: 4      # maximum number of mismatches to print
   ValidationPrintValids: False # print matches too
@@ -23,12 +22,9 @@ GlobalParameters:
   NumWarmups: 0
   EnqueuesPerSync: 1
   PrintWinnersOnly: False
-  MinKForGSU: 1
   Architecture: gfx1250
   KeepBuildTmp: True
   PrintLevel: 2
-  UseGPUTimer: False
-  MaxLDS: 163840
   StinkyTofuDebugLevel: 3
   StinkyTofuDebugPass: "StinkyRemoveNopPass"
   CpuThreads: 1
@@ -63,7 +59,7 @@ BenchmarkProblems:
         - KernelLanguage: ["Assembly"]
       ForkParameters:
         - UseSgprForGRO: [0]
-        - ForceDisableShadowInit: [1]
+        - ForceDisableShadowInit: [True]
         - MatrixInstruction:
           - [16, 16, 128, 1,  1,  8, 4,  2, 2]
           #- [16, 16, 128, 1,  1,  8, 8,  2, 2]
@@ -90,14 +86,14 @@ BenchmarkProblems:
         - VectorWidthB: [-1]
         - LocalReadVectorWidth: [-1]
         - 1LDSBuffer: [0]
-        - SourceSwap: [0]
-        - DirectToVgprSparseMetadata: [0]
+        - SourceSwap: [False]
+        - DirectToVgprSparseMetadata: [False]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - DirectToVgprA: [False]
         - DirectToVgprB: [False]
         - WavefrontSize: [32]
-        - ExpandPointerSwap: [0]
+        - ExpandPointerSwap: [False]
         - AssertSummationElementMultiple: [ 32 ]
       BenchmarkForkParameters:
       JoinParameters:

@@ -2,7 +2,6 @@ GlobalParameters:
   #SyncsPerBenchmark: 0
   NumElementsToValidate: -1
   KernelTime: False
-  NewClient: 2
   BoundsCheck: 0
   PrintSolutionRejectionReason: True
   ValidationMaxToPrint: 4      # maximum number of mismatches to print
@@ -18,19 +17,16 @@ GlobalParameters:
   # PrintTensorC: 1
   # PrintTensorD: 1
   # PrintTensorRef: 1
-  NumWarmups: 100
-  EnqueuesPerSync: 500
+  NumWarmups: 0
+  EnqueuesPerSync: 0
   PrintWinnersOnly: False
-  MinKForGSU: 1
   Architecture: gfx1250
   KeepBuildTmp: True
   PrintLevel: 2
-  UseGPUTimer: False
-  MaxLDS: 163840
   RotatingBufferSize: 512
-  StinkyTofuDebugLevel: 0
-  StinkyTofuDebugPass: "StinkyDAGSchedulerPass"
-  Device: 1
+  #StinkyTofuDebugLevel: 0
+ # StinkyTofuDebugPass: "StinkyDAGSchedulerPass"
+  #Device: 1
 
 BenchmarkProblems:
   -
@@ -58,7 +54,7 @@ BenchmarkProblems:
         - KernelLanguage: ["Assembly"]
       ForkParameters:
         - UseSgprForGRO: [0]
-        - ForceDisableShadowInit: [1]
+        - ForceDisableShadowInit: [True]
         - MatrixInstruction:
           #- [16, 16, 128, 1,  1,  8, 4,  2, 2]
           - [16, 16, 128, 1,  1,  8, 8,  2, 2]
@@ -85,14 +81,14 @@ BenchmarkProblems:
         - VectorWidthB: [-1]
         - LocalReadVectorWidth: [-1]
         - 1LDSBuffer: [0]
-        - SourceSwap: [0]
-        - DirectToVgprSparseMetadata: [0]
+        - SourceSwap: [False]
+        - DirectToVgprSparseMetadata: [False]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - DirectToVgprA: [False]
         - DirectToVgprB: [False]
         - WavefrontSize: [32]
-        - ExpandPointerSwap: [0]
+        - ExpandPointerSwap: [False]
         - AssertSummationElementMultiple: [ 32 ]
         - InitCIterWmma: [0]
         #- TDMSplit: [True]
