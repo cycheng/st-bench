@@ -1,5 +1,5 @@
 diff --git a/projects/hipblaslt/clients/CMakeLists.txt b/projects/hipblaslt/clients/CMakeLists.txt
-index a47a1600c76..5e4aa25f746 100755
+index a47a1600c7..5e4aa25f74 100755
 --- a/projects/hipblaslt/clients/CMakeLists.txt
 +++ b/projects/hipblaslt/clients/CMakeLists.txt
 @@ -127,7 +127,23 @@ if(HIPBLASLT_ENABLE_YAML)
@@ -27,7 +27,7 @@ index a47a1600c76..5e4aa25f746 100755
      if(amd_smi_FOUND)
          target_link_libraries(hipblaslt-test PRIVATE amd_smi)
 diff --git a/projects/hipblaslt/tasks.py b/projects/hipblaslt/tasks.py
-index 317aee1f02c..ac4eb9699fc 100644
+index 7a42700e47..49b6e6f821 100644
 --- a/projects/hipblaslt/tasks.py
 +++ b/projects/hipblaslt/tasks.py
 @@ -475,7 +475,10 @@ def build(
@@ -51,7 +51,7 @@ index 317aee1f02c..ac4eb9699fc 100644
  
      if relocatable:
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index d6517a2763b..57d3e92bbb3 100644
+index 88a945cdf8..105981a979 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 @@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
@@ -63,3 +63,79 @@ index d6517a2763b..57d3e92bbb3 100644
  )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
+@@ -400,7 +400,7 @@ globalParameters["StinkyTofuEnableRemarks"] = False
+ # StinkyTofuModule.setOutputDir (see KernelWriter._convertToStinkyTofu).
+ globalParameters["StinkyTofuCostOutputDir"] = ""
+ 
+-globalParameters["DisableSTWaitCnt"] = True
++globalParameters["DisableSTWaitCnt"] = False
+ 
+ # Internal plumbing for the --cpu-only CLI switch (see Tensile.py addCommonArguments).
+ # When True, the benchmark flow runs GPU-less: ISA is spoofed, the GPU clock-frequency
+diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+index 3d6c7730b1..c12874a80f 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+@@ -6849,24 +6849,24 @@ class KernelWriter(metaclass=abc.ABCMeta):
+                                            signature=fs,
+                                            options=stinky_module_options)
+       t1a_end = time.perf_counter()
+-      print2(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
++      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
+ 
+       # Run pipeline — builder handles O0 internally (skips optimization,
+       # still runs required passes like InsertVgprMsb)
+       t1b_start = time.perf_counter()
+       stModule.runOptimizationPipeline()
+       t1b_end = time.perf_counter()
+-      print2(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
++      print(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
+ 
+     error = self.states.overflowedResources
+-    print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
++    print(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
+ 
+     # Check if StinkyTofu assembly output should be used
+     if stModule is not None:
+       t2_start = time.perf_counter()
+       st_asm = stModule.emitAssembly()
+       t2_end = time.perf_counter()
+-      print2(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
++      print(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
+ 
+       if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None:
+         t3_start = time.perf_counter()
+@@ -6903,15 +6903,15 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           fcntl.flock(f, fcntl.LOCK_UN)
+ 
+         t3_end = time.perf_counter()
+-        print2(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s")
++        print(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s")
+ 
+       t0_end = time.perf_counter()
+-      print2(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s")
++      print(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s")
+ 
+-      print2(f"Using StinkyTofu Assembly")
++      print(f"Using StinkyTofu Assembly")
+       return (error, st_asm)
+     else:
+-      print2(f"Using Original Rocisa Assembly")
++      print(f"Using Original Rocisa Assembly")
+       return (error, str(moduleKernelBody))
+ 
+   ##############################################################################
+diff --git a/shared/stinkytofu/src/transforms/asm/waitcnt/WaitDataflow.cpp b/shared/stinkytofu/src/transforms/asm/waitcnt/WaitDataflow.cpp
+index 02c68d54ba..79696d4c77 100644
+--- a/shared/stinkytofu/src/transforms/asm/waitcnt/WaitDataflow.cpp
++++ b/shared/stinkytofu/src/transforms/asm/waitcnt/WaitDataflow.cpp
+@@ -901,7 +901,8 @@ bool WaitDataflow::solve() {
+             PASS_DEBUG(reportCounterOverflow());
+             PASS_DEBUG(
+                 { std::cerr << "[WaitDataflow] solver converged in " << iter << " iterations\n"; });
+-            return true;
++            std::cerr << "[WaitDataflow] solver converged in " << iter << " iterations\n";
++	    return true;
+         }
+     }
+ 
