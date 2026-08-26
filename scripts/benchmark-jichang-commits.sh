@@ -21,11 +21,13 @@ Without --start/--end, test the current checkout once and do not change or
 stash the repository.
 
 Output:
-  results.csv             Successful commits and maximum PFLOPS per YAML.
-  failures.csv            Skipped commits and failure reasons.
+  results.csv             Tested commits and maximum PFLOPS per YAML.
+  failures.csv            YAML failures and skipped-commit reasons.
   logs/<commit>/<test>.log
 
 PFLOPS is calculated as max(gflops) / 1000 for each YAML.
+A YAML that fails or has no finite gflops value is recorded as 0, and the
+remaining YAMLs for that commit are still run.
 EOF
 }
 
@@ -141,7 +143,7 @@ record_failure() {
   printf '%s,' "${commit}" >> "${FAILURES_CSV}"
   csv_escape "${reason}" >> "${FAILURES_CSV}"
   printf '\n' >> "${FAILURES_CSV}"
-  echo "Skipping ${commit}: ${reason}" >&2
+  echo "${commit}: ${reason}" >&2
 }
 
 extract_max_pflops() {
@@ -291,7 +293,6 @@ for commit in "${COMMITS[@]}"; do
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
   mkdir -p "${commit_log_dir}"
   values=()
-  commit_failed=0
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
@@ -304,28 +305,26 @@ for commit in "${COMMITS[@]}"; do
       ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
     ) 2>&1 | tee "${log_file}"; then
       record_failure "${short_commit}" "${test_name}: YAML execution failed"
-      commit_failed=1
-      break
+      values+=("0")
+      continue
     fi
 
     if ! pflops="$(extract_max_pflops "${log_file}")"; then
       record_failure "${short_commit}" "${test_name}: no finite gflops value found"
-      commit_failed=1
-      break
+      values+=("0")
+      continue
     fi
     values+=("${pflops}")
     echo "${test_name}: ${pflops} PFLOPS"
   done
 
-  if [[ ${commit_failed} -eq 0 ]]; then
-    {
-      printf '%s' "${short_commit}"
-      for value in "${values[@]}"; do
-        printf ',%s' "${value}"
-      done
-      printf '\n'
-    } >> "${RESULTS_CSV}"
-  fi
+  {
+    printf '%s' "${short_commit}"
+    for value in "${values[@]}"; do
+      printf ',%s' "${value}"
+    done
+    printf '\n'
+  } >> "${RESULTS_CSV}"
 done
 
 restore_status=0
@@ -343,7 +342,7 @@ with open(sys.argv[1], newline="", encoding="utf-8") as stream:
     rows = list(csv.reader(stream))
 
 if len(rows) == 1:
-    print("No commits completed all tests successfully.")
+    print("No commits could be tested.")
 else:
     widths = [max(len(row[i]) for row in rows) for i in range(len(rows[0]))]
     for row_number, row in enumerate(rows):
