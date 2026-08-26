@@ -21,22 +21,21 @@ GlobalParameters:
   # PrintTensorD: 1
   # PrintTensorRef: 1
   NumWarmups: 2
-  EnqueuesPerSync: 100
+  EnqueuesPerSync: 1000
   PrintWinnersOnly: True
   Architecture: gfx1250
   KeepBuildTmp: True
   PrintLevel: 2
-  CpuThreads: 2
   SkipSlowSolutionRatio: 0.0
-    #RotatingBufferSize: 256
+  RotatingBufferSize: 256
 
 
 BenchmarkProblems:
   -
     - # ProblemType, TN
       OperationType: GEMM
-      DataType: F8
-      DestDataType: F8
+      DataType: b
+      DestDataType: b
       ComputeDataType: s
       HighPrecisionAccumulate:  True
       TransposeA: True
@@ -46,10 +45,6 @@ BenchmarkProblems:
       Activation: False
       SupportUserArgs: True
       UseBias: 0
-        #MXBlockA: 32
-        #MXBlockB: 32
-        #DataTypeMXSA: e8
-        #DataTypeMXSB: e8
 
     - # BenchmarkProblemSizeGroup - Standard
       InitialSolutionParameters:
@@ -59,13 +54,15 @@ BenchmarkProblems:
         - UseSgprForGRO: [0]
         - ForceDisableShadowInit: [True]
         - MatrixInstruction:
-          - [16, 16, 128, 1,  1,  8, 8,  2, 2]
-        - DepthU: [256]
+          - [16, 16, 32, 1,  1,  8, 8,  2, 2]
+        - DepthU: [128]
         - TDMInst: [3]
+        - TDMPlusLdsBuf: [-1]
         - HalfPLR: [1]
-        - TDMIterateMode: [-1]
-        #- TDMSplit: [False,True]
-        - PrefetchGL2: [0,1]
+        - TDMIterateMode: [1]
+        - TDMSplit: [False]
+        - PrefetchGL2: [2]
+        - LDSSegmentInterleave: [1]
         - TransposeLDS: [-1]
         - LdsPadA: [-1]
         - LdsPadB: [-1]
@@ -86,12 +83,13 @@ BenchmarkProblems:
         - GlobalReadVectorWidthA: [-1]
         - GlobalReadVectorWidthB: [-1]
         - VectorWidthA: [8]
-        - VectorWidthB: [8]
+        - VectorWidthB: [-1]
         - LocalReadVectorWidth: [-1]
         - 1LDSBuffer: [0]
         - SourceSwap: [True]
-        - ClusterDim: [[2,4],[4,2]]
-        - LDSSegmentInterleave: [1]
+        - ClusterDim: [[4,4]]
+        - InitCIterWmma: [1]
+        #- ClusterDim: [[1,1]]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - WavefrontSize: [32]
@@ -104,7 +102,6 @@ BenchmarkProblems:
       BenchmarkFinalParameters:
         - ProblemSizes:
           - Exact: [4096, 4096, 1, 65536]
-            #- Exact: [4096, 7168, 1, 16384]
 
 #LibraryLogic:
 #    ScheduleName: "gfx1250"
@@ -113,4 +110,3 @@ BenchmarkProblems:
 #    LibraryType: "GridBased"
 #
 #LibraryClient:
-

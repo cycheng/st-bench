@@ -21,7 +21,8 @@ GlobalParameters:
   # PrintTensorD: 1
   # PrintTensorRef: 1
   NumWarmups: 2
-  EnqueuesPerSync: 200
+  EnqueuesPerSync: 1000
+  #NumBenchmarks: 10
   PrintWinnersOnly: True
   Architecture: gfx1250
   KeepBuildTmp: True
@@ -62,10 +63,11 @@ BenchmarkProblems:
           - [32, 16, 128, 1,  1,  8, 4,  2, 2]
         - DepthU: [512]
         - TDMInst: [3]
+        - TDMPlusLdsBuf: [-1]
         - HalfPLR: [1]
         - TDMIterateMode: [-1]
         - TDMSplit: [False]
-        - PrefetchGL2: [0,1,2]
+        - PrefetchGL2: [2]
         - TransposeLDS: [-1]
         - LdsPadA: [-1]
         - LdsPadB: [-1]
@@ -90,7 +92,8 @@ BenchmarkProblems:
         - LocalReadVectorWidth: [-1]
         - 1LDSBuffer: [0]
         - SourceSwap: [True]
-        - ClusterDim: [[2,4]]
+        - ClusterDim: [[4,4]]
+        - InitCIterWmma: [1]
         - LDSSegmentInterleave: [1]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
@@ -111,4 +114,4 @@ BenchmarkProblems:
 #    ArchitectureName: "gfx1250"
 #    LibraryType: "GridBased"
 #
-#LibraryClient:
+#Li braryClient:
