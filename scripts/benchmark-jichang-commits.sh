@@ -10,8 +10,8 @@ Usage:
   scripts/benchmark-jichang-commits.sh [options]
 
 Options:
-  --start <commit>       First commit to test (inclusive; requires --end).
-  --end <commit>         Last commit to test (inclusive; requires --start).
+  --start <commit>       First range boundary (inclusive; requires --end).
+  --end <commit>         Last range boundary (inclusive; requires --start).
   --config <file>        run-single-yaml config (default: examples/test.cfg).
   --repo <dir>           rocm-libraries repository (default: ~/rocm-libraries).
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
@@ -20,8 +20,11 @@ Options:
 Without --start/--end, test the current checkout once and do not change or
 stash the repository.
 
+In range mode, only commits that modify shared/stinkytofu are tested.
+
 Output:
   results.csv             Tested commits and maximum PFLOPS per YAML.
+  summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
   logs/<commit>/<test>.log
 
@@ -33,6 +36,7 @@ EOF
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+RESULT_HELPER="${SCRIPT_DIR}/benchmark-jichang-results.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -92,6 +96,10 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Config file not found: ${CONFIG_FILE}" >&2
   exit 2
 fi
+if [[ ! -f "${RESULT_HELPER}" ]]; then
+  echo "Result helper not found: ${RESULT_HELPER}" >&2
+  exit 2
+fi
 if [[ ! -d "${ROCM_REPO}/shared/stinkytofu" ]]; then
   echo "stinkytofu directory not found: ${ROCM_REPO}/shared/stinkytofu" >&2
   exit 2
@@ -126,11 +134,25 @@ done
 
 mkdir -p "${OUTPUT_DIR}/logs"
 RESULTS_CSV="${OUTPUT_DIR}/results.csv"
+SUMMARY_FILE="${OUTPUT_DIR}/summary.txt"
 FAILURES_CSV="${OUTPUT_DIR}/failures.csv"
 printf '%s\n' \
   'commit-id,maf-bf16,maf-FP8,maf-MXFP8,maf-MXFP4,maf-NVFP4,medium-bf16,medium-FP8,medium-MXFP8,medium-MXFP4' \
   > "${RESULTS_CSV}"
 printf '%s\n' 'commit-id,reason' > "${FAILURES_CSV}"
+
+update_result_and_summary() {
+  local commit="$1"
+  local result_index="$2"
+  local value="$3"
+
+  python3 "${RESULT_HELPER}" update \
+    --results "${RESULTS_CSV}" \
+    --summary "${SUMMARY_FILE}" \
+    --commit "${commit}" \
+    --index "${result_index}" \
+    --value "${value}"
+}
 
 csv_escape() {
   local value="${1//\"/\"\"}"
@@ -147,40 +169,7 @@ record_failure() {
 }
 
 extract_max_pflops() {
-  python3 - "$1" <<'PY'
-import csv
-import math
-import sys
-
-maximum = None
-gflops_index = None
-
-with open(sys.argv[1], encoding="utf-8", errors="replace", newline="") as stream:
-    for line in stream:
-        try:
-            row = next(csv.reader([line]))
-        except csv.Error:
-            continue
-
-        normalized = [field.strip().lower() for field in row]
-        if "gflops" in normalized:
-            gflops_index = normalized.index("gflops")
-            continue
-        if gflops_index is None or len(row) <= gflops_index:
-            continue
-
-        try:
-            value = float(row[gflops_index].strip())
-        except ValueError:
-            continue
-        if math.isfinite(value) and (maximum is None or value > maximum):
-            maximum = value
-
-if maximum is None:
-    sys.exit(1)
-
-print(f"{maximum / 1000.0:.9g}")
-PY
+  python3 "${RESULT_HELPER}" extract "$1"
 }
 
 ORIGINAL_COMMIT=""
@@ -241,10 +230,22 @@ if [[ -n "${START_COMMIT}" ]]; then
     exit 2
   fi
 
-  COMMITS=("${START_COMMIT}")
+  COMMITS=()
+  if [[ -n "$(git -C "${ROCM_REPO}" diff-tree --root --no-commit-id \
+    --name-only -r "${START_COMMIT}" -- shared/stinkytofu)" ]]; then
+    COMMITS+=("${START_COMMIT}")
+  fi
   while IFS= read -r commit; do
     [[ -n "${commit}" ]] && COMMITS+=("${commit}")
-  done < <(git -C "${ROCM_REPO}" rev-list --reverse --ancestry-path "${START_COMMIT}..${END_COMMIT}")
+  done < <(
+    git -C "${ROCM_REPO}" rev-list --reverse --ancestry-path \
+      "${START_COMMIT}..${END_COMMIT}" -- shared/stinkytofu
+  )
+
+  if [[ ${#COMMITS[@]} -eq 0 ]]; then
+    echo "No commits in the requested range modify shared/stinkytofu." >&2
+    exit 2
+  fi
 
   if ! git -C "${ROCM_REPO}" diff --quiet ||
      ! git -C "${ROCM_REPO}" diff --cached --quiet; then
@@ -292,7 +293,7 @@ for commit in "${COMMITS[@]}"; do
 
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
   mkdir -p "${commit_log_dir}"
-  values=()
+  update_result_and_summary "${short_commit}" -1 0
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
@@ -305,26 +306,18 @@ for commit in "${COMMITS[@]}"; do
       ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
     ) 2>&1 | tee "${log_file}"; then
       record_failure "${short_commit}" "${test_name}: YAML execution failed"
-      values+=("0")
+      update_result_and_summary "${short_commit}" "${index}" 0
       continue
     fi
 
     if ! pflops="$(extract_max_pflops "${log_file}")"; then
       record_failure "${short_commit}" "${test_name}: no finite gflops value found"
-      values+=("0")
+      update_result_and_summary "${short_commit}" "${index}" 0
       continue
     fi
-    values+=("${pflops}")
     echo "${test_name}: ${pflops} PFLOPS"
+    update_result_and_summary "${short_commit}" "${index}" "${pflops}"
   done
-
-  {
-    printf '%s' "${short_commit}"
-    for value in "${values[@]}"; do
-      printf ',%s' "${value}"
-    done
-    printf '\n'
-  } >> "${RESULTS_CSV}"
 done
 
 restore_status=0
@@ -334,22 +327,12 @@ fi
 
 echo
 echo "Results: ${RESULTS_CSV}"
-python3 - "${RESULTS_CSV}" <<'PY'
-import csv
-import sys
-
-with open(sys.argv[1], newline="", encoding="utf-8") as stream:
-    rows = list(csv.reader(stream))
-
-if len(rows) == 1:
-    print("No commits could be tested.")
-else:
-    widths = [max(len(row[i]) for row in rows) for i in range(len(rows[0]))]
-    for row_number, row in enumerate(rows):
-        print("  ".join(value.ljust(widths[i]) for i, value in enumerate(row)))
-        if row_number == 0:
-            print("  ".join("-" * width for width in widths))
-PY
+echo "Summary: ${SUMMARY_FILE}"
+if [[ -f "${SUMMARY_FILE}" ]]; then
+  python3 "${RESULT_HELPER}" show "${SUMMARY_FILE}"
+else
+  echo "No commits could be tested."
+fi
 
 if [[ -s "${FAILURES_CSV}" ]] && [[ "$(wc -l < "${FAILURES_CSV}")" -gt 1 ]]; then
   echo "Failures: ${FAILURES_CSV}"
