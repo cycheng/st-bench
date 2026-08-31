@@ -57,7 +57,7 @@ BenchmarkProblems:
           - [16, 16, 32, 1,  1,  8, 8,  2, 2]
         - DepthU: [128]
         - TDMInst: [3]
-        - TDMPlusLdsBuf: [-1]
+        #- TDMPlusLdsBuf: [-1]
         - HalfPLR: [1]
         - TDMIterateMode: [1]
         - TDMSplit: [False]
