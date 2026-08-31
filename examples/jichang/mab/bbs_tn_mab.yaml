@@ -50,7 +50,7 @@ BenchmarkProblems:
         - DepthU: [128]
         - HalfPLR: [0]
         - TDMInst: [3]
-        #- TDMPlusLdsBuf: [-1]
+        - TDMPlusLdsBuf: [-1]
         - PrefetchGL2: [1]
         - ClusterDim: [[1,1]]
         - TDMIterateMode: [0]
