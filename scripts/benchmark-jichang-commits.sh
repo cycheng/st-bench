@@ -37,12 +37,16 @@ YAML compatibility is selected automatically for each rocm-libraries commit:
   3941c087f7 onward:   st-codegen-test revision 6f82feb
 
 Output:
+  run-state.csv           Atomic resumable task ledger (source of truth).
   results.csv             Tested commits and maximum score per YAML.
   summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
-  logs/<commit>/<test>.log
+  logs/<commit>/<test>.attempt-N.log
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
   asm-diffs/<pair>.diff   File-level differences when ASM does not match.
+
+Reusing --output-dir resumes that run. Completed YAMLs, including failures,
+are skipped; interrupted running YAMLs receive a new attempt log.
 
 MAB scores use max(gbps-bandwidth) in GB/s. MAF and medium scores use
 max(gflops) / 1000 in PFLOPS.
@@ -56,6 +60,7 @@ EOF
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 RESULT_HELPER="${SCRIPT_DIR}/benchmark-jichang-results.py"
+STATE_HELPER="${SCRIPT_DIR}/benchmark-jichang-state.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -148,6 +153,10 @@ if [[ ! -f "${RESULT_HELPER}" ]]; then
   echo "Result helper not found: ${RESULT_HELPER}" >&2
   exit 2
 fi
+if [[ ! -f "${STATE_HELPER}" ]]; then
+  echo "State helper not found: ${STATE_HELPER}" >&2
+  exit 2
+fi
 if [[ ! -d "${ROCM_REPO}/shared/stinkytofu" ]]; then
   echo "stinkytofu directory not found: ${ROCM_REPO}/shared/stinkytofu" >&2
   exit 2
@@ -219,45 +228,25 @@ for yaml in "${TEST_YAMLS[@]}"; do
   fi
 done
 
+if ! python3 "${STATE_HELPER}" init \
+  --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}"; then
+  exit 1
+fi
 mkdir -p "${OUTPUT_DIR}/logs"
+RUN_STATE="${OUTPUT_DIR}/run-state.csv"
 RESULTS_CSV="${OUTPUT_DIR}/results.csv"
 SUMMARY_FILE="${OUTPUT_DIR}/summary.txt"
 FAILURES_CSV="${OUTPUT_DIR}/failures.csv"
-printf '%s\n' \
-  "commit-id,source,asm-same,$(IFS=,; echo "${TEST_NAMES[*]}")" \
-  > "${RESULTS_CSV}"
-printf '%s\n' 'commit-id,source,reason' > "${FAILURES_CSV}"
 
-update_result_and_summary() {
-  local commit="$1"
-  local source="$2"
-  local asm_same="$3"
-  local result_index="$4"
-  local value="$5"
-
-  python3 "${RESULT_HELPER}" update \
-    --results "${RESULTS_CSV}" \
-    --summary "${SUMMARY_FILE}" \
-    --commit "${commit}" \
-    --source "${source}" \
-    --asm-same "${asm_same}" \
-    --index "${result_index}" \
-    --value "${value}"
+regenerate_reports() {
+  python3 "${STATE_HELPER}" reports --output "${OUTPUT_DIR}" || exit 1
 }
 
-csv_escape() {
-  local value="${1//\"/\"\"}"
-  printf '"%s"' "${value}"
-}
-
-record_failure() {
-  local commit="$1"
-  local source="$2"
-  local reason="$3"
-  printf '%s,%s,' "${commit}" "${source}" >> "${FAILURES_CSV}"
-  csv_escape "${reason}" >> "${FAILURES_CSV}"
-  printf '\n' >> "${FAILURES_CSV}"
-  echo "${commit}: ${reason}" >&2
+finish_task() {
+  python3 "${STATE_HELPER}" finish --state "${RUN_STATE}" \
+    --commit "$1" --test "$2" --status "$3" --score "$4" \
+    --asm-status "$5" --message "$6" || exit 1
+  regenerate_reports
 }
 
 extract_max_score() {
@@ -297,21 +286,37 @@ compare_asm_caches() {
   local previous_dir="$1"
   local current_dir="$2"
   local diff_file="$3"
-  local status
+  local status=0
+  local item_status
+  local test_name
+  local temporary="${diff_file}.tmp.$$"
 
   mkdir -p -- "$(dirname -- "${diff_file}")"
-  if diff -qr --exclude=manifest.txt \
-      "${previous_dir}" "${current_dir}" > "${diff_file}" 2>&1; then
+  : > "${temporary}"
+  for test_name in "${ASM_TEST_NAMES[@]}"; do
+    diff -qr --exclude=manifest.txt \
+      "${previous_dir}/${test_name}/st" "${current_dir}/${test_name}/st" \
+      >> "${temporary}" 2>&1
+    item_status=$?
+    if [[ ${item_status} -gt 1 ]]; then
+      status=2
+      break
+    elif [[ ${item_status} -eq 1 && ${status} -eq 0 ]]; then
+      status=1
+    fi
+  done
+  if [[ ${status} -eq 0 ]]; then
+    rm -f -- "${temporary}"
     rm -f -- "${diff_file}"
     echo "yes"
     return
-  else
-    status=$?
   fi
 
   if [[ ${status} -eq 1 ]]; then
+    mv -- "${temporary}" "${diff_file}"
     echo "no"
   else
+    rm -f -- "${temporary}"
     echo "unknown"
   fi
 }
@@ -394,6 +399,56 @@ STASH_APPLIED=0
 RANGE_MODE=0
 RESTORED=0
 
+tracked_diff_hash() {
+  git -C "${ROCM_REPO}" diff --binary HEAD | sha256sum | awk '{print $1}'
+}
+
+session_get() {
+  python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" get --field "$1"
+}
+
+session_set() {
+  python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" set "$@" || exit 1
+}
+
+normalize_interrupted_session() {
+  local applied_commit
+  local expected_hash
+  local actual_hash
+
+  [[ -f "${OUTPUT_DIR}/git-session.json" ]] || return 0
+  ORIGINAL_COMMIT="$(session_get original_commit)"
+  ORIGINAL_BRANCH="$(session_get original_branch)"
+  STASH_OID="$(session_get stash_oid)"
+  if [[ "${STASH_OID}" == "pending" ]]; then
+    stash_subject="$(git -C "${ROCM_REPO}" log -1 --format=%s refs/stash 2>/dev/null || true)"
+    if [[ "${stash_subject}" == *"benchmark-jichang-commits automatic stash"* ]]; then
+      STASH_OID="$(git -C "${ROCM_REPO}" rev-parse refs/stash)"
+      session_set --stash-oid "${STASH_OID}"
+    else
+      echo "An interrupted automatic stash could not be identified safely; inspect ${ROCM_REPO}." >&2
+      exit 1
+    fi
+  fi
+  applied_commit="$(session_get applied_commit)"
+  expected_hash="$(session_get applied_diff_hash)"
+  if [[ -n "${applied_commit}" ]]; then
+    actual_hash="$(tracked_diff_hash)"
+    if [[ "$(git -C "${ROCM_REPO}" rev-parse HEAD)" != "${applied_commit}" ||
+          -z "${expected_hash}" || "${actual_hash}" != "${expected_hash}" ]]; then
+      echo "Interrupted benchmark left tracked changes that do not demonstrably match its saved automatic stash." >&2
+      echo "Inspect ${ROCM_REPO}; the preserved stash is ${STASH_OID:-unknown}. Refusing to reset anything." >&2
+      exit 1
+    fi
+    git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+    session_set --applied-commit "" --applied-diff-hash ""
+  elif ! git -C "${ROCM_REPO}" diff --quiet ||
+       ! git -C "${ROCM_REPO}" diff --cached --quiet; then
+    echo "ROCm repository has unmatched tracked changes; refusing to resume." >&2
+    exit 1
+  fi
+}
+
 restore_repository() {
   [[ ${RANGE_MODE} -eq 1 && ${RESTORED} -eq 0 ]] || return 0
   RESTORED=1
@@ -401,14 +456,21 @@ restore_repository() {
   set +e
 
   if [[ ${STASH_APPLIED} -eq 1 ]]; then
-    git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+    local expected_hash
+    expected_hash="$(session_get applied_diff_hash)"
+    if [[ -z "${expected_hash}" || "$(tracked_diff_hash)" != "${expected_hash}" ]]; then
+      echo "WARNING: tracked changes no longer match the automatic stash; not resetting them." >&2
+      return 1
+    fi
+    git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null || return 1
     STASH_APPLIED=0
+    session_set --applied-commit "" --applied-diff-hash ""
   fi
 
   if [[ -n "${ORIGINAL_BRANCH}" ]]; then
-    git -C "${ROCM_REPO}" checkout "${ORIGINAL_BRANCH}" >/dev/null
+    git -C "${ROCM_REPO}" checkout "${ORIGINAL_BRANCH}" >/dev/null || return 1
   else
-    git -C "${ROCM_REPO}" checkout --detach "${ORIGINAL_COMMIT}" >/dev/null
+    git -C "${ROCM_REPO}" checkout --detach "${ORIGINAL_COMMIT}" >/dev/null || return 1
   fi
 
   if [[ -n "${STASH_OID}" ]]; then
@@ -424,13 +486,23 @@ restore_repository() {
       return 1
     fi
   fi
+  python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" clear
 }
 
 COMMITS=()
 if [[ -n "${START_COMMIT}" ]]; then
   RANGE_MODE=1
-  ORIGINAL_COMMIT="$(git -C "${ROCM_REPO}" rev-parse HEAD)"
-  ORIGINAL_BRANCH="$(git -C "${ROCM_REPO}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
+    normalize_interrupted_session
+    if [[ -n "${STASH_OID}" ]] &&
+       ! git -C "${ROCM_REPO}" cat-file -e "${STASH_OID}^{commit}" 2>/dev/null; then
+      echo "Saved automatic stash no longer exists: ${STASH_OID}" >&2
+      exit 1
+    fi
+  else
+    ORIGINAL_COMMIT="$(git -C "${ROCM_REPO}" rev-parse HEAD)"
+    ORIGINAL_BRANCH="$(git -C "${ROCM_REPO}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  fi
 
   if ! START_COMMIT="$(git -C "${ROCM_REPO}" rev-parse --verify "${START_COMMIT}^{commit}")"; then
     echo "Invalid start commit." >&2
@@ -472,30 +544,72 @@ if [[ -n "${START_COMMIT}" ]]; then
     exit 2
   fi
 
-  if ! git -C "${ROCM_REPO}" diff --quiet ||
-     ! git -C "${ROCM_REPO}" diff --cached --quiet; then
+  if [[ ! -f "${OUTPUT_DIR}/git-session.json" ]]; then
+    session_set --original-commit "${ORIGINAL_COMMIT}" --original-branch "${ORIGINAL_BRANCH}"
+  fi
+  if [[ -z "${STASH_OID}" ]] &&
+     { ! git -C "${ROCM_REPO}" diff --quiet ||
+       ! git -C "${ROCM_REPO}" diff --cached --quiet; }; then
     echo "Stashing tracked changes in ${ROCM_REPO}"
+    session_set --stash-oid pending
     if ! git -C "${ROCM_REPO}" stash push -m "benchmark-jichang-commits automatic stash"; then
+      session_set --stash-oid ""
       echo "Failed to stash repository changes." >&2
       exit 1
     fi
     STASH_OID="$(git -C "${ROCM_REPO}" rev-parse refs/stash)"
+    session_set --stash-oid "${STASH_OID}"
   fi
 
   trap restore_repository EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
 else
+  if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
+    echo "This output directory has an interrupted range-mode Git session." >&2
+    echo "Resume with --start and --end so the repository can be recovered safely." >&2
+    exit 1
+  fi
   COMMITS=("$(git -C "${ROCM_REPO}" rev-parse HEAD)")
 fi
 
-COMPARE_ASM=0
-if [[ ${#COMMITS[@]} -ge 2 ]]; then
-  COMPARE_ASM=1
-fi
-PREVIOUS_ASM_DIR=""
-PREVIOUS_ASM_COMPLETE=0
-PREVIOUS_SHORT_COMMIT=""
+plan_args=()
+for commit in "${COMMITS[@]}"; do
+  plan_args+=(--commit "${commit}")
+done
+for test_name in "${TEST_NAMES[@]}"; do
+  plan_args+=(--test "${test_name}")
+done
+python3 "${STATE_HELPER}" plan --output "${OUTPUT_DIR}" "${plan_args[@]}" || exit 1
+
+# Materialize the full matrix before executing anything. A SIGKILL therefore
+# leaves every selected pair either running, completed, or explicitly missing.
+for commit in "${COMMITS[@]}"; do
+  short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
+  source="$(commit_source "${commit}")"
+  yaml_revision="$(yaml_revision_for_commit "${commit}")"
+  for index in "${!TEST_NAMES[@]}"; do
+    test_name="${TEST_NAMES[${index}]}"
+    test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
+    test_category="${test_category%%/*}"
+    if [[ "${test_category}" == "mab" ]]; then
+      score_metric="gbps-bandwidth"
+      score_unit="GB/s"
+    else
+      score_metric="gflops"
+      score_unit="PFLOPS"
+    fi
+    python3 "${STATE_HELPER}" ensure --state "${RUN_STATE}" \
+      --commit "${commit}" --short "${short_commit}" --source "${source}" \
+      --yaml-revision "${yaml_revision}" --test "${test_name}" \
+      --yaml "${TEST_YAMLS[${index}]}" --metric "${score_metric}" --unit "${score_unit}" ||
+      exit 1
+  done
+done
+regenerate_reports
+mapfile -t ASM_TEST_NAMES < <(
+  python3 "${STATE_HELPER}" tests --state "${RUN_STATE}"
+)
 
 for commit_index in "${!COMMITS[@]}"; do
   commit="${COMMITS[${commit_index}]}"
@@ -505,49 +619,74 @@ for commit_index in "${!COMMITS[@]}"; do
   echo
   echo "===== Testing ${short_commit} (${source}; YAML revision ${yaml_revision}) ====="
 
+  pending_args=()
+  for test_name in "${TEST_NAMES[@]}"; do
+    pending_args+=(--test "${test_name}")
+  done
+  commit_pending="$(python3 "${STATE_HELPER}" pending \
+    --state "${RUN_STATE}" --commit "${commit}" "${pending_args[@]}")" || exit 1
+  if [[ "${commit_pending}" == "no" ]]; then
+    echo "All selected YAMLs already completed; skipping commit."
+    continue
+  fi
+
   if [[ ${RANGE_MODE} -eq 1 ]]; then
     if [[ ${STASH_APPLIED} -eq 1 ]]; then
+      expected_hash="$(session_get applied_diff_hash)"
+      if [[ -z "${expected_hash}" || "$(tracked_diff_hash)" != "${expected_hash}" ]]; then
+        echo "Tracked changes no longer match the saved automatic stash; refusing to reset." >&2
+        exit 1
+      fi
       git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
       STASH_APPLIED=0
+      session_set --applied-commit "" --applied-diff-hash ""
     fi
 
     if ! git -C "${ROCM_REPO}" checkout --detach "${commit}" >/dev/null 2>&1; then
-      record_failure "${short_commit}" "${source}" "git checkout failed"
+      for test_name in "${TEST_NAMES[@]}"; do
+        start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+          --commit "${commit}" --test "${test_name}")" || exit 1
+        [[ "${start_result}" == "skip" ]] && continue
+        finish_task "${commit}" "${test_name}" execution-failed 0 missing "git checkout failed"
+      done
       continue
     fi
 
     if [[ -n "${STASH_OID}" ]]; then
       if ! git -C "${ROCM_REPO}" stash apply "${STASH_OID}" >/dev/null 2>&1; then
-        record_failure "${short_commit}" "${source}" "git stash apply failed"
         git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
         STASH_APPLIED=0
+        for test_name in "${TEST_NAMES[@]}"; do
+          start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+            --commit "${commit}" --test "${test_name}")" || exit 1
+          [[ "${start_result}" == "skip" ]] && continue
+          finish_task "${commit}" "${test_name}" execution-failed 0 missing "git stash apply failed"
+        done
         continue
       fi
       STASH_APPLIED=1
+      session_set --applied-commit "${commit}" --applied-diff-hash "$(tracked_diff_hash)"
     fi
   fi
 
   if ! prepare_yamls "${yaml_revision}"; then
-    record_failure "${short_commit}" "${source}" \
-      "could not prepare YAML revision ${yaml_revision}"
+    for test_name in "${TEST_NAMES[@]}"; do
+      start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+        --commit "${commit}" --test "${test_name}")" || exit 1
+      [[ "${start_result}" == "skip" ]] && continue
+      finish_task "${commit}" "${test_name}" execution-failed 0 missing \
+        "could not prepare YAML revision ${yaml_revision}"
+    done
     continue
   fi
 
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
   mkdir -p "${commit_log_dir}"
-  asm_same="N/A"
   commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
-  commit_asm_complete=1
-  if [[ ${COMPARE_ASM} -eq 1 ]]; then
-    rm -rf -- "${commit_asm_dir}"
-  fi
-  update_result_and_summary \
-    "${short_commit}" "${source}" "${asm_same}" -1 0
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
     yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#examples/jichang/}"
-    log_file="${commit_log_dir}/${test_name}.log"
     test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
     test_category="${test_category%%/*}"
     if [[ "${test_category}" == "mab" ]]; then
@@ -558,6 +697,14 @@ for commit_index in "${!COMMITS[@]}"; do
       score_unit="PFLOPS"
     fi
 
+    start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+      --commit "${commit}" --test "${test_name}")" || exit 1
+    if [[ "${start_result}" == "skip" ]]; then
+      echo "--- ${test_name}: already completed, skipping"
+      continue
+    fi
+    log_file="${OUTPUT_DIR}/${start_result}"
+    mkdir -p "$(dirname -- "${log_file}")"
     echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
     (
       cd "${PROJECT_DIR}" &&
@@ -567,60 +714,74 @@ for commit_index in "${!COMMITS[@]}"; do
 
     if ! score="$(extract_max_score "${log_file}" "${score_metric}")"; then
       if [[ ${run_status} -ne 0 ]]; then
-        record_failure "${short_commit}" "${source}" \
-          "${test_name}: YAML execution failed with no finite ${score_metric} value"
+        terminal_status="execution-failed"
+        message="YAML execution failed with no finite ${score_metric} value"
       else
-        record_failure "${short_commit}" "${source}" \
-          "${test_name}: no finite ${score_metric} value found"
+        terminal_status="no-score"
+        message="no finite ${score_metric} value found"
       fi
-      commit_asm_complete=0
-      update_result_and_summary \
-        "${short_commit}" "${source}" "${asm_same}" "${index}" 0
+      finish_task "${commit}" "${test_name}" "${terminal_status}" 0 missing "${message}"
       continue
     fi
 
+    terminal_status="passed"
+    message=""
     if [[ "${score}" == *"*" ]]; then
-      record_failure "${short_commit}" "${source}" \
-        "${test_name}: validation failed (score marked *)"
+      terminal_status="validation-failed"
+      message="validation failed (score marked *)"
     fi
 
     if [[ ${run_status} -ne 0 ]]; then
-      if [[ "${score}" != *"*" ]]; then
-        record_failure "${short_commit}" "${source}" \
-          "${test_name}: YAML execution failed after reporting a score"
+      if [[ "${terminal_status}" == "passed" ]]; then
+        terminal_status="execution-failed"
+        message="YAML execution failed after reporting a score"
       fi
-      commit_asm_complete=0
-    elif [[ ${COMPARE_ASM} -eq 1 ]] &&
-       ! cache_generated_asm \
-         "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
-      record_failure "${short_commit}" "${source}" \
-        "${test_name}: generated st ASM could not be cached"
-      commit_asm_complete=0
+      asm_status="missing"
+    elif cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
+      asm_status="cached"
+    else
+      asm_status="missing"
+      if [[ -z "${message}" ]]; then
+        message="generated st ASM could not be cached"
+      else
+        message="${message}; generated st ASM could not be cached"
+      fi
     fi
 
     echo "${test_name}: ${score} ${score_unit}"
-    update_result_and_summary \
-      "${short_commit}" "${source}" "${asm_same}" "${index}" "${score}"
+    finish_task "${commit}" "${test_name}" "${terminal_status}" "${score}" \
+      "${asm_status}" "${message}"
   done
+done
 
-  if [[ ${COMPARE_ASM} -eq 1 ]]; then
-    if [[ -z "${PREVIOUS_ASM_DIR}" ]]; then
-      asm_same="N/A"
-    elif [[ ${PREVIOUS_ASM_COMPLETE} -eq 0 ||
-            ${commit_asm_complete} -eq 0 ]]; then
-      asm_same="unknown"
-    else
-      diff_file="${OUTPUT_DIR}/asm-diffs/${PREVIOUS_SHORT_COMMIT}--${short_commit}.diff"
-      asm_same="$(compare_asm_caches \
-        "${PREVIOUS_ASM_DIR}" "${commit_asm_dir}" "${diff_file}")"
-    fi
-    echo "ASM same as previous tested commit: ${asm_same}"
-    update_result_and_summary \
-      "${short_commit}" "${source}" "${asm_same}" -1 0
-    PREVIOUS_ASM_DIR="${commit_asm_dir}"
-    PREVIOUS_ASM_COMPLETE="${commit_asm_complete}"
-    PREVIOUS_SHORT_COMMIT="${short_commit}"
+PREVIOUS_ASM_DIR=""
+PREVIOUS_ASM_COMPLETE=0
+PREVIOUS_SHORT_COMMIT=""
+for commit in "${COMMITS[@]}"; do
+  short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
+  commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
+  commit_asm_complete=1
+  for test_name in "${ASM_TEST_NAMES[@]}"; do
+    [[ -d "${commit_asm_dir}/${test_name}/st" ]] || commit_asm_complete=0
+  done
+  if [[ -z "${PREVIOUS_ASM_DIR}" ]]; then
+    asm_same="N/A"
+  elif [[ ${PREVIOUS_ASM_COMPLETE} -eq 0 || ${commit_asm_complete} -eq 0 ]]; then
+    asm_same="unknown"
+  else
+    diff_file="${OUTPUT_DIR}/asm-diffs/${PREVIOUS_SHORT_COMMIT}--${short_commit}.diff"
+    asm_same="$(compare_asm_caches \
+      "${PREVIOUS_ASM_DIR}" "${commit_asm_dir}" "${diff_file}")"
   fi
+  if [[ ${#COMMITS[@]} -ge 2 ]]; then
+    echo "ASM same as previous tested commit: ${asm_same}"
+  fi
+  python3 "${STATE_HELPER}" plan-asm --output "${OUTPUT_DIR}" \
+    --commit "${commit}" --value "${asm_same}" || exit 1
+  regenerate_reports
+  PREVIOUS_ASM_DIR="${commit_asm_dir}"
+  PREVIOUS_ASM_COMPLETE="${commit_asm_complete}"
+  PREVIOUS_SHORT_COMMIT="${short_commit}"
 done
 
 restore_status=0
