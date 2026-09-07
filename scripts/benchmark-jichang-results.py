@@ -64,14 +64,16 @@ def update_result(args: argparse.Namespace) -> None:
     )
     if current_index is None:
         data_rows.append(
-            [args.commit, args.source] + ["0"] * (len(header) - 2)
+            [args.commit, args.source, args.asm_same]
+            + ["0"] * (len(header) - 3)
         )
         current_index = len(data_rows) - 1
     else:
         data_rows[current_index][1] = args.source
+        data_rows[current_index][2] = args.asm_same
 
     if args.index >= 0:
-        data_rows[current_index][args.index + 2] = args.value
+        data_rows[current_index][args.index + 3] = args.value
 
     atomic_write(
         args.results,
@@ -138,6 +140,7 @@ def parse_args() -> argparse.Namespace:
     update.add_argument("--summary", type=Path, required=True)
     update.add_argument("--commit", required=True)
     update.add_argument("--source", required=True)
+    update.add_argument("--asm-same", required=True)
     update.add_argument("--index", type=int, required=True)
     update.add_argument("--value", required=True)
     update.set_defaults(handler=update_result)

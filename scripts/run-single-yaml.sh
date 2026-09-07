@@ -382,24 +382,24 @@ if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
   grep -oE 'NO_CHECK.{0,10}' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
 fi
 
+# Do not let missing output from this run look like an artifact from an older
+# run of the same YAML.
+rm -rf "${HOST_OUTPUT_DIR}/orig" "${HOST_OUTPUT_DIR}/st"
+
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
   if docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/orig'"; then
-    rm -rf "${HOST_OUTPUT_DIR}/orig"
     docker cp "${CONTAINER_NAME}:${RUN_DIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
   fi
   if docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "test -d 'cmpasm/st'"; then
-    rm -rf "${HOST_OUTPUT_DIR}/st"
     docker cp "${CONTAINER_NAME}:${RUN_DIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
   fi
   # Keep workspace clean after artifact copy.
   docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf 'cmpasm'"
 else
   if [[ -d "${RUN_DIR}/cmpasm/orig" ]]; then
-    rm -rf "${HOST_OUTPUT_DIR}/orig"
     cp -a "${RUN_DIR}/cmpasm/orig" "${HOST_OUTPUT_DIR}/orig"
   fi
   if [[ -d "${RUN_DIR}/cmpasm/st" ]]; then
-    rm -rf "${HOST_OUTPUT_DIR}/st"
     cp -a "${RUN_DIR}/cmpasm/st" "${HOST_OUTPUT_DIR}/st"
   fi
   # Keep workspace clean after artifact copy.

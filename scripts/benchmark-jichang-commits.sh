@@ -28,7 +28,8 @@ stash the repository.
 
 In range mode, commits that modify shared/stinkytofu, projects/hipblaslt, or
 both are tested. The source column identifies which component each commit
-changes.
+changes. When at least two commits are selected, asm-same reports whether each
+commit's complete generated st ASM matches the previously tested commit.
 
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
@@ -40,6 +41,8 @@ Output:
   summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
   logs/<commit>/<test>.log
+  asm/<commit>/<test>/st  Cached generated ASM used for comparison.
+  asm-diffs/<pair>.diff   File-level differences when ASM does not match.
 
 PFLOPS is calculated as max(gflops) / 1000 for each YAML.
 A YAML that fails or has no finite gflops value is recorded as 0, and the
@@ -218,20 +221,23 @@ RESULTS_CSV="${OUTPUT_DIR}/results.csv"
 SUMMARY_FILE="${OUTPUT_DIR}/summary.txt"
 FAILURES_CSV="${OUTPUT_DIR}/failures.csv"
 printf '%s\n' \
-  "commit-id,source,$(IFS=,; echo "${TEST_NAMES[*]}")" > "${RESULTS_CSV}"
+  "commit-id,source,asm-same,$(IFS=,; echo "${TEST_NAMES[*]}")" \
+  > "${RESULTS_CSV}"
 printf '%s\n' 'commit-id,source,reason' > "${FAILURES_CSV}"
 
 update_result_and_summary() {
   local commit="$1"
   local source="$2"
-  local result_index="$3"
-  local value="$4"
+  local asm_same="$3"
+  local result_index="$4"
+  local value="$5"
 
   python3 "${RESULT_HELPER}" update \
     --results "${RESULTS_CSV}" \
     --summary "${SUMMARY_FILE}" \
     --commit "${commit}" \
     --source "${source}" \
+    --asm-same "${asm_same}" \
     --index "${result_index}" \
     --value "${value}"
 }
@@ -253,6 +259,58 @@ record_failure() {
 
 extract_max_pflops() {
   python3 "${RESULT_HELPER}" extract "$1"
+}
+
+cache_generated_asm() {
+  local log_file="$1"
+  local destination="$2"
+  local artifact_dir
+
+  artifact_dir="$(awk '
+    /^Saved artifacts to / {
+      sub(/^Saved artifacts to /, "")
+      path = $0
+    }
+    END { print path }
+  ' "${log_file}")"
+  if [[ -z "${artifact_dir}" ]]; then
+    echo "run-single-yaml did not report its artifact directory" >&2
+    return 1
+  fi
+  if [[ "${artifact_dir}" != /* ]]; then
+    artifact_dir="${PROJECT_DIR}/${artifact_dir}"
+  fi
+  if [[ ! -d "${artifact_dir}/st" ]]; then
+    echo "Generated st ASM directory not found: ${artifact_dir}/st" >&2
+    return 1
+  fi
+
+  rm -rf -- "${destination}"
+  mkdir -p -- "$(dirname -- "${destination}")"
+  cp -a -- "${artifact_dir}/st" "${destination}"
+}
+
+compare_asm_caches() {
+  local previous_dir="$1"
+  local current_dir="$2"
+  local diff_file="$3"
+  local status
+
+  mkdir -p -- "$(dirname -- "${diff_file}")"
+  if diff -qr --exclude=manifest.txt \
+      "${previous_dir}" "${current_dir}" > "${diff_file}" 2>&1; then
+    rm -f -- "${diff_file}"
+    echo "yes"
+    return
+  else
+    status=$?
+  fi
+
+  if [[ ${status} -eq 1 ]]; then
+    echo "no"
+  else
+    echo "unknown"
+  fi
 }
 
 commit_source() {
@@ -428,7 +486,16 @@ else
   COMMITS=("$(git -C "${ROCM_REPO}" rev-parse HEAD)")
 fi
 
-for commit in "${COMMITS[@]}"; do
+COMPARE_ASM=0
+if [[ ${#COMMITS[@]} -ge 2 ]]; then
+  COMPARE_ASM=1
+fi
+PREVIOUS_ASM_DIR=""
+PREVIOUS_ASM_COMPLETE=0
+PREVIOUS_SHORT_COMMIT=""
+
+for commit_index in "${!COMMITS[@]}"; do
+  commit="${COMMITS[${commit_index}]}"
   short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
   source="$(commit_source "${commit}")"
   yaml_revision="$(yaml_revision_for_commit "${commit}")"
@@ -465,7 +532,14 @@ for commit in "${COMMITS[@]}"; do
 
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
   mkdir -p "${commit_log_dir}"
-  update_result_and_summary "${short_commit}" "${source}" -1 0
+  asm_same="N/A"
+  commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
+  commit_asm_complete=1
+  if [[ ${COMPARE_ASM} -eq 1 ]]; then
+    rm -rf -- "${commit_asm_dir}"
+  fi
+  update_result_and_summary \
+    "${short_commit}" "${source}" "${asm_same}" -1 0
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
@@ -479,20 +553,50 @@ for commit in "${COMMITS[@]}"; do
     ) 2>&1 | tee "${log_file}"; then
       record_failure "${short_commit}" "${source}" \
         "${test_name}: YAML execution failed"
-      update_result_and_summary "${short_commit}" "${source}" "${index}" 0
+      commit_asm_complete=0
+      update_result_and_summary \
+        "${short_commit}" "${source}" "${asm_same}" "${index}" 0
       continue
+    fi
+
+    if [[ ${COMPARE_ASM} -eq 1 ]] &&
+       ! cache_generated_asm \
+         "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
+      record_failure "${short_commit}" "${source}" \
+        "${test_name}: generated st ASM could not be cached"
+      commit_asm_complete=0
     fi
 
     if ! pflops="$(extract_max_pflops "${log_file}")"; then
       record_failure "${short_commit}" "${source}" \
         "${test_name}: no finite gflops value found"
-      update_result_and_summary "${short_commit}" "${source}" "${index}" 0
+      update_result_and_summary \
+        "${short_commit}" "${source}" "${asm_same}" "${index}" 0
       continue
     fi
     echo "${test_name}: ${pflops} PFLOPS"
     update_result_and_summary \
-      "${short_commit}" "${source}" "${index}" "${pflops}"
+      "${short_commit}" "${source}" "${asm_same}" "${index}" "${pflops}"
   done
+
+  if [[ ${COMPARE_ASM} -eq 1 ]]; then
+    if [[ -z "${PREVIOUS_ASM_DIR}" ]]; then
+      asm_same="N/A"
+    elif [[ ${PREVIOUS_ASM_COMPLETE} -eq 0 ||
+            ${commit_asm_complete} -eq 0 ]]; then
+      asm_same="unknown"
+    else
+      diff_file="${OUTPUT_DIR}/asm-diffs/${PREVIOUS_SHORT_COMMIT}--${short_commit}.diff"
+      asm_same="$(compare_asm_caches \
+        "${PREVIOUS_ASM_DIR}" "${commit_asm_dir}" "${diff_file}")"
+    fi
+    echo "ASM same as previous tested commit: ${asm_same}"
+    update_result_and_summary \
+      "${short_commit}" "${source}" "${asm_same}" -1 0
+    PREVIOUS_ASM_DIR="${commit_asm_dir}"
+    PREVIOUS_ASM_COMPLETE="${commit_asm_complete}"
+    PREVIOUS_SHORT_COMMIT="${short_commit}"
+  fi
 done
 
 restore_status=0
