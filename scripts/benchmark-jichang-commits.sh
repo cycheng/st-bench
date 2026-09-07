@@ -45,8 +45,9 @@ Output:
   asm-diffs/<pair>.diff   File-level differences when ASM does not match.
 
 PFLOPS is calculated as max(gflops) / 1000 for each YAML.
-A YAML that fails or has no finite gflops value is recorded as 0, and the
-remaining YAMLs for that commit are still run.
+A score followed by * came from a row whose validation field is FAILED, so the
+measured performance is shown but its output was incorrect. A YAML with no
+finite gflops value is recorded as 0, and the remaining YAMLs still run.
 EOF
 }
 
@@ -547,19 +548,38 @@ for commit_index in "${!COMMITS[@]}"; do
     log_file="${commit_log_dir}/${test_name}.log"
 
     echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
-    if ! (
+    (
       cd "${PROJECT_DIR}" &&
       ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
-    ) 2>&1 | tee "${log_file}"; then
-      record_failure "${short_commit}" "${source}" \
-        "${test_name}: YAML execution failed"
+    ) 2>&1 | tee "${log_file}"
+    run_status="${PIPESTATUS[0]}"
+
+    if ! pflops="$(extract_max_pflops "${log_file}")"; then
+      if [[ ${run_status} -ne 0 ]]; then
+        record_failure "${short_commit}" "${source}" \
+          "${test_name}: YAML execution failed with no finite gflops value"
+      else
+        record_failure "${short_commit}" "${source}" \
+          "${test_name}: no finite gflops value found"
+      fi
       commit_asm_complete=0
       update_result_and_summary \
         "${short_commit}" "${source}" "${asm_same}" "${index}" 0
       continue
     fi
 
-    if [[ ${COMPARE_ASM} -eq 1 ]] &&
+    if [[ "${pflops}" == *"*" ]]; then
+      record_failure "${short_commit}" "${source}" \
+        "${test_name}: validation failed (score marked *)"
+    fi
+
+    if [[ ${run_status} -ne 0 ]]; then
+      if [[ "${pflops}" != *"*" ]]; then
+        record_failure "${short_commit}" "${source}" \
+          "${test_name}: YAML execution failed after reporting a score"
+      fi
+      commit_asm_complete=0
+    elif [[ ${COMPARE_ASM} -eq 1 ]] &&
        ! cache_generated_asm \
          "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
       record_failure "${short_commit}" "${source}" \
@@ -567,13 +587,6 @@ for commit_index in "${!COMMITS[@]}"; do
       commit_asm_complete=0
     fi
 
-    if ! pflops="$(extract_max_pflops "${log_file}")"; then
-      record_failure "${short_commit}" "${source}" \
-        "${test_name}: no finite gflops value found"
-      update_result_and_summary \
-        "${short_commit}" "${source}" "${asm_same}" "${index}" 0
-      continue
-    fi
     echo "${test_name}: ${pflops} PFLOPS"
     update_result_and_summary \
       "${short_commit}" "${source}" "${asm_same}" "${index}" "${pflops}"

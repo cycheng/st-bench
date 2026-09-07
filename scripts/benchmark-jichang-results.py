@@ -94,6 +94,8 @@ def update_result(args: argparse.Namespace) -> None:
 def extract_max_pflops(args: argparse.Namespace) -> None:
     maximum = None
     gflops_index = None
+    validation_index = None
+    maximum_failed_validation = False
 
     with args.log.open(
         encoding="utf-8", errors="replace", newline=""
@@ -107,6 +109,11 @@ def extract_max_pflops(args: argparse.Namespace) -> None:
             normalized = [field.strip().lower() for field in row]
             if "gflops" in normalized:
                 gflops_index = normalized.index("gflops")
+                validation_index = (
+                    normalized.index("validation")
+                    if "validation" in normalized
+                    else None
+                )
                 continue
             if gflops_index is None or len(row) <= gflops_index:
                 continue
@@ -119,10 +126,16 @@ def extract_max_pflops(args: argparse.Namespace) -> None:
                 maximum is None or value > maximum
             ):
                 maximum = value
+                maximum_failed_validation = (
+                    validation_index is not None
+                    and len(row) > validation_index
+                    and row[validation_index].strip().lower() == "failed"
+                )
 
     if maximum is None:
         raise SystemExit(1)
-    print(f"{maximum / 1000.0:.9g}")
+    annotation = "*" if maximum_failed_validation else ""
+    print(f"{maximum / 1000.0:.9g}{annotation}")
 
 
 def show_summary(args: argparse.Namespace) -> None:
