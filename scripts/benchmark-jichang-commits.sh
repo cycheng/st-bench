@@ -675,6 +675,14 @@ for commit_index in "${!COMMITS[@]}"; do
     ) 2>&1 | tee "${log_file}"
     run_status="${PIPESTATUS[0]}"
 
+    asm_status="missing"
+    asm_message=""
+    if cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
+      asm_status="cached"
+    else
+      asm_message="generated st ASM could not be cached"
+    fi
+
     if ! score="$(extract_max_score "${log_file}" "${score_metric}")"; then
       if [[ ${run_status} -ne 0 ]]; then
         terminal_status="execution-failed"
@@ -683,7 +691,11 @@ for commit_index in "${!COMMITS[@]}"; do
         terminal_status="no-score"
         message="no finite ${score_metric} value found"
       fi
-      finish_task "${commit}" "${test_name}" "${terminal_status}" 0 missing "${message}"
+      if [[ -n "${asm_message}" ]]; then
+        message="${message}; ${asm_message}"
+      fi
+      finish_task "${commit}" "${test_name}" "${terminal_status}" 0 \
+        "${asm_status}" "${message}"
       continue
     fi
 
@@ -699,15 +711,13 @@ for commit_index in "${!COMMITS[@]}"; do
         terminal_status="execution-failed"
         message="YAML execution failed after reporting a score"
       fi
-      asm_status="missing"
-    elif cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
-      asm_status="cached"
-    else
-      asm_status="missing"
+    fi
+
+    if [[ -n "${asm_message}" ]]; then
       if [[ -z "${message}" ]]; then
-        message="generated st ASM could not be cached"
+        message="${asm_message}"
       else
-        message="${message}; generated st ASM could not be cached"
+        message="${message}; ${asm_message}"
       fi
     fi
 

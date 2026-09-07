@@ -350,12 +350,13 @@ if [[ ${BUILD_ONLY} -eq 1 ]]; then
 fi
 TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
 
+run_status=0
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
   DOCKER_ENV_ARGS=()
   for kv in "${RUNTIME_ENV_VARS[@]}"; do
     DOCKER_ENV_ARGS+=("-e" "${kv}")
   done
-  {
+  if {
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
     echo "Execution mode: ${EXECUTION_MODE}"
@@ -364,9 +365,13 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     docker exec -w "${RUN_DIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
       "${TENSILE_ARGS}"
   } 2>&1 \
-    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"; then
+    :
+  else
+    run_status="${PIPESTATUS[0]}"
+  fi
 else
-  {
+  if {
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
     echo "Execution mode: ${EXECUTION_MODE}"
@@ -374,7 +379,11 @@ else
     echo
     (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
   } 2>&1 \
-    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"; then
+    :
+  else
+    run_status="${PIPESTATUS[0]}"
+  fi
 fi
 
 if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
@@ -417,3 +426,4 @@ if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
 fi
 
 echo "Saved artifacts to ${HOST_OUTPUT_DIR}"
+exit "${run_status}"
