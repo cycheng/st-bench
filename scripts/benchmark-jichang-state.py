@@ -3,9 +3,11 @@
 
 import argparse
 import csv
+import difflib
 import hashlib
 import json
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, TextIO
@@ -187,6 +189,152 @@ def set_plan_asm(args: argparse.Namespace) -> None:
     write_json(path, plan)
 
 
+def asm_files(root: Path) -> dict[str, Path]:
+    if not root.is_dir():
+        return {}
+    return {
+        str(path.relative_to(root)): path
+        for path in root.rglob("*")
+        if path.is_file() and path.suffix.lower() in {".s", ".asm"}
+    }
+
+
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_file_diff(left: Path, right: Path, destination: Path) -> None:
+    left_lines = left.read_text(encoding="utf-8", errors="replace").splitlines(True)
+    right_lines = right.read_text(encoding="utf-8", errors="replace").splitlines(True)
+    body = difflib.unified_diff(
+        left_lines,
+        right_lines,
+        fromfile=str(left),
+        tofile=str(right),
+    )
+    atomic_write(destination, lambda stream: stream.writelines(body))
+
+
+def compare_asm(args: argparse.Namespace) -> None:
+    output = args.output
+    state_rows = read_rows(output / "run-state.csv")
+    plan_path = output / "current-plan.json"
+    if not plan_path.exists():
+        raise SystemExit("current-plan.json does not exist")
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    commits: list[str] = plan.get("commits", [])
+    tests: list[str] = []
+    short_by_commit: dict[str, str] = {}
+    for row in state_rows:
+        short_by_commit.setdefault(row["commit"], row["short_commit"])
+        if row["test"] not in tests:
+            tests.append(row["test"])
+
+    summary_rows = [[
+        "previous-commit", "current-commit", "yaml", "status",
+        "total", "same", "different", "added", "removed",
+    ]]
+    file_rows = [[
+        "previous-commit", "current-commit", "yaml", "file", "status",
+        "previous-sha256", "current-sha256",
+    ]]
+    asm_same = {
+        commit: value
+        for commit, value in plan.get("asm_same", {}).items()
+        if commit not in commits
+    }
+    diff_root = output / "asm-diffs"
+    if diff_root.exists():
+        shutil.rmtree(diff_root)
+
+    previous_commit = ""
+    for commit in commits:
+        current_short = short_by_commit.get(commit, commit[:12])
+        if not previous_commit:
+            asm_same[commit] = {
+                "status": "N/A", "different": "", "added": "", "removed": "",
+            }
+            previous_commit = commit
+            continue
+
+        previous_short = short_by_commit.get(previous_commit, previous_commit[:12])
+        aggregate = {"same": 0, "different": 0, "added": 0, "removed": 0}
+        incomplete = False
+        for test in tests:
+            left_root = output / "asm" / previous_short / test / "st"
+            right_root = output / "asm" / current_short / test / "st"
+            if not left_root.is_dir() or not right_root.is_dir():
+                incomplete = True
+                summary_rows.append([
+                    previous_short, current_short, test, "unknown",
+                    "", "", "", "", "",
+                ])
+                continue
+
+            left_files = asm_files(left_root)
+            right_files = asm_files(right_root)
+            counts = {"same": 0, "different": 0, "added": 0, "removed": 0}
+            for relative in sorted(left_files.keys() | right_files.keys()):
+                left = left_files.get(relative)
+                right = right_files.get(relative)
+                left_hash = file_hash(left) if left else ""
+                right_hash = file_hash(right) if right else ""
+                if left is None:
+                    status = "added"
+                elif right is None:
+                    status = "removed"
+                elif left_hash == right_hash:
+                    status = "same"
+                else:
+                    status = "different"
+                    write_file_diff(
+                        left,
+                        right,
+                        diff_root / f"{previous_short}--{current_short}"
+                        / test / f"{relative}.diff",
+                    )
+                counts[status] += 1
+                file_rows.append([
+                    previous_short, current_short, test, relative, status,
+                    left_hash, right_hash,
+                ])
+
+            for name, value in counts.items():
+                aggregate[name] += value
+            total = sum(counts.values())
+            yaml_status = (
+                "yes"
+                if counts["different"] + counts["added"] + counts["removed"] == 0
+                else "no"
+            )
+            summary_rows.append([
+                previous_short, current_short, test, yaml_status, str(total),
+                str(counts["same"]), str(counts["different"]),
+                str(counts["added"]), str(counts["removed"]),
+            ])
+
+        changed = aggregate["different"] + aggregate["added"] + aggregate["removed"]
+        status = "unknown" if incomplete else ("yes" if changed == 0 else "no")
+        asm_same[commit] = {
+            "status": status,
+            "different": str(aggregate["different"]),
+            "added": str(aggregate["added"]),
+            "removed": str(aggregate["removed"]),
+        }
+        previous_commit = commit
+
+    plan["asm_same"] = asm_same
+    write_json(plan_path, plan)
+    atomic_write(
+        output / "asm-summary.csv",
+        lambda stream: csv.writer(stream, lineterminator="\n").writerows(summary_rows),
+    )
+    atomic_write(
+        output / "asm-file-comparisons.csv",
+        lambda stream: csv.writer(stream, lineterminator="\n").writerows(file_rows),
+    )
+
+
 def format_summary(header: list[str], rows: list[list[str]]) -> str:
     display_rows: list[list[str]] = []
     for row in rows:
@@ -234,8 +382,23 @@ def reports(args: argparse.Namespace) -> None:
         for test in tests:
             row = by_key.get((commit, test))
             values.append(row["score"] if row and row["status"] in DONE else "")
-        commit_rows.append([first["short_commit"], first["source"], asm.get(commit, ""), *values])
-    header = ["commit-id", "source", "asm-same", *tests]
+        asm_value = asm.get(commit, "")
+        if isinstance(asm_value, dict):
+            asm_status = asm_value.get("status", "")
+            asm_different = asm_value.get("different", "")
+            asm_added = asm_value.get("added", "")
+            asm_removed = asm_value.get("removed", "")
+        else:
+            asm_status = asm_value
+            asm_different = asm_added = asm_removed = ""
+        commit_rows.append([
+            first["short_commit"], first["source"], asm_status,
+            asm_different, asm_added, asm_removed, *values,
+        ])
+    header = [
+        "commit-id", "source", "asm-same", "asm-different",
+        "asm-added", "asm-removed", *tests,
+    ]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),
@@ -327,6 +490,9 @@ def parse_args() -> argparse.Namespace:
     plan_asm.add_argument("--commit", required=True)
     plan_asm.add_argument("--value", required=True)
     plan_asm.set_defaults(handler=set_plan_asm)
+    compare_parser = commands.add_parser("compare-asm")
+    compare_parser.add_argument("--output", type=Path, required=True)
+    compare_parser.set_defaults(handler=compare_asm)
     report = commands.add_parser("reports")
     report.add_argument("--output", type=Path, required=True)
     report.set_defaults(handler=reports)

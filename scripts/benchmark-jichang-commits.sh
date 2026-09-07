@@ -41,9 +41,13 @@ Output:
   results.csv             Tested commits and maximum score per YAML.
   summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
+  asm-summary.csv         Per-commit-pair and per-YAML ASM comparison counts.
+  asm-file-comparisons.csv
+                           Exact status and hashes for every ASM file.
   logs/<commit>/<test>.attempt-N.log
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
-  asm-diffs/<pair>.diff   File-level differences when ASM does not match.
+  asm-diffs/<pair>/<test>/<file>.diff
+                           Unified diffs for changed ASM files.
 
 Reusing --output-dir resumes that run. Completed YAMLs, including failures,
 are skipped; interrupted running YAMLs receive a new attempt log.
@@ -280,45 +284,6 @@ cache_generated_asm() {
   rm -rf -- "${destination}"
   mkdir -p -- "$(dirname -- "${destination}")"
   cp -a -- "${artifact_dir}/st" "${destination}"
-}
-
-compare_asm_caches() {
-  local previous_dir="$1"
-  local current_dir="$2"
-  local diff_file="$3"
-  local status=0
-  local item_status
-  local test_name
-  local temporary="${diff_file}.tmp.$$"
-
-  mkdir -p -- "$(dirname -- "${diff_file}")"
-  : > "${temporary}"
-  for test_name in "${ASM_TEST_NAMES[@]}"; do
-    diff -qr --exclude=manifest.txt \
-      "${previous_dir}/${test_name}/st" "${current_dir}/${test_name}/st" \
-      >> "${temporary}" 2>&1
-    item_status=$?
-    if [[ ${item_status} -gt 1 ]]; then
-      status=2
-      break
-    elif [[ ${item_status} -eq 1 && ${status} -eq 0 ]]; then
-      status=1
-    fi
-  done
-  if [[ ${status} -eq 0 ]]; then
-    rm -f -- "${temporary}"
-    rm -f -- "${diff_file}"
-    echo "yes"
-    return
-  fi
-
-  if [[ ${status} -eq 1 ]]; then
-    mv -- "${temporary}" "${diff_file}"
-    echo "no"
-  else
-    rm -f -- "${temporary}"
-    echo "unknown"
-  fi
 }
 
 commit_source() {
@@ -607,9 +572,8 @@ for commit in "${COMMITS[@]}"; do
   done
 done
 regenerate_reports
-mapfile -t ASM_TEST_NAMES < <(
-  python3 "${STATE_HELPER}" tests --state "${RUN_STATE}"
-)
+python3 "${STATE_HELPER}" compare-asm --output "${OUTPUT_DIR}" || exit 1
+regenerate_reports
 
 for commit_index in "${!COMMITS[@]}"; do
   commit="${COMMITS[${commit_index}]}"
@@ -753,36 +717,8 @@ for commit_index in "${!COMMITS[@]}"; do
       "${asm_status}" "${message}"
   done
 done
-
-PREVIOUS_ASM_DIR=""
-PREVIOUS_ASM_COMPLETE=0
-PREVIOUS_SHORT_COMMIT=""
-for commit in "${COMMITS[@]}"; do
-  short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
-  commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
-  commit_asm_complete=1
-  for test_name in "${ASM_TEST_NAMES[@]}"; do
-    [[ -d "${commit_asm_dir}/${test_name}/st" ]] || commit_asm_complete=0
-  done
-  if [[ -z "${PREVIOUS_ASM_DIR}" ]]; then
-    asm_same="N/A"
-  elif [[ ${PREVIOUS_ASM_COMPLETE} -eq 0 || ${commit_asm_complete} -eq 0 ]]; then
-    asm_same="unknown"
-  else
-    diff_file="${OUTPUT_DIR}/asm-diffs/${PREVIOUS_SHORT_COMMIT}--${short_commit}.diff"
-    asm_same="$(compare_asm_caches \
-      "${PREVIOUS_ASM_DIR}" "${commit_asm_dir}" "${diff_file}")"
-  fi
-  if [[ ${#COMMITS[@]} -ge 2 ]]; then
-    echo "ASM same as previous tested commit: ${asm_same}"
-  fi
-  python3 "${STATE_HELPER}" plan-asm --output "${OUTPUT_DIR}" \
-    --commit "${commit}" --value "${asm_same}" || exit 1
-  regenerate_reports
-  PREVIOUS_ASM_DIR="${commit_asm_dir}"
-  PREVIOUS_ASM_COMPLETE="${commit_asm_complete}"
-  PREVIOUS_SHORT_COMMIT="${short_commit}"
-done
+python3 "${STATE_HELPER}" compare-asm --output "${OUTPUT_DIR}" || exit 1
+regenerate_reports
 
 restore_status=0
 if [[ ${RANGE_MODE} -eq 1 ]]; then
