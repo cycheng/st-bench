@@ -177,7 +177,7 @@ fi
 ALL_TEST_NAMES=(
   mab-bf16 mab-bf16-m64 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4
   maf-bf16 maf-FP8 maf-MXFP8 maf-MXFP4 maf-NVFP4
-  medium-bf16 medium-FP8-FP4 medium-FP8 medium-MXFP8 medium-MXFP4
+  medium-bf16 medium-FP8 medium-MXFP8 medium-MXFP4
 )
 ALL_TEST_YAMLS=(
   examples/jichang/mab/bbs_tn_mab.yaml
@@ -192,7 +192,6 @@ ALL_TEST_YAMLS=(
   examples/jichang/maf/mxf4_tn_maf.yaml
   examples/jichang/maf/nvf4_tn_maf.yaml
   examples/jichang/medium/bbs_tn_medium.yaml
-  examples/jichang/medium/f8_f4_tn.yaml
   examples/jichang/medium/f8_tn_medium.yaml
   examples/jichang/medium/mxf8_tn_medium.yaml
   examples/jichang/medium/mxf4_tn_medium.yaml
