@@ -91,9 +91,9 @@ def update_result(args: argparse.Namespace) -> None:
     print(summary_lines[current_index + 1])
 
 
-def extract_max_pflops(args: argparse.Namespace) -> None:
+def extract_max_score(args: argparse.Namespace) -> None:
     maximum = None
-    gflops_index = None
+    metric_index = None
     validation_index = None
     maximum_failed_validation = False
 
@@ -107,19 +107,19 @@ def extract_max_pflops(args: argparse.Namespace) -> None:
                 continue
 
             normalized = [field.strip().lower() for field in row]
-            if "gflops" in normalized:
-                gflops_index = normalized.index("gflops")
+            if args.metric in normalized:
+                metric_index = normalized.index(args.metric)
                 validation_index = (
                     normalized.index("validation")
                     if "validation" in normalized
                     else None
                 )
                 continue
-            if gflops_index is None or len(row) <= gflops_index:
+            if metric_index is None or len(row) <= metric_index:
                 continue
 
             try:
-                value = float(row[gflops_index].strip())
+                value = float(row[metric_index].strip())
             except ValueError:
                 continue
             if math.isfinite(value) and (
@@ -135,7 +135,8 @@ def extract_max_pflops(args: argparse.Namespace) -> None:
     if maximum is None:
         raise SystemExit(1)
     annotation = "*" if maximum_failed_validation else ""
-    print(f"{maximum / 1000.0:.9g}{annotation}")
+    divisor = 1000.0 if args.metric == "gflops" else 1.0
+    print(f"{maximum / divisor:.9g}{annotation}")
 
 
 def show_summary(args: argparse.Namespace) -> None:
@@ -160,7 +161,12 @@ def parse_args() -> argparse.Namespace:
 
     extract = subparsers.add_parser("extract")
     extract.add_argument("log", type=Path)
-    extract.set_defaults(handler=extract_max_pflops)
+    extract.add_argument(
+        "--metric",
+        choices=("gflops", "gbps-bandwidth"),
+        default="gflops",
+    )
+    extract.set_defaults(handler=extract_max_score)
 
     show = subparsers.add_parser("show")
     show.add_argument("summary", type=Path)

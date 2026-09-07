@@ -37,17 +37,19 @@ YAML compatibility is selected automatically for each rocm-libraries commit:
   3941c087f7 onward:   st-codegen-test revision 6f82feb
 
 Output:
-  results.csv             Tested commits and maximum PFLOPS per YAML.
+  results.csv             Tested commits and maximum score per YAML.
   summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
   logs/<commit>/<test>.log
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
   asm-diffs/<pair>.diff   File-level differences when ASM does not match.
 
-PFLOPS is calculated as max(gflops) / 1000 for each YAML.
+MAB scores use max(gbps-bandwidth) in GB/s. MAF and medium scores use
+max(gflops) / 1000 in PFLOPS.
 A score followed by * came from a row whose validation field is FAILED, so the
 measured performance is shown but its output was incorrect. A YAML with no
-finite gflops value is recorded as 0, and the remaining YAMLs still run.
+finite value for its metric is recorded as 0, and the remaining YAMLs still
+run.
 EOF
 }
 
@@ -258,8 +260,8 @@ record_failure() {
   echo "${commit}: ${reason}" >&2
 }
 
-extract_max_pflops() {
-  python3 "${RESULT_HELPER}" extract "$1"
+extract_max_score() {
+  python3 "${RESULT_HELPER}" extract "$1" --metric "$2"
 }
 
 cache_generated_asm() {
@@ -546,6 +548,15 @@ for commit_index in "${!COMMITS[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
     yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#examples/jichang/}"
     log_file="${commit_log_dir}/${test_name}.log"
+    test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
+    test_category="${test_category%%/*}"
+    if [[ "${test_category}" == "mab" ]]; then
+      score_metric="gbps-bandwidth"
+      score_unit="GB/s"
+    else
+      score_metric="gflops"
+      score_unit="PFLOPS"
+    fi
 
     echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
     (
@@ -554,13 +565,13 @@ for commit_index in "${!COMMITS[@]}"; do
     ) 2>&1 | tee "${log_file}"
     run_status="${PIPESTATUS[0]}"
 
-    if ! pflops="$(extract_max_pflops "${log_file}")"; then
+    if ! score="$(extract_max_score "${log_file}" "${score_metric}")"; then
       if [[ ${run_status} -ne 0 ]]; then
         record_failure "${short_commit}" "${source}" \
-          "${test_name}: YAML execution failed with no finite gflops value"
+          "${test_name}: YAML execution failed with no finite ${score_metric} value"
       else
         record_failure "${short_commit}" "${source}" \
-          "${test_name}: no finite gflops value found"
+          "${test_name}: no finite ${score_metric} value found"
       fi
       commit_asm_complete=0
       update_result_and_summary \
@@ -568,13 +579,13 @@ for commit_index in "${!COMMITS[@]}"; do
       continue
     fi
 
-    if [[ "${pflops}" == *"*" ]]; then
+    if [[ "${score}" == *"*" ]]; then
       record_failure "${short_commit}" "${source}" \
         "${test_name}: validation failed (score marked *)"
     fi
 
     if [[ ${run_status} -ne 0 ]]; then
-      if [[ "${pflops}" != *"*" ]]; then
+      if [[ "${score}" != *"*" ]]; then
         record_failure "${short_commit}" "${source}" \
           "${test_name}: YAML execution failed after reporting a score"
       fi
@@ -587,9 +598,9 @@ for commit_index in "${!COMMITS[@]}"; do
       commit_asm_complete=0
     fi
 
-    echo "${test_name}: ${pflops} PFLOPS"
+    echo "${test_name}: ${score} ${score_unit}"
     update_result_and_summary \
-      "${short_commit}" "${source}" "${asm_same}" "${index}" "${pflops}"
+      "${short_commit}" "${source}" "${asm_same}" "${index}" "${score}"
   done
 
   if [[ ${COMPARE_ASM} -eq 1 ]]; then
