@@ -351,6 +351,7 @@ fi
 TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
 
 run_status=0
+run_log="${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
   DOCKER_ENV_ARGS=()
   for kv in "${RUNTIME_ENV_VARS[@]}"; do
@@ -364,11 +365,10 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     echo
     docker exec -w "${RUN_DIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
       "${TENSILE_ARGS}"
-  } 2>&1 \
-    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"; then
+  } </dev/null >"${run_log}" 2>&1; then
     :
   else
-    run_status="${PIPESTATUS[0]}"
+    run_status=$?
   fi
 else
   if {
@@ -378,17 +378,17 @@ else
     echo "Workdir: ${RUN_DIR}"
     echo
     (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
-  } 2>&1 \
-    | tee "${HOST_OUTPUT_DIR}/${BASE_NAME}.log"; then
+  } </dev/null >"${run_log}" 2>&1; then
     :
   else
-    run_status="${PIPESTATUS[0]}"
+    run_status=$?
   fi
 fi
+cat "${run_log}"
 
-if [[ -f "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" ]]; then
-  grep -A 4 'Processes:' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
-  grep -oE 'NO_CHECK.{0,10}' "${HOST_OUTPUT_DIR}/${BASE_NAME}.log" || true
+if [[ -f "${run_log}" ]]; then
+  grep -A 4 'Processes:' "${run_log}" || true
+  grep -oE 'NO_CHECK.{0,10}' "${run_log}" || true
 fi
 
 # Do not let missing output from this run look like an artifact from an older

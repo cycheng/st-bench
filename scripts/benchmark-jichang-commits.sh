@@ -17,6 +17,8 @@ Options:
   --repo <dir>           rocm-libraries repository (default: ~/rocm-libraries).
   --patch <file>         Patch applied to every range commit (default:
                          st-patch/run-silicon-B0-perf.diff).
+  --timeout <duration>   Maximum time for one YAML (default: 10m).
+  --live-output          Stream YAML output to the terminal with one tee.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML, relative to examples/jichang
@@ -58,6 +60,8 @@ Reusing --output-dir resumes that run. Completed YAMLs, including failures,
 are skipped; interrupted running YAMLs receive a new attempt log.
 After an unexpected interruption, manually restore the rocm-libraries worktree
 before resuming; the script does not validate the recovered Git state.
+SIGINT, SIGTERM, SIGHUP, and SIGTSTP cancel the active YAML and leave it
+pending. Rerun the command to resume; do not use shell fg/bg for recovery.
 
 MAB scores use max(gbps-bandwidth) in GB/s. MAF and medium scores use
 max(gflops) / 1000 in PFLOPS.
@@ -75,6 +79,8 @@ STATE_HELPER="${SCRIPT_DIR}/benchmark-jichang-state.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
 PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
+YAML_TIMEOUT="10m"
+LIVE_OUTPUT=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
 END_COMMIT=""
@@ -109,6 +115,15 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "Missing value for --patch" >&2; exit 2; }
       PATCH_FILE="$2"
       shift 2
+      ;;
+    --timeout)
+      [[ $# -ge 2 ]] || { echo "Missing value for --timeout" >&2; exit 2; }
+      YAML_TIMEOUT="$2"
+      shift 2
+      ;;
+    --live-output)
+      LIVE_OUTPUT=1
+      shift
       ;;
     --output-dir)
       [[ $# -ge 2 ]] || { echo "Missing value for --output-dir" >&2; exit 2; }
@@ -176,6 +191,14 @@ fi
 if [[ ! -f "${PATCH_FILE}" ]]; then
   echo "Patch file not found: ${PATCH_FILE}" >&2
   exit 2
+fi
+if ! command -v setsid >/dev/null 2>&1 || ! command -v timeout >/dev/null 2>&1; then
+  echo "This script requires the setsid and timeout commands." >&2
+  exit 2
+fi
+if [[ ${EUID} -eq 0 && -n "${SUDO_USER:-}" ]]; then
+  echo "WARNING: running the entire benchmark through sudo is discouraged." >&2
+  echo "Prefer normal user permissions and run it inside tmux." >&2
 fi
 if [[ ! -f "${RESULT_HELPER}" ]]; then
   echo "Result helper not found: ${RESULT_HELPER}" >&2
@@ -399,6 +422,33 @@ STASH_OID=""
 PATCH_APPLIED=0
 RANGE_MODE=0
 RESTORED=0
+ACTIVE_RUN_PID=""
+
+# Git checkout may invoke credential, SSH, or LFS helpers. Unattended runs must
+# fail instead of stopping to read from a terminal.
+export GIT_TERMINAL_PROMPT=0
+export GCM_INTERACTIVE=Never
+export GIT_ASKPASS=/bin/false
+if [[ -z "${GIT_SSH_COMMAND:-}" ]]; then
+  export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o StrictHostKeyChecking=yes"
+fi
+
+terminate_active_run() {
+  [[ -n "${ACTIVE_RUN_PID}" ]] || return 0
+  kill -TERM -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
+  sleep 5
+  if kill -0 -- "-${ACTIVE_RUN_PID}" 2>/dev/null; then
+    kill -KILL -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
+  fi
+  wait "${ACTIVE_RUN_PID}" 2>/dev/null || true
+  ACTIVE_RUN_PID=""
+}
+
+handle_signal() {
+  local status="$1"
+  terminate_active_run
+  exit "${status}"
+}
 
 session_get() {
   python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" get --field "$1"
@@ -438,9 +488,13 @@ restore_repository() {
   fi
 
   if [[ -n "${ORIGINAL_BRANCH}" ]]; then
-    git -C "${ROCM_REPO}" checkout "${ORIGINAL_BRANCH}" >/dev/null || return 1
+    timeout --signal=TERM --kill-after=10s 10m \
+      git -C "${ROCM_REPO}" checkout "${ORIGINAL_BRANCH}" \
+      </dev/null >/dev/null || return 1
   else
-    git -C "${ROCM_REPO}" checkout --detach "${ORIGINAL_COMMIT}" >/dev/null || return 1
+    timeout --signal=TERM --kill-after=10s 10m \
+      git -C "${ROCM_REPO}" checkout --detach "${ORIGINAL_COMMIT}" \
+      </dev/null >/dev/null || return 1
   fi
 
   if [[ -n "${STASH_OID}" ]]; then
@@ -532,8 +586,6 @@ if [[ -n "${START_COMMIT}" ]]; then
   fi
 
   trap restore_repository EXIT
-  trap 'exit 130' INT
-  trap 'exit 143' TERM
 else
   if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
     echo "This output directory has an interrupted range-mode Git session." >&2
@@ -542,6 +594,11 @@ else
   fi
   COMMITS=("$(git -C "${ROCM_REPO}" rev-parse HEAD)")
 fi
+
+trap 'handle_signal 129' HUP
+trap 'handle_signal 130' INT
+trap 'handle_signal 143' TERM
+trap 'handle_signal 148' TSTP
 
 plan_args=()
 for commit in "${COMMITS[@]}"; do
@@ -608,15 +665,17 @@ for commit_index in "${!COMMITS[@]}"; do
     commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
     mkdir -p "${commit_log_dir}"
     setup_log="${commit_log_dir}/git-setup.log"
-    if ! git -C "${ROCM_REPO}" checkout --detach "${commit}" \
-         >"${setup_log}" 2>&1; then
+    if ! timeout --signal=TERM --kill-after=10s 10m \
+         git -C "${ROCM_REPO}" checkout --detach "${commit}" \
+         </dev/null >"${setup_log}" 2>&1; then
       echo "Git checkout failed for ${short_commit}; tasks remain not run." >&2
       cat "${setup_log}" >&2
       exit 1
     fi
 
-    if ! git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
-         >>"${setup_log}" 2>&1; then
+    if ! timeout --signal=TERM --kill-after=10s 10m \
+         git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
+         </dev/null >>"${setup_log}" 2>&1; then
       echo "Git patch apply failed for ${short_commit}; tasks remain not run." >&2
       cat "${setup_log}" >&2
       git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
@@ -656,14 +715,37 @@ for commit_index in "${!COMMITS[@]}"; do
     log_file="${OUTPUT_DIR}/${start_result}"
     mkdir -p "$(dirname -- "${log_file}")"
     echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
-    (
-      cd "${PROJECT_DIR}" &&
-      ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
-    ) 2>&1 | tee "${log_file}"
-    run_status="${PIPESTATUS[0]}"
+    if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+      (
+        cd "${PROJECT_DIR}" || exit 1
+        exec setsid --wait timeout --signal=TERM --kill-after=30s \
+          "${YAML_TIMEOUT}" bash -c '
+            set -o pipefail
+            log_file="$1"
+            shift
+            "$@" 2>&1 | tee "${log_file}"
+          ' benchmark-live-output "${log_file}" \
+          ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
+      ) </dev/null &
+    else
+      (
+        cd "${PROJECT_DIR}" || exit 1
+        exec setsid --wait timeout --signal=TERM --kill-after=30s \
+          "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
+      ) </dev/null >"${log_file}" 2>&1 &
+    fi
+    ACTIVE_RUN_PID=$!
+    run_status=0
+    wait "${ACTIVE_RUN_PID}" || run_status=$?
+    ACTIVE_RUN_PID=""
+    if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
+      cat "${log_file}"
+    fi
 
-    if [[ ${run_status} -eq 130 || ${run_status} -eq 143 ]]; then
-      echo "${test_name}: interrupted; task remains pending" >&2
+    if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
+          ${run_status} -eq 129 || ${run_status} -eq 130 ||
+          ${run_status} -eq 143 || ${run_status} -eq 148 ]]; then
+      echo "${test_name}: interrupted or timed out; task remains pending" >&2
       exit "${run_status}"
     fi
 
