@@ -68,7 +68,8 @@ max(gflops) / 1000 in PFLOPS.
 A score followed by * came from a row whose validation field is FAILED, so the
 measured performance is shown but its output was incorrect. A YAML with no
 finite value for its metric is recorded as 0, and the remaining YAMLs still
-run.
+run. A score followed by = generated the same ASM as the previous chronological
+commit for that YAML.
 EOF
 }
 

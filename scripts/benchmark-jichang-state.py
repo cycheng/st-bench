@@ -381,8 +381,13 @@ def format_summary(header: list[str], rows: list[list[str]]) -> str:
     for row in rows:
         display = [row[0]]
         for field in row[1:]:
+            numeric = field
+            annotations = ""
+            while numeric and numeric[-1] in "*=":
+                annotations = numeric[-1] + annotations
+                numeric = numeric[:-1]
             try:
-                display.append(f"{float(field):.2f}")
+                display.append(f"{float(numeric):.2f}{annotations}")
             except ValueError:
                 display.append(field)
         display_rows.append(display)
@@ -395,6 +400,10 @@ def format_summary(header: list[str], rows: list[list[str]]) -> str:
         fields = [row[0].ljust(widths[0])]
         fields.extend(row[i].rjust(widths[i]) for i in range(1, len(row)))
         lines.append("   ".join(fields))
+    lines.extend([
+        "",
+        "Annotations: = ASM matches previous chronological commit; * validation failed",
+    ])
     return "\n".join(lines) + "\n"
 
 
@@ -412,7 +421,14 @@ def reports(args: argparse.Namespace) -> None:
         if row["test"] not in tests:
             tests.append(row["test"])
     commits = chronological_commits(output, commits)
-    asm = plan.get("asm_same", {})
+    yaml_asm_same: dict[tuple[str, str], bool] = {}
+    asm_summary_path = output / "asm-summary.csv"
+    if asm_summary_path.exists():
+        with asm_summary_path.open(encoding="utf-8", newline="") as stream:
+            for asm_row in csv.DictReader(stream):
+                yaml_asm_same[
+                    (asm_row["current-commit"], asm_row["yaml"])
+                ] = asm_row["status"] == "yes"
     by_key = {(row["commit"], row["test"]): row for row in rows}
     commit_rows: list[list[str]] = []
     for commit in commits:
@@ -423,24 +439,14 @@ def reports(args: argparse.Namespace) -> None:
         values = []
         for test in tests:
             row = by_key.get((commit, test))
-            values.append(row["score"] if row and row["status"] in DONE else "")
-        asm_value = asm.get(commit, "")
-        if isinstance(asm_value, dict):
-            asm_status = asm_value.get("status", "")
-            asm_different = asm_value.get("different", "")
-            asm_added = asm_value.get("added", "")
-            asm_removed = asm_value.get("removed", "")
-        else:
-            asm_status = asm_value
-            asm_different = asm_added = asm_removed = ""
+            value = row["score"] if row and row["status"] in DONE else ""
+            if value and yaml_asm_same.get((first["short_commit"], test), False):
+                value += "="
+            values.append(value)
         commit_rows.append([
-            first["short_commit"], first["source"], asm_status,
-            asm_different, asm_added, asm_removed, *values,
+            first["short_commit"], first["source"], *values,
         ])
-    header = [
-        "commit-id", "source", "asm-same", "asm-different",
-        "asm-added", "asm-removed", *tests,
-    ]
+    header = ["commit-id", "source", *tests]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),
