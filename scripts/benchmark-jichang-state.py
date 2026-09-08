@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, TextIO
@@ -46,6 +47,34 @@ def atomic_write(path: Path, writer: Callable[[TextIO], Any]) -> None:
 
 def write_json(path: Path, value: Any) -> None:
     atomic_write(path, lambda stream: json.dump(value, stream, indent=2, sort_keys=True))
+
+
+def chronological_commits(output: Path, commits: list[str]) -> list[str]:
+    metadata_path = output / "run-metadata.json"
+    if not commits or not metadata_path.exists():
+        return commits
+    repo = json.loads(metadata_path.read_text(encoding="utf-8")).get("rocm_repo")
+    if not repo:
+        return commits
+    result = subprocess.run(
+        ["git", "-C", repo, "show", "-s", "--format=%H %ct", *commits],
+        text=True, capture_output=True, check=False,
+    )
+    if result.returncode != 0:
+        return commits
+    timestamps: dict[str, int] = {}
+    for line in result.stdout.splitlines():
+        commit, separator, timestamp = line.partition(" ")
+        if separator and timestamp.isdigit():
+            timestamps[commit] = int(timestamp)
+    original_order = {commit: index for index, commit in enumerate(commits)}
+    return sorted(
+        commits,
+        key=lambda commit: (
+            timestamps.get(commit, 2**63 - 1),
+            original_order[commit],
+        ),
+    )
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -236,8 +265,11 @@ def compare_asm(args: argparse.Namespace) -> None:
     short_by_commit: dict[str, str] = {}
     for row in state_rows:
         short_by_commit.setdefault(row["commit"], row["short_commit"])
+        if row["commit"] not in commits:
+            commits.append(row["commit"])
         if row["test"] not in tests:
             tests.append(row["test"])
+    commits = chronological_commits(output, commits)
 
     summary_rows = [[
         "previous-commit", "current-commit", "yaml", "status",
@@ -379,6 +411,7 @@ def reports(args: argparse.Namespace) -> None:
             commits.append(row["commit"])
         if row["test"] not in tests:
             tests.append(row["test"])
+    commits = chronological_commits(output, commits)
     asm = plan.get("asm_same", {})
     by_key = {(row["commit"], row["test"]): row for row in rows}
     commit_rows: list[list[str]] = []
