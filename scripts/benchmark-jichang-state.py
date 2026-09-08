@@ -17,7 +17,16 @@ FIELDS = [
     "status", "score", "metric", "unit", "attempt", "log_path",
     "asm_cache_status", "message",
 ]
-DONE = {"passed", "validation-failed", "execution-failed", "no-score"}
+DONE = {"passed", "validation-failed", "execution-failed"}
+LEGACY_DONE = {"no-score"}
+RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
+
+
+def task_done(row: dict[str, str]) -> bool:
+    return (
+        row["status"] in DONE | LEGACY_DONE
+        and row["message"] not in RETRYABLE_MESSAGES
+    )
 
 
 def atomic_write(path: Path, writer: Callable[[TextIO], Any]) -> None:
@@ -112,7 +121,7 @@ def start(args: argparse.Namespace) -> None:
     row = locate(rows, args.commit, args.test)
     if row is None:
         raise SystemExit("Task must be ensured before it is started")
-    if row["status"] in DONE:
+    if task_done(row):
         print("skip")
         return
     attempt = int(row["attempt"] or "0") + 1
@@ -159,7 +168,7 @@ def has_pending(args: argparse.Namespace) -> None:
     rows = read_rows(args.state)
     pending = any(
         (row := locate(rows, args.commit, test)) is None
-        or row["status"] not in DONE
+        or not task_done(row)
         for test in args.test
     )
     print("yes" if pending else "no")

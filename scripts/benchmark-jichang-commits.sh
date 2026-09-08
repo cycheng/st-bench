@@ -15,6 +15,8 @@ Options:
   --end <commit>         Last range boundary (inclusive; requires --start).
   --config <file>        run-single-yaml config (default: examples/test.cfg).
   --repo <dir>           rocm-libraries repository (default: ~/rocm-libraries).
+  --patch <file>         Patch applied to every range commit (default:
+                         st-patch/run-silicon-B0-perf.diff).
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML, relative to examples/jichang
@@ -31,7 +33,8 @@ stash the repository.
 In range mode, commits that modify shared/stinkytofu, projects/hipblaslt, or
 both are tested. The source column identifies which component each commit
 changes. When at least two commits are selected, asm-same reports whether each
-commit's complete generated st ASM matches the previously tested commit.
+commit's complete generated st ASM matches the previously tested commit. Local
+tracked changes are stashed once, and --patch is applied to each tested commit.
 
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
@@ -71,6 +74,7 @@ RESULT_HELPER="${SCRIPT_DIR}/benchmark-jichang-results.py"
 STATE_HELPER="${SCRIPT_DIR}/benchmark-jichang-state.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
+PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
 END_COMMIT=""
@@ -99,6 +103,11 @@ while [[ $# -gt 0 ]]; do
     --repo)
       [[ $# -ge 2 ]] || { echo "Missing value for --repo" >&2; exit 2; }
       ROCM_REPO="$2"
+      shift 2
+      ;;
+    --patch)
+      [[ $# -ge 2 ]] || { echo "Missing value for --patch" >&2; exit 2; }
+      PATCH_FILE="$2"
       shift 2
       ;;
     --output-dir)
@@ -157,10 +166,15 @@ fi
 
 CONFIG_FILE="$(readlink -f -- "${CONFIG_FILE}")"
 ROCM_REPO="$(readlink -f -- "${ROCM_REPO}")"
+PATCH_FILE="$(readlink -f -- "${PATCH_FILE}")"
 OUTPUT_DIR="$(readlink -m -- "${OUTPUT_DIR}")"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Config file not found: ${CONFIG_FILE}" >&2
+  exit 2
+fi
+if [[ ! -f "${PATCH_FILE}" ]]; then
+  echo "Patch file not found: ${PATCH_FILE}" >&2
   exit 2
 fi
 if [[ ! -f "${RESULT_HELPER}" ]]; then
@@ -382,7 +396,7 @@ prepare_yamls() {
 ORIGINAL_COMMIT=""
 ORIGINAL_BRANCH=""
 STASH_OID=""
-STASH_APPLIED=0
+PATCH_APPLIED=0
 RANGE_MODE=0
 RESTORED=0
 
@@ -418,9 +432,9 @@ restore_repository() {
   trap - EXIT
   set +e
 
-  if [[ ${STASH_APPLIED} -eq 1 ]]; then
+  if [[ ${PATCH_APPLIED} -eq 1 ]]; then
     git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null || return 1
-    STASH_APPLIED=0
+    PATCH_APPLIED=0
   fi
 
   if [[ -n "${ORIGINAL_BRANCH}" ]]; then
@@ -586,46 +600,34 @@ for commit_index in "${!COMMITS[@]}"; do
   fi
 
   if [[ ${RANGE_MODE} -eq 1 ]]; then
-    if [[ ${STASH_APPLIED} -eq 1 ]]; then
+    if [[ ${PATCH_APPLIED} -eq 1 ]]; then
       git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
-      STASH_APPLIED=0
+      PATCH_APPLIED=0
     fi
 
-    if ! git -C "${ROCM_REPO}" checkout --detach "${commit}" >/dev/null 2>&1; then
-      for test_name in "${TEST_NAMES[@]}"; do
-        start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
-          --commit "${commit}" --test "${test_name}")" || exit 1
-        [[ "${start_result}" == "skip" ]] && continue
-        finish_task "${commit}" "${test_name}" execution-failed 0 missing "git checkout failed"
-      done
-      continue
+    commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
+    mkdir -p "${commit_log_dir}"
+    setup_log="${commit_log_dir}/git-setup.log"
+    if ! git -C "${ROCM_REPO}" checkout --detach "${commit}" \
+         >"${setup_log}" 2>&1; then
+      echo "Git checkout failed for ${short_commit}; tasks remain not run." >&2
+      cat "${setup_log}" >&2
+      exit 1
     fi
 
-    if [[ -n "${STASH_OID}" ]]; then
-      if ! git -C "${ROCM_REPO}" stash apply "${STASH_OID}" >/dev/null 2>&1; then
-        git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
-        STASH_APPLIED=0
-        for test_name in "${TEST_NAMES[@]}"; do
-          start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
-            --commit "${commit}" --test "${test_name}")" || exit 1
-          [[ "${start_result}" == "skip" ]] && continue
-          finish_task "${commit}" "${test_name}" execution-failed 0 missing "git stash apply failed"
-        done
-        continue
-      fi
-      STASH_APPLIED=1
+    if ! git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
+         >>"${setup_log}" 2>&1; then
+      echo "Git patch apply failed for ${short_commit}; tasks remain not run." >&2
+      cat "${setup_log}" >&2
+      git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+      exit 1
     fi
+    PATCH_APPLIED=1
   fi
 
   if ! prepare_yamls "${yaml_revision}"; then
-    for test_name in "${TEST_NAMES[@]}"; do
-      start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
-        --commit "${commit}" --test "${test_name}")" || exit 1
-      [[ "${start_result}" == "skip" ]] && continue
-      finish_task "${commit}" "${test_name}" execution-failed 0 missing \
-        "could not prepare YAML revision ${yaml_revision}"
-    done
-    continue
+    echo "YAML preparation failed for ${short_commit}; tasks remain not run." >&2
+    exit 1
   fi
 
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
@@ -660,6 +662,11 @@ for commit_index in "${!COMMITS[@]}"; do
     ) 2>&1 | tee "${log_file}"
     run_status="${PIPESTATUS[0]}"
 
+    if [[ ${run_status} -eq 130 || ${run_status} -eq 143 ]]; then
+      echo "${test_name}: interrupted; task remains pending" >&2
+      exit "${run_status}"
+    fi
+
     asm_status="missing"
     asm_message=""
     if cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
@@ -673,7 +680,7 @@ for commit_index in "${!COMMITS[@]}"; do
         terminal_status="execution-failed"
         message="YAML execution failed with no finite ${score_metric} value"
       else
-        terminal_status="no-score"
+        terminal_status="execution-failed"
         message="no finite ${score_metric} value found"
       fi
       if [[ -n "${asm_message}" ]]; then
