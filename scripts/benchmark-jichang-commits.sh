@@ -19,6 +19,8 @@ Options:
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML, relative to examples/jichang
                          (for example: maf/f8_tn_maf.yaml).
+  --exclude-yaml <file>  Skip one YAML, relative to examples/jichang. Repeat
+                         this option to skip multiple YAMLs.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
                          (default: either).
   -h, --help             Show this help.
@@ -72,6 +74,7 @@ START_COMMIT=""
 END_COMMIT=""
 CATEGORY=""
 ONLY_YAML=""
+EXCLUDED_YAMLS=()
 COMPONENT="either"
 
 while [[ $# -gt 0 ]]; do
@@ -109,6 +112,11 @@ while [[ $# -gt 0 ]]; do
     --yaml)
       [[ $# -ge 2 ]] || { echo "Missing value for --yaml" >&2; exit 2; }
       ONLY_YAML="$2"
+      shift 2
+      ;;
+    --exclude-yaml)
+      [[ $# -ge 2 ]] || { echo "Missing value for --exclude-yaml" >&2; exit 2; }
+      EXCLUDED_YAMLS+=("$2")
       shift 2
       ;;
     --component)
@@ -202,6 +210,11 @@ if [[ -n "${ONLY_YAML}" ]]; then
   ONLY_YAML="${ONLY_YAML#examples/jichang/}"
   ONLY_YAML="examples/jichang/${ONLY_YAML}"
 fi
+for index in "${!EXCLUDED_YAMLS[@]}"; do
+  yaml="${EXCLUDED_YAMLS[${index}]#./}"
+  yaml="${yaml#examples/jichang/}"
+  EXCLUDED_YAMLS[${index}]="examples/jichang/${yaml}"
+done
 
 TEST_NAMES=()
 TEST_YAMLS=()
@@ -211,15 +224,23 @@ for index in "${!ALL_TEST_NAMES[@]}"; do
   yaml_category="${yaml_category%%/*}"
   [[ -z "${CATEGORY}" || "${yaml_category}" == "${CATEGORY}" ]] || continue
   [[ -z "${ONLY_YAML}" || "${yaml}" == "${ONLY_YAML}" ]] || continue
+  excluded=0
+  for excluded_yaml in "${EXCLUDED_YAMLS[@]}"; do
+    if [[ "${yaml}" == "${excluded_yaml}" ]]; then
+      excluded=1
+      break
+    fi
+  done
+  [[ ${excluded} -eq 0 ]] || continue
   TEST_NAMES+=("${ALL_TEST_NAMES[${index}]}")
   TEST_YAMLS+=("${yaml}")
 done
 
 if [[ ${#TEST_YAMLS[@]} -eq 0 ]]; then
   if [[ -n "${ONLY_YAML}" ]]; then
-    echo "Unknown YAML or YAML excluded by --category: ${ONLY_YAML}" >&2
+    echo "Unknown YAML or YAML excluded by filters: ${ONLY_YAML}" >&2
   else
-    echo "No YAMLs selected." >&2
+    echo "No YAMLs selected after applying filters." >&2
   fi
   exit 2
 fi
