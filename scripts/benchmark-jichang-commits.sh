@@ -18,7 +18,7 @@ Options:
   --patch <file>         Patch applied to every range commit (default:
                          st-patch/run-silicon-B0-perf.diff).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
-  --live-output          Stream YAML output to the terminal with one tee.
+  --live-output          Stream YAML output (or set live_output=true in config).
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML, relative to examples/jichang
@@ -188,12 +188,34 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Config file not found: ${CONFIG_FILE}" >&2
   exit 2
 fi
+while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
+  config_line="${config_line#"${config_line%%[![:space:]]*}"}"
+  config_line="${config_line%"${config_line##*[![:space:]]}"}"
+  [[ -z "${config_line}" || "${config_line}" == \#* ]] && continue
+  config_key="${config_line%%=*}"
+  config_value="${config_line#*=}"
+  config_key="${config_key#"${config_key%%[![:space:]]*}"}"
+  config_key="${config_key%"${config_key##*[![:space:]]}"}"
+  [[ "${config_key}" == "live_output" ]] || continue
+  config_value="${config_value#"${config_value%%[![:space:]]*}"}"
+  config_value="${config_value%"${config_value##*[![:space:]]}"}"
+  case "${config_value,,}" in
+    1|true|yes|on) LIVE_OUTPUT=1 ;;
+    0|false|no|off) ;;
+    *)
+      echo "Invalid live_output value in ${CONFIG_FILE}: ${config_value}" >&2
+      exit 2
+      ;;
+  esac
+done < "${CONFIG_FILE}"
 if [[ ! -f "${PATCH_FILE}" ]]; then
   echo "Patch file not found: ${PATCH_FILE}" >&2
   exit 2
 fi
-if ! command -v setsid >/dev/null 2>&1 || ! command -v timeout >/dev/null 2>&1; then
-  echo "This script requires the setsid and timeout commands." >&2
+if ! command -v setsid >/dev/null 2>&1 ||
+   ! command -v timeout >/dev/null 2>&1 ||
+   ! command -v tail >/dev/null 2>&1; then
+  echo "This script requires the setsid, timeout, and tail commands." >&2
   exit 2
 fi
 if [[ ${EUID} -eq 0 && -n "${SUDO_USER:-}" ]]; then
@@ -423,6 +445,7 @@ PATCH_APPLIED=0
 RANGE_MODE=0
 RESTORED=0
 ACTIVE_RUN_PID=""
+ACTIVE_TAIL_PID=""
 
 # Git checkout may invoke credential, SSH, or LFS helpers. Unattended runs must
 # fail instead of stopping to read from a terminal.
@@ -434,14 +457,20 @@ if [[ -z "${GIT_SSH_COMMAND:-}" ]]; then
 fi
 
 terminate_active_run() {
-  [[ -n "${ACTIVE_RUN_PID}" ]] || return 0
-  kill -TERM -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
-  sleep 5
-  if kill -0 -- "-${ACTIVE_RUN_PID}" 2>/dev/null; then
-    kill -KILL -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
+  if [[ -n "${ACTIVE_RUN_PID}" ]]; then
+    kill -TERM -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
+    sleep 5
+    if kill -0 -- "-${ACTIVE_RUN_PID}" 2>/dev/null; then
+      kill -KILL -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
+    fi
+    wait "${ACTIVE_RUN_PID}" 2>/dev/null || true
+    ACTIVE_RUN_PID=""
   fi
-  wait "${ACTIVE_RUN_PID}" 2>/dev/null || true
-  ACTIVE_RUN_PID=""
+  if [[ -n "${ACTIVE_TAIL_PID}" ]]; then
+    kill -KILL "${ACTIVE_TAIL_PID}" 2>/dev/null || true
+    wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
+    ACTIVE_TAIL_PID=""
+  fi
 }
 
 handle_signal() {
@@ -719,14 +748,9 @@ for commit_index in "${!COMMITS[@]}"; do
       (
         cd "${PROJECT_DIR}" || exit 1
         exec setsid --wait timeout --signal=TERM --kill-after=30s \
-          "${YAML_TIMEOUT}" bash -c '
-            set -o pipefail
-            log_file="$1"
-            shift
-            "$@" 2>&1 | tee "${log_file}"
-          ' benchmark-live-output "${log_file}" \
-          ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
-      ) </dev/null &
+          "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
+          "${CONFIG_FILE}" "${yaml}" --live-output
+      ) </dev/null >"${log_file}" 2>&1 &
     else
       (
         cd "${PROJECT_DIR}" || exit 1
@@ -735,9 +759,17 @@ for commit_index in "${!COMMITS[@]}"; do
       ) </dev/null >"${log_file}" 2>&1 &
     fi
     ACTIVE_RUN_PID=$!
+    if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+      tail --pid="${ACTIVE_RUN_PID}" -n +1 -s 0.2 -f "${log_file}" &
+      ACTIVE_TAIL_PID=$!
+    fi
     run_status=0
     wait "${ACTIVE_RUN_PID}" || run_status=$?
     ACTIVE_RUN_PID=""
+    if [[ -n "${ACTIVE_TAIL_PID}" ]]; then
+      wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
+      ACTIVE_TAIL_PID=""
+    fi
     if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
       cat "${log_file}"
     fi

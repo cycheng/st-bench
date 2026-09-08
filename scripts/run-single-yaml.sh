@@ -28,6 +28,7 @@ Optional:
   --isolate-run-dir      Run inside a private subdir of workdir. Required for
                          concurrent runs, which otherwise share cmpasm/.out.
   --keep-container-out   Keep <yaml-base>.out in container workdir.
+  --live-output          Stream command output while also saving its log.
   -h, --help             Show help.
 
 Examples:
@@ -54,6 +55,7 @@ AUTO_START=1
 BUILD_ONLY=1
 KEEP_CONTAINER_OUT=0
 ISOLATE_RUN_DIR=0
+LIVE_OUTPUT=0
 RUN_DIR=""
 EXTRA_ENVS=()
 ENV_FILES=()
@@ -153,6 +155,7 @@ parse_config_file() {
       no_start) AUTO_START=$((1 - $(parse_bool "${value}"))) ;;
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
+      live_output) LIVE_OUTPUT="$(parse_bool "${value}")" ;;
       jobs) : ;;  # accepted for shared config compatibility
       hipblaslt_repo_path) : ;;      # accepted for shared config compatibility
       hipblaslt_install_flags) : ;;  # accepted for shared config compatibility
@@ -232,6 +235,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --keep-container-out)
       KEEP_CONTAINER_OUT=1
+      shift
+      ;;
+    --live-output)
+      LIVE_OUTPUT=1
       shift
       ;;
     -h|--help)
@@ -352,12 +359,15 @@ TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
 
 run_status=0
 run_log="${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
+DOCKER_ENV_ARGS=()
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
-  DOCKER_ENV_ARGS=()
   for kv in "${RUNTIME_ENV_VARS[@]}"; do
     DOCKER_ENV_ARGS+=("-e" "${kv}")
   done
-  if {
+fi
+
+run_tensile() {
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
     echo "Execution mode: ${EXECUTION_MODE}"
@@ -365,26 +375,34 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     echo
     docker exec -w "${RUN_DIR}" "${DOCKER_ENV_ARGS[@]}" "${CONTAINER_NAME}" bash -lc \
       "${TENSILE_ARGS}"
-  } </dev/null >"${run_log}" 2>&1; then
-    :
   else
-    run_status=$?
-  fi
-else
-  if {
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
     echo "Execution mode: ${EXECUTION_MODE}"
     echo "Workdir: ${RUN_DIR}"
     echo
     (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
-  } </dev/null >"${run_log}" 2>&1; then
+  fi
+}
+
+if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+  if run_tensile </dev/null 2>&1 | tee "${run_log}"; then
+    :
+  else
+    pipeline_status=("${PIPESTATUS[@]}")
+    run_status="${pipeline_status[0]}"
+    if [[ ${run_status} -eq 0 && ${pipeline_status[1]} -ne 0 ]]; then
+      run_status="${pipeline_status[1]}"
+    fi
+  fi
+else
+  if run_tensile </dev/null >"${run_log}" 2>&1; then
     :
   else
     run_status=$?
   fi
+  cat "${run_log}"
 fi
-cat "${run_log}"
 
 if [[ -f "${run_log}" ]]; then
   grep -A 4 'Processes:' "${run_log}" || true
