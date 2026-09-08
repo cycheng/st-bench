@@ -53,6 +53,8 @@ Output:
 
 Reusing --output-dir resumes that run. Completed YAMLs, including failures,
 are skipped; interrupted running YAMLs receive a new attempt log.
+After an unexpected interruption, manually restore the rocm-libraries worktree
+before resuming; the script does not validate the recovered Git state.
 
 MAB scores use max(gbps-bandwidth) in GB/s. MAF and medium scores use
 max(gflops) / 1000 in PFLOPS.
@@ -384,10 +386,6 @@ STASH_APPLIED=0
 RANGE_MODE=0
 RESTORED=0
 
-tracked_diff_hash() {
-  git -C "${ROCM_REPO}" diff --binary HEAD | sha256sum | awk '{print $1}'
-}
-
 session_get() {
   python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" get --field "$1"
 }
@@ -397,10 +395,6 @@ session_set() {
 }
 
 normalize_interrupted_session() {
-  local applied_commit
-  local expected_hash
-  local actual_hash
-
   [[ -f "${OUTPUT_DIR}/git-session.json" ]] || return 0
   ORIGINAL_COMMIT="$(session_get original_commit)"
   ORIGINAL_BRANCH="$(session_get original_branch)"
@@ -415,23 +409,7 @@ normalize_interrupted_session() {
       exit 1
     fi
   fi
-  applied_commit="$(session_get applied_commit)"
-  expected_hash="$(session_get applied_diff_hash)"
-  if [[ -n "${applied_commit}" ]]; then
-    actual_hash="$(tracked_diff_hash)"
-    if [[ "$(git -C "${ROCM_REPO}" rev-parse HEAD)" != "${applied_commit}" ||
-          -z "${expected_hash}" || "${actual_hash}" != "${expected_hash}" ]]; then
-      echo "Interrupted benchmark left tracked changes that do not demonstrably match its saved automatic stash." >&2
-      echo "Inspect ${ROCM_REPO}; the preserved stash is ${STASH_OID:-unknown}. Refusing to reset anything." >&2
-      exit 1
-    fi
-    git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
-    session_set --applied-commit "" --applied-diff-hash ""
-  elif ! git -C "${ROCM_REPO}" diff --quiet ||
-       ! git -C "${ROCM_REPO}" diff --cached --quiet; then
-    echo "ROCm repository has unmatched tracked changes; refusing to resume." >&2
-    exit 1
-  fi
+  session_set --applied-commit "" --applied-diff-hash ""
 }
 
 restore_repository() {
@@ -441,15 +419,8 @@ restore_repository() {
   set +e
 
   if [[ ${STASH_APPLIED} -eq 1 ]]; then
-    local expected_hash
-    expected_hash="$(session_get applied_diff_hash)"
-    if [[ -z "${expected_hash}" || "$(tracked_diff_hash)" != "${expected_hash}" ]]; then
-      echo "WARNING: tracked changes no longer match the automatic stash; not resetting them." >&2
-      return 1
-    fi
     git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null || return 1
     STASH_APPLIED=0
-    session_set --applied-commit "" --applied-diff-hash ""
   fi
 
   if [[ -n "${ORIGINAL_BRANCH}" ]]; then
@@ -616,14 +587,8 @@ for commit_index in "${!COMMITS[@]}"; do
 
   if [[ ${RANGE_MODE} -eq 1 ]]; then
     if [[ ${STASH_APPLIED} -eq 1 ]]; then
-      expected_hash="$(session_get applied_diff_hash)"
-      if [[ -z "${expected_hash}" || "$(tracked_diff_hash)" != "${expected_hash}" ]]; then
-        echo "Tracked changes no longer match the saved automatic stash; refusing to reset." >&2
-        exit 1
-      fi
       git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
       STASH_APPLIED=0
-      session_set --applied-commit "" --applied-diff-hash ""
     fi
 
     if ! git -C "${ROCM_REPO}" checkout --detach "${commit}" >/dev/null 2>&1; then
@@ -649,7 +614,6 @@ for commit_index in "${!COMMITS[@]}"; do
         continue
       fi
       STASH_APPLIED=1
-      session_set --applied-commit "${commit}" --applied-diff-hash "$(tracked_diff_hash)"
     fi
   fi
 
