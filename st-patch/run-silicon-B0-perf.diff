@@ -1,0 +1,138 @@
+diff --git a/projects/hipblaslt/clients/CMakeLists.txt b/projects/hipblaslt/clients/CMakeLists.txt
+index 35dda4b855..9426a1a87b 100755
+--- a/projects/hipblaslt/clients/CMakeLists.txt
++++ b/projects/hipblaslt/clients/CMakeLists.txt
+@@ -187,7 +187,23 @@ if(HIPBLASLT_ENABLE_YAML)
+     target_include_directories(hipblaslt-sequence PRIVATE ${LLVM_INCLUDE_DIRS})
+ endif()
+ if(BUILD_TESTING OR HIPBLASLT_BUILD_TESTING)
++
+     find_package(GTest CONFIG REQUIRED)
++
++    get_target_property(_gtest_location GTest::gtest IMPORTED_LOCATION_NOCONFIG)
++    message(STATUS "GTest::gtest IMPORTED_LOCATION_NOCONFIG=${_gtest_location}")
++
++    if(NOT _gtest_location OR _gtest_location MATCHES "NOTFOUND")
++        find_library(_gtest_location NAMES gtest REQUIRED)
++        message(STATUS "Fallback libgtest=${_gtest_location}")
++    endif()
++
++    set_target_properties(GTest::gtest PROPERTIES
++        IMPORTED_LOCATION "${_gtest_location}"
++        IMPORTED_LOCATION_RELEASE "${_gtest_location}"
++        IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
++        IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
++    )
+     add_executable(hipblaslt-test)
+     if(amd_smi_FOUND)
+         target_link_libraries(hipblaslt-test PRIVATE amd_smi)
+diff --git a/projects/hipblaslt/tasks.py b/projects/hipblaslt/tasks.py
+index 623085cc83..87cd83cefe 100644
+--- a/projects/hipblaslt/tasks.py
++++ b/projects/hipblaslt/tasks.py
+@@ -654,7 +654,10 @@ def build(
+     cmake_opts = [
+         f'"-DGPU_TARGETS={architecture}"',
+         f"-DCMAKE_BUILD_TYPE={build_type}",
+-        f"-DCMAKE_PREFIX_PATH={deps_prefix.as_posix()}",
++        #f"-DCMAKE_PREFIX_PATH={deps_prefix.as_posix()}",
++        # "-DCMAKE_MAP_IMPORTED_CONFIG_RELEASE=NOCONFIG",
++        # "-DCMAKE_MAP_IMPORTED_CONFIG_DEBUG=NOCONFIG",
++        #"-DCMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO=NOCONFIG",
+         "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+         "-DMSGPACK_USE_BOOST=OFF",
+     ]
+@@ -772,6 +775,7 @@ def build(
+         prefix_path = Path(cmake_prefix).as_posix()
+     else:
+         prefix_path = f"{rocm_s};{rocm_s}/hcc;{rocm_s}/hip"
++        prefix_path = f"{deps_prefix.as_posix()};{rocm_s};{rocm_s}/hcc;{rocm_s}/hip"
+     module_path = f"{rocm_s}/hip/cmake"
+ 
+     if relocatable:
+diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+index 572ac11164..87a5c5f8fd 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
++++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
+@@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
+     1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
+ )
+ globalParameters["CpuThreads"] = (
+-    -1
++    30
+ )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
+ # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
+ # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
+diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+index 473140fdb2..ca3cbab299 100644
+--- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
+@@ -6907,24 +6907,24 @@ class KernelWriter(metaclass=abc.ABCMeta):
+                                            signature=fs,
+                                            options=stinky_module_options)
+       t1a_end = time.perf_counter()
+-      print2(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
++      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
+ 
+       # Run pipeline — builder handles O0 internally (skips optimization,
+       # still runs required passes like InsertVgprMsb)
+       t1b_start = time.perf_counter()
+       stModule.runOptimizationPipeline()
+       t1b_end = time.perf_counter()
+-      print2(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
++      print(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
+ 
+     error = self.states.overflowedResources
+-    print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
++    print(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
+ 
+     # Check if StinkyTofu assembly output should be used
+     if stModule is not None:
+       t2_start = time.perf_counter()
+       st_asm = stModule.emitAssembly()
+       t2_end = time.perf_counter()
+-      print2(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
++      print(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
+ 
+       if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None:
+         t3_start = time.perf_counter()
+@@ -6944,13 +6944,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           st_path = f"cmpasm/st/{base_name}_{suffix}.s"
+           suffix += 1
+ 
+-        t_str_start = time.perf_counter()
+-        orig_asm_str = str(moduleKernelBody)
+-        t_str_end = time.perf_counter()
+-        print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
++        #t_str_start = time.perf_counter()
++        #orig_asm_str = str(moduleKernelBody)
++        #t_str_end = time.perf_counter()
++        #print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
+ 
+-        with open(orig_path, "w") as f:
+-          f.write(orig_asm_str)
++        #with open(orig_path, "w") as f:
++        #  f.write(orig_asm_str)
+         with open(st_path, "w") as f:
+           f.write(st_asm)
+ 
+@@ -6961,15 +6961,15 @@ class KernelWriter(metaclass=abc.ABCMeta):
+           fcntl.flock(f, fcntl.LOCK_UN)
+ 
+         t3_end = time.perf_counter()
+-        print2(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s")
++        print(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s")
+ 
+       t0_end = time.perf_counter()
+-      print2(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s")
++      print(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s")
+ 
+-      print2(f"Using StinkyTofu Assembly")
++      print(f"Using StinkyTofu Assembly")
+       return (error, st_asm)
+     else:
+-      print2(f"Using Original Rocisa Assembly")
++      print(f"Using Original Rocisa Assembly")
+       return (error, str(moduleKernelBody))
+ 
+   ##############################################################################
