@@ -41,7 +41,7 @@ tracked changes are stashed once, and --patch is applied to each tested commit.
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
   f2a6c23df523 onward: st-codegen-test revision c394e5b
-  3941c087f7 onward:   st-codegen-test revision 6f82feb
+  9a9953849d8 onward:  st-codegen-test revision 49b34a960f
 
 Output:
   run-state.csv           Atomic resumable task ledger (source of truth).
@@ -411,8 +411,8 @@ commit_matches_component() {
 yaml_revision_for_commit() {
   local commit="$1"
 
-  if git -C "${ROCM_REPO}" merge-base --is-ancestor 3941c087f7 "${commit}"; then
-    echo "6f82feb"
+  if git -C "${ROCM_REPO}" merge-base --is-ancestor 9a9953849d8 "${commit}"; then
+    echo "49b34a960f"
   elif git -C "${ROCM_REPO}" merge-base --is-ancestor f2a6c23df523 "${commit}"; then
     echo "c394e5b"
   else
