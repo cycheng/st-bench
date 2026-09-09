@@ -59,7 +59,7 @@ BenchmarkProblems:
         - PrefetchGL2: [2]
         - ClusterDim: [[4,4]]
         - GlobalSplitU: [1]
-        - TDMIterateMode: [0]
+        - TDMIterateMode: [-1]
         - LDSSegmentInterleave: [0]
         - TDMSplit: [False]
         - StaggerU: [0]

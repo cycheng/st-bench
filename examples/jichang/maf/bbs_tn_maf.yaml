@@ -59,7 +59,7 @@ BenchmarkProblems:
         - TDMInst: [3]
         - TDMPlusLdsBuf: [-1]
         - HalfPLR: [1]
-        - TDMIterateMode: [1]
+        - TDMIterateMode: [-1]
         - TDMSplit: [False]
         - PrefetchGL2: [2]
         - LDSSegmentInterleave: [1]

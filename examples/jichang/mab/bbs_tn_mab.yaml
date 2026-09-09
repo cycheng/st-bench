@@ -53,7 +53,7 @@ BenchmarkProblems:
         - TDMPlusLdsBuf: [-1]
         - PrefetchGL2: [1]
         - ClusterDim: [[1,1]]
-        - TDMIterateMode: [0]
+        - TDMIterateMode: [-1]
         - TDMSplit: [False]
         - StaggerU: [0]
         - StreamK: [0]
