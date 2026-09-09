@@ -62,7 +62,7 @@ BenchmarkProblems:
         - DepthU: [256]
         - TDMInst: [3]
         - HalfPLR: [1]
-        - TDMIterateMode: [-1]
+        - TDMIterateMode: [3]
         - TDMSplit: [False]
         - PrefetchGL2: [2]
         - TransposeLDS: [-1]

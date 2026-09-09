@@ -59,7 +59,7 @@ BenchmarkProblems:
         - PrefetchGL2: [1]
         - ClusterDim: [[1,1]]
         - TDMPlusLdsBuf: [-1]
-        - TDMIterateMode: [-1]
+        - TDMIterateMode: [0]
         - TDMSplit: [False]
         - GlobalSplitU: [1]
         - ScheduleIterAlg: [4]
