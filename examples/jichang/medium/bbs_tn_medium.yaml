@@ -55,7 +55,7 @@ BenchmarkProblems:
         - ClusterDim: [[4,4]]
         - GlobalSplitU: [1]
         - TDMIterateMode: [0]
-        - TDMPlusLdsBuf: [0]
+        #- TDMPlusLdsBuf: [0]
         - LDSSegmentInterleave: [1]
         - TDMSplit: [False]
         - StaggerU: [0]
@@ -177,7 +177,7 @@ BenchmarkProblems:
 #           - Exact: [2048, 2048, 1, 65536]
 #         - ActivationArgs:
 #           - [Enum: none]
-
+          
 # LibraryLogic:
 #   ScheduleName: "gfx1250"
 #   # DeviceNames: [Device 0049, Device 0050]

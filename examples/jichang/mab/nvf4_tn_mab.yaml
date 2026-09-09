@@ -179,7 +179,7 @@ BenchmarkProblems:
 #           - Exact: [65536, 16, 1, 16384]
 #         - ActivationArgs:
 #           - [Enum: none]
-
+          
 # LibraryLogic:
 #   ScheduleName: "gfx1250"
 #   # DeviceNames: [Device 0049, Device 0050]
