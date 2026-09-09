@@ -7,6 +7,7 @@ import difflib
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -237,13 +238,30 @@ def asm_files(root: Path) -> dict[str, Path]:
     }
 
 
+CLUSTER_LABEL_HASH_RE = re.compile(
+    r"(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}"
+)
+CLUSTER_LABEL_HASH_BYTES_RE = re.compile(
+    rb"(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}"
+)
+
+
+def normalized_asm_bytes(path: Path) -> bytes:
+    return CLUSTER_LABEL_HASH_BYTES_RE.sub(rb"\1<hash>", path.read_bytes())
+
+
+def normalized_asm_text(path: Path) -> str:
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return CLUSTER_LABEL_HASH_RE.sub(r"\1<hash>", text)
+
+
 def file_hash(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(normalized_asm_bytes(path)).hexdigest()
 
 
 def write_file_diff(left: Path, right: Path, destination: Path) -> None:
-    left_lines = left.read_text(encoding="utf-8", errors="replace").splitlines(True)
-    right_lines = right.read_text(encoding="utf-8", errors="replace").splitlines(True)
+    left_lines = normalized_asm_text(left).splitlines(True)
+    right_lines = normalized_asm_text(right).splitlines(True)
     body = difflib.unified_diff(
         left_lines,
         right_lines,

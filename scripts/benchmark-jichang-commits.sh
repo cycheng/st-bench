@@ -70,6 +70,8 @@ measured performance is shown but its output was incorrect. A YAML with no
 finite value for its metric is recorded as 0, and the remaining YAMLs still
 run. A score followed by = generated the same ASM as the previous chronological
 commit for that YAML.
+ASM comparison ignores the nondeterministic 16-character hash in
+cluster-barrier basic-block labels.
 EOF
 }
 
