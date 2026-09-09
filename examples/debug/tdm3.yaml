@@ -20,6 +20,7 @@ GlobalParameters:
   CpuThreads: 1
   KeepBuildTmp: True
   PrintLevel: 2
+  StinkyTofuPrintAfterPass: "StinkyWaitCntInsertionPass"
 
 BenchmarkProblems:
   -
@@ -58,12 +59,13 @@ BenchmarkProblems:
         - LdsBlockSizePerPadB: [-1]
         - LdsPadMetadata: [0]
         - TDMInst: [3]
-        - TDMSplit: [False, True]
+        #- TDMSplit: [False, True]
+        - TDMSplit: [False]
         - StreamK: [0]
         - LDSTrInst: [False]
         - StaggerU: [0]
-        - ScheduleIterAlg: [0]
-        - PrefetchLocalRead: [1]
+        - ScheduleIterAlg: [4]
+        - PrefetchLocalRead: [2]
         #- PrefetchGlobalRead: [1,2]
         - PrefetchGlobalRead: [2]
         #- TDMPlusLdsBuf: [-1,0,1]
