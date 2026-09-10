@@ -247,17 +247,17 @@ if ! git -C "${PROJECT_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; th
 fi
 
 ALL_TEST_NAMES=(
-  mab-bf16 mab-bf16-m64 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4
+  mab-bf16 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4 mab-bf16-m64
   maf-bf16 maf-FP8 maf-MXFP8 maf-MXFP4 maf-NVFP4
   medium-bf16 medium-FP8 medium-MXFP8 medium-MXFP4
 )
 ALL_TEST_YAMLS=(
   examples/jichang/mab/bbs_tn_mab.yaml
-  examples/jichang/mab/bbs_tn_m_64_mab.yaml
   examples/jichang/mab/f8_tn_mab.yaml
   examples/jichang/mab/mxf8_tn_mab.yaml
   examples/jichang/mab/mxf4_tn_mab.yaml
   examples/jichang/mab/nvf4_tn_mab.yaml
+  examples/jichang/mab/bbs_tn_m_64_mab.yaml
   examples/jichang/maf/bbs_tn_maf.yaml
   examples/jichang/maf/f8_tn_maf.yaml
   examples/jichang/maf/mxf8_tn_maf.yaml

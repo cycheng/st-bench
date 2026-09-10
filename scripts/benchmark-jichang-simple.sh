@@ -117,19 +117,24 @@ for category in mab maf medium; do
     -maxdepth 1 -type f -name '*.yaml' -print0 | sort -z)
 done
 
-headers=("result")
-values=("best")
-for name in "${MAB_NAMES[@]}"; do
-  headers+=("mab-${name}")
-  values+=("${SCORES[mab/${name}]}")
-done
-for name in "${MAF_NAMES[@]}"; do
-  headers+=("maf-${name}")
-  values+=("${SCORES[maf/${name}]}")
-done
-for name in "${MEDIUM_NAMES[@]}"; do
-  headers+=("medium-${name}")
-  values+=("${SCORES[medium/${name}]}")
+headers=("result-id")
+values=("result-1")
+tags=(
+  mab-bf16 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4 mab-bf16-m64
+  maf-bf16 maf-FP8 maf-MXFP8 maf-MXFP4 maf-NVFP4
+  medium-bf16 medium-FP8 medium-MXFP8 medium-MXFP4
+)
+keys=(
+  mab/bbs_tn_mab mab/f8_tn_mab mab/mxf8_tn_mab mab/mxf4_tn_mab
+  mab/nvf4_tn_mab mab/bbs_tn_m_64_mab
+  maf/bbs_tn_maf maf/f8_tn_maf maf/mxf8_tn_maf maf/mxf4_tn_maf
+  maf/nvf4_tn_maf
+  medium/bbs_tn_medium medium/f8_tn_medium medium/mxf8_tn_medium
+  medium/mxf4_tn_medium
+)
+for index in "${!tags[@]}"; do
+  headers+=("${tags[index]}")
+  values+=("${SCORES[${keys[index]}]}")
 done
 
 declare -a WIDTHS=()
