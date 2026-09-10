@@ -41,7 +41,7 @@ tracked changes are stashed once, and --patch is applied to each tested commit.
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
   f2a6c23df523 onward: st-codegen-test revision c394e5b
-  9a9953849d8 onward:  st-codegen-test revision 49b34a960f
+  9a9953849d8 onward:  st-codegen-test HEAD at benchmark start
 
 Output:
   run-state.csv           Atomic resumable task ledger (source of truth).
@@ -77,6 +77,7 @@ EOF
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+HEAD_YAML_REVISION=""
 RESULT_HELPER="${SCRIPT_DIR}/benchmark-jichang-results.py"
 STATE_HELPER="${SCRIPT_DIR}/benchmark-jichang-state.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
@@ -245,6 +246,7 @@ if ! git -C "${PROJECT_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; th
   echo "Benchmark project is not a Git repository: ${PROJECT_DIR}" >&2
   exit 2
 fi
+HEAD_YAML_REVISION="$(git -C "${PROJECT_DIR}" rev-parse HEAD)"
 
 ALL_TEST_NAMES=(
   mab-bf16 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4 mab-bf16-m64
@@ -412,7 +414,7 @@ yaml_revision_for_commit() {
   local commit="$1"
 
   if git -C "${ROCM_REPO}" merge-base --is-ancestor 9a9953849d8 "${commit}"; then
-    echo "49b34a960f"
+    echo "${HEAD_YAML_REVISION}"
   elif git -C "${ROCM_REPO}" merge-base --is-ancestor f2a6c23df523 "${commit}"; then
     echo "c394e5b"
   else
