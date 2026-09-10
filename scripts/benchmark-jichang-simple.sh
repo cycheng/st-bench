@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 CONFIG_FILE="${1:-${PROJECT_DIR}/examples/test-silicon-rel.cfg}"
 RUNNER="${RUN_SINGLE_YAML:-${SCRIPT_DIR}/run-single-yaml.sh}"
-RUNS=2
+RUNS=1
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Config file not found: ${CONFIG_FILE}" >&2
@@ -87,11 +87,11 @@ for category in mab maf medium; do
     for ((run = 1; run <= RUNS; run++)); do
       log="${TMP_DIR}/${category}-${name}-${run}.log"
       logs+=("${log}")
-      echo "=== ${category}/${name}: run ${run}/${RUNS} ==="
+      echo "=== ${category}/${name}: run ${run}/${RUNS} ===" >&2
 
       run_status=0
       if "${RUNNER}" "${CONFIG_FILE}" "${yaml}" --live-output \
-          2>&1 | tee "${log}"; then
+          2>&1 | tee "${log}" >&2; then
         :
       else
         run_status="${PIPESTATUS[0]}"
@@ -117,25 +117,39 @@ for category in mab maf medium; do
     -maxdepth 1 -type f -name '*.yaml' -print0 | sort -z)
 done
 
-print_table() {
-  local category="$1"
-  local metric="$2"
-  shift 2
-  local names=("$@")
+headers=("result")
+values=("best")
+for name in "${MAB_NAMES[@]}"; do
+  headers+=("mab-${name}")
+  values+=("${SCORES[mab/${name}]}")
+done
+for name in "${MAF_NAMES[@]}"; do
+  headers+=("maf-${name}")
+  values+=("${SCORES[maf/${name}]}")
+done
+for name in "${MEDIUM_NAMES[@]}"; do
+  headers+=("medium-${name}")
+  values+=("${SCORES[medium/${name}]}")
+done
 
-  echo
-  echo "${category} (${metric})"
-  printf '%s' "${names[0]}"
-  for name in "${names[@]:1}"; do
-    printf '  %s' "${name}"
-  done
-  printf '\nscore'
-  for name in "${names[@]}"; do
-    printf '  %s' "${SCORES[${category}/${name}]}"
-  done
-  printf '\n'
-}
+declare -a WIDTHS=()
+for index in "${!headers[@]}"; do
+  width="${#headers[index]}"
+  (( ${#values[index]} > width )) && width="${#values[index]}"
+  WIDTHS+=("${width}")
+done
 
-print_table mab gbps-bandwidth "${MAB_NAMES[@]}"
-print_table maf gflops "${MAF_NAMES[@]}"
-print_table medium gflops "${MEDIUM_NAMES[@]}"
+for index in "${!headers[@]}"; do
+  (( index > 0 )) && printf '   '
+  printf '%-*s' "${WIDTHS[index]}" "${headers[index]}"
+done
+printf '\n'
+for index in "${!values[@]}"; do
+  (( index > 0 )) && printf '   '
+  if (( index == 0 )); then
+    printf '%-*s' "${WIDTHS[index]}" "${values[index]}"
+  else
+    printf '%*s' "${WIDTHS[index]}" "${values[index]}"
+  fi
+done
+printf '\n'
