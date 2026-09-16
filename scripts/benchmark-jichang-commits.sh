@@ -5,17 +5,19 @@ set -uo pipefail
 usage() {
   cat <<'EOF'
 Benchmark the Jichang MAB, MAF, and medium YAMLs, optionally across a
-rocm-libraries commit range.
+rocm-libraries commit range or an explicit commit list.
 
 Usage:
   scripts/benchmark-jichang-commits.sh [options]
 
 Options:
+  --commit <commit>      Run this exact commit. Repeat for multiple commits.
+                         Cannot be combined with --start/--end.
   --start <commit>       First range boundary (inclusive; requires --end).
   --end <commit>         Last range boundary (inclusive; requires --start).
   --config <file>        run-single-yaml config (default: examples/test.cfg).
   --repo <dir>           rocm-libraries repository (default: ~/rocm-libraries).
-  --patch <file>         Patch applied to every range commit (default:
+  --patch <file>         Patch applied to every checked-out commit (default:
                          st-patch/run-silicon-B0-perf.diff).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
   --live-output          Stream YAML output (or set live_output=true in config).
@@ -29,14 +31,16 @@ Options:
                          (default: either).
   -h, --help             Show this help.
 
-Without --start/--end, test the current checkout once and do not change or
-stash the repository.
+Without --commit or --start/--end, test the current checkout once and do not
+change or stash the repository.
 
 In range mode, commits that modify shared/stinkytofu, projects/hipblaslt, or
-both are tested. The source column identifies which component each commit
-changes. When at least two commits are selected, asm-same reports whether each
-commit's complete generated st ASM matches the previously tested commit. Local
-tracked changes are stashed once, and --patch is applied to each tested commit.
+both are tested. Repeated --commit options instead test exactly the supplied
+commits in the supplied order, without component filtering. The source column
+identifies which component each commit changes. When at least two commits are
+selected, asm-same reports whether each commit's complete generated st ASM
+matches the previous chronological commit. Local tracked changes are stashed
+once, and --patch is applied to each tested commit.
 
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
@@ -88,6 +92,7 @@ LIVE_OUTPUT=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
 END_COMMIT=""
+SELECTED_COMMITS=()
 CATEGORY=""
 ONLY_YAML=""
 EXCLUDED_YAMLS=()
@@ -95,6 +100,11 @@ COMPONENT="either"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --commit)
+      [[ $# -ge 2 ]] || { echo "Missing value for --commit" >&2; exit 2; }
+      SELECTED_COMMITS+=("$2")
+      shift 2
+      ;;
     --start)
       [[ $# -ge 2 ]] || { echo "Missing value for --start" >&2; exit 2; }
       START_COMMIT="$2"
@@ -169,6 +179,10 @@ done
 if { [[ -n "${START_COMMIT}" ]] && [[ -z "${END_COMMIT}" ]]; } ||
    { [[ -z "${START_COMMIT}" ]] && [[ -n "${END_COMMIT}" ]]; }; then
   echo "--start and --end must be provided together." >&2
+  exit 2
+fi
+if [[ ${#SELECTED_COMMITS[@]} -gt 0 && -n "${START_COMMIT}" ]]; then
+  echo "--commit cannot be combined with --start/--end." >&2
   exit 2
 fi
 if [[ -n "${CATEGORY}" ]] &&
@@ -548,7 +562,7 @@ restore_repository() {
 }
 
 COMMITS=()
-if [[ -n "${START_COMMIT}" ]]; then
+if [[ -n "${START_COMMIT}" || ${#SELECTED_COMMITS[@]} -gt 0 ]]; then
   RANGE_MODE=1
   if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
     normalize_interrupted_session
@@ -562,44 +576,60 @@ if [[ -n "${START_COMMIT}" ]]; then
     ORIGINAL_BRANCH="$(git -C "${ROCM_REPO}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
   fi
 
-  if ! START_COMMIT="$(git -C "${ROCM_REPO}" rev-parse --verify "${START_COMMIT}^{commit}")"; then
-    echo "Invalid start commit." >&2
-    exit 2
-  fi
-  if ! END_COMMIT="$(git -C "${ROCM_REPO}" rev-parse --verify "${END_COMMIT}^{commit}")"; then
-    echo "Invalid end commit." >&2
-    exit 2
-  fi
-  if ! git -C "${ROCM_REPO}" merge-base --is-ancestor "${START_COMMIT}" "${END_COMMIT}"; then
-    echo "Start commit is not an ancestor of end commit." >&2
-    exit 2
-  fi
-
   COMMITS=()
-  if commit_matches_component "$(commit_source "${START_COMMIT}")"; then
-    COMMITS+=("${START_COMMIT}")
-  fi
-  case "${COMPONENT}" in
-    stinkytofu)
-      COMPONENT_PATHS=(shared/stinkytofu)
-      ;;
-    hipblaslt)
-      COMPONENT_PATHS=(projects/hipblaslt)
-      ;;
-    either)
-      COMPONENT_PATHS=(shared/stinkytofu projects/hipblaslt)
-      ;;
-  esac
-  while IFS= read -r commit; do
-    [[ -n "${commit}" ]] && COMMITS+=("${commit}")
-  done < <(
-    git -C "${ROCM_REPO}" rev-list --reverse --ancestry-path \
-      "${START_COMMIT}..${END_COMMIT}" -- "${COMPONENT_PATHS[@]}"
-  )
+  if [[ ${#SELECTED_COMMITS[@]} -gt 0 ]]; then
+    for commit_ref in "${SELECTED_COMMITS[@]}"; do
+      if ! resolved_commit="$(git -C "${ROCM_REPO}" rev-parse --verify "${commit_ref}^{commit}")"; then
+        echo "Invalid commit: ${commit_ref}" >&2
+        exit 2
+      fi
+      for existing_commit in "${COMMITS[@]}"; do
+        if [[ "${existing_commit}" == "${resolved_commit}" ]]; then
+          echo "Duplicate commit: ${commit_ref}" >&2
+          exit 2
+        fi
+      done
+      COMMITS+=("${resolved_commit}")
+    done
+  else
+    if ! START_COMMIT="$(git -C "${ROCM_REPO}" rev-parse --verify "${START_COMMIT}^{commit}")"; then
+      echo "Invalid start commit." >&2
+      exit 2
+    fi
+    if ! END_COMMIT="$(git -C "${ROCM_REPO}" rev-parse --verify "${END_COMMIT}^{commit}")"; then
+      echo "Invalid end commit." >&2
+      exit 2
+    fi
+    if ! git -C "${ROCM_REPO}" merge-base --is-ancestor "${START_COMMIT}" "${END_COMMIT}"; then
+      echo "Start commit is not an ancestor of end commit." >&2
+      exit 2
+    fi
 
-  if [[ ${#COMMITS[@]} -eq 0 ]]; then
-    echo "No ${COMPONENT} commits found in the requested range." >&2
-    exit 2
+    if commit_matches_component "$(commit_source "${START_COMMIT}")"; then
+      COMMITS+=("${START_COMMIT}")
+    fi
+    case "${COMPONENT}" in
+      stinkytofu)
+        COMPONENT_PATHS=(shared/stinkytofu)
+        ;;
+      hipblaslt)
+        COMPONENT_PATHS=(projects/hipblaslt)
+        ;;
+      either)
+        COMPONENT_PATHS=(shared/stinkytofu projects/hipblaslt)
+        ;;
+    esac
+    while IFS= read -r commit; do
+      [[ -n "${commit}" ]] && COMMITS+=("${commit}")
+    done < <(
+      git -C "${ROCM_REPO}" rev-list --reverse --ancestry-path \
+        "${START_COMMIT}..${END_COMMIT}" -- "${COMPONENT_PATHS[@]}"
+    )
+
+    if [[ ${#COMMITS[@]} -eq 0 ]]; then
+      echo "No ${COMPONENT} commits found in the requested range." >&2
+      exit 2
+    fi
   fi
 
   if [[ ! -f "${OUTPUT_DIR}/git-session.json" ]]; then
@@ -622,8 +652,8 @@ if [[ -n "${START_COMMIT}" ]]; then
   trap restore_repository EXIT
 else
   if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
-    echo "This output directory has an interrupted range-mode Git session." >&2
-    echo "Resume with --start and --end so the repository can be recovered safely." >&2
+    echo "This output directory has an interrupted managed Git session." >&2
+    echo "Resume with the original --commit or --start/--end options." >&2
     exit 1
   fi
   COMMITS=("$(git -C "${ROCM_REPO}" rev-parse HEAD)")
