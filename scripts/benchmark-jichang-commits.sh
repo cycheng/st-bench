@@ -20,6 +20,7 @@ Options:
   --patch <file>         Patch applied to every checked-out commit (default:
                          st-patch/run-silicon-B0-perf.diff).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
+  --repeat <num>         Run each commit/YAML this many times (default: 1).
   --live-output          Stream YAML output (or set live_output=true in config).
   --skip-identical-asm   Build and compare ASM with the previous selected
                          commit; reuse its score when the ASM is identical.
@@ -51,6 +52,8 @@ YAML compatibility is selected automatically for each rocm-libraries commit:
 
 Output:
   run-state.csv           Atomic resumable task ledger (source of truth).
+  run-samples.csv         Individual performance samples from each repetition.
+  run-statistics.csv      Average, best, worst, and standard deviation per YAML.
   results.csv             Tested commits and maximum score per YAML.
   summary.txt             Human-readable table, updated after every YAML.
   failures.csv            YAML failures and skipped-commit reasons.
@@ -58,6 +61,7 @@ Output:
   asm-file-comparisons.csv
                            Exact status and hashes for every ASM file.
   logs/<commit>/<test>.attempt-N.log
+  logs/<commit>/<test>.attempt-N.run-M.log (when --repeat is greater than 1)
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
   asm-diffs/<pair>/<test>/<file>.diff
                            Unified diffs for changed ASM files.
@@ -78,6 +82,8 @@ run. A score followed by = generated the same ASM as the previous chronological
 commit for that YAML.
 ASM comparison ignores the nondeterministic 16-character hash in
 cluster-barrier basic-block labels.
+Average and standard deviation use finite performance samples; standard
+deviation is the population standard deviation.
 EOF
 }
 
@@ -90,6 +96,7 @@ CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
 PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
 YAML_TIMEOUT="10m"
+REPEAT_RUNS=1
 LIVE_OUTPUT=0
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -136,6 +143,11 @@ while [[ $# -gt 0 ]]; do
     --timeout)
       [[ $# -ge 2 ]] || { echo "Missing value for --timeout" >&2; exit 2; }
       YAML_TIMEOUT="$2"
+      shift 2
+      ;;
+    --repeat)
+      [[ $# -ge 2 ]] || { echo "Missing value for --repeat" >&2; exit 2; }
+      REPEAT_RUNS="$2"
       shift 2
       ;;
     --live-output)
@@ -195,6 +207,10 @@ fi
 if [[ -n "${CATEGORY}" ]] &&
    [[ "${CATEGORY}" != "mab" && "${CATEGORY}" != "maf" && "${CATEGORY}" != "medium" ]]; then
   echo "--category must be mab, maf, or medium." >&2
+  exit 2
+fi
+if [[ ! "${REPEAT_RUNS}" =~ ^[1-9][0-9]*$ ]]; then
+  echo "--repeat must be a positive integer." >&2
   exit 2
 fi
 if [[ "${COMPONENT}" != "stinkytofu" &&
@@ -340,7 +356,8 @@ for yaml in "${TEST_YAMLS[@]}"; do
 done
 
 if ! python3 "${STATE_HELPER}" init \
-  --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}"; then
+  --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}" \
+  --repeat "${REPEAT_RUNS}"; then
   exit 1
 fi
 mkdir -p "${OUTPUT_DIR}/logs"
@@ -878,67 +895,90 @@ for commit_index in "${!COMMITS[@]}"; do
       fi
     fi
 
-    log_file="${OUTPUT_DIR}/${start_result}"
-    mkdir -p "$(dirname -- "${log_file}")"
-    echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
-    run_status=0
-    run_yaml "${yaml}" "${log_file}" config || run_status=$?
-
-    if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
-          ${run_status} -eq 129 || ${run_status} -eq 130 ||
-          ${run_status} -eq 143 || ${run_status} -eq 148 ]]; then
-      echo "${test_name}: interrupted or timed out; task remains pending" >&2
-      exit "${run_status}"
-    fi
-
     asm_status="missing"
     asm_message=""
-    if cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
-      asm_status="cached"
-    else
-      asm_message="generated st ASM could not be cached"
-    fi
-
-    if ! score="$(extract_max_score "${log_file}" "${score_metric}")"; then
-      if [[ ${run_status} -ne 0 ]]; then
-        terminal_status="execution-failed"
-        message="YAML execution failed with no finite ${score_metric} value"
+    sample_count=0
+    failed_runs=0
+    validation_failed_runs=0
+    for ((run_index = 1; run_index <= REPEAT_RUNS; run_index++)); do
+      if [[ ${run_index} -eq 1 ]]; then
+        log_file="${OUTPUT_DIR}/${start_result}"
       else
-        terminal_status="execution-failed"
-        message="no finite ${score_metric} value found"
+        log_file="${OUTPUT_DIR}/${start_result%.log}.run-${run_index}.log"
       fi
-      if [[ -n "${asm_message}" ]]; then
-        message="${message}; ${asm_message}"
+      mkdir -p "$(dirname -- "${log_file}")"
+      echo "--- ${test_name}: run ${run_index}/${REPEAT_RUNS}"
+      run_status=0
+      run_yaml "${yaml}" "${log_file}" config || run_status=$?
+
+      if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
+            ${run_status} -eq 129 || ${run_status} -eq 130 ||
+            ${run_status} -eq 143 || ${run_status} -eq 148 ]]; then
+        echo "${test_name}: interrupted or timed out; task remains pending" >&2
+        exit "${run_status}"
       fi
+
+      if cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
+        asm_status="cached"
+        asm_message=""
+      else
+        asm_message="generated st ASM could not be cached"
+      fi
+
+      sample_score=""
+      sample_status="execution-failed"
+      if score="$(extract_max_score "${log_file}" "${score_metric}")"; then
+        sample_score="${score}"
+        sample_count=$((sample_count + 1))
+        if [[ "${score}" == *"*" ]]; then
+          sample_status="validation-failed"
+          validation_failed_runs=$((validation_failed_runs + 1))
+        elif [[ ${run_status} -eq 0 ]]; then
+          sample_status="passed"
+        fi
+      fi
+      if [[ ${run_status} -ne 0 ]]; then
+        failed_runs=$((failed_runs + 1))
+      fi
+
+      python3 "${STATE_HELPER}" record-sample --output "${OUTPUT_DIR}" \
+        --commit "${commit}" --test "${test_name}" --run "${run_index}" \
+        --status "${sample_status}" --score "${sample_score}" || exit 1
+
+      if [[ -n "${sample_score}" ]]; then
+        echo "${test_name}: run ${run_index} = ${sample_score} ${score_unit}"
+      else
+        echo "${test_name}: run ${run_index} produced no finite score" >&2
+      fi
+    done
+
+    if [[ ${sample_count} -eq 0 ]]; then
+      terminal_status="execution-failed"
+      message="no finite ${score_metric} value found in ${REPEAT_RUNS} run(s)"
       finish_task "${commit}" "${test_name}" "${terminal_status}" 0 \
         "${asm_status}" "${message}"
       continue
     fi
 
+    stats_line="$(python3 "${STATE_HELPER}" sample-stats \
+      --output "${OUTPUT_DIR}" --commit "${commit}" --test "${test_name}")" || exit 1
+    IFS=$'\t' read -r measured_count average best worst standard_deviation \
+      best_score validation_failures sample_failures <<< "${stats_line}"
     terminal_status="passed"
-    message=""
-    if [[ "${score}" == *"*" ]]; then
+    message="${measured_count}/${REPEAT_RUNS} run(s) produced finite scores"
+    if [[ ${validation_failures} -gt 0 ]]; then
       terminal_status="validation-failed"
-      message="validation failed (score marked *)"
+      message="${message}; ${validation_failures} validation-failed run(s)"
+    elif [[ ${failed_runs} -gt 0 ]]; then
+      terminal_status="execution-failed"
+      message="${message}; ${failed_runs} run(s) failed"
     fi
-
-    if [[ ${run_status} -ne 0 ]]; then
-      if [[ "${terminal_status}" == "passed" ]]; then
-        terminal_status="execution-failed"
-        message="YAML execution failed after reporting a score"
-      fi
-    fi
-
     if [[ -n "${asm_message}" ]]; then
-      if [[ -z "${message}" ]]; then
-        message="${asm_message}"
-      else
-        message="${message}; ${asm_message}"
-      fi
+      message="${message}; ${asm_message}"
     fi
 
-    echo "${test_name}: ${score} ${score_unit}"
-    finish_task "${commit}" "${test_name}" "${terminal_status}" "${score}" \
+    echo "${test_name}: best=${best_score}, average=${average}, worst=${worst}, SD=${standard_deviation} ${score_unit}"
+    finish_task "${commit}" "${test_name}" "${terminal_status}" "${best_score}" \
       "${asm_status}" "${message}"
   done
 done

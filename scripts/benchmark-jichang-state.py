@@ -6,6 +6,7 @@ import csv
 import difflib
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -19,6 +20,7 @@ FIELDS = [
     "status", "score", "metric", "unit", "attempt", "log_path",
     "asm_cache_status", "message",
 ]
+SAMPLE_FIELDS = ["commit", "test", "run", "status", "score"]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
@@ -96,6 +98,28 @@ def write_rows(path: Path, rows: list[dict[str, str]]) -> None:
     atomic_write(path, writer)
 
 
+def samples_path(state_path: Path) -> Path:
+    return state_path.parent / "run-samples.csv"
+
+
+def read_samples(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames != SAMPLE_FIELDS:
+            raise SystemExit(f"Unexpected run-samples.csv columns in {path}")
+        return list(reader)
+
+
+def write_samples(path: Path, rows: list[dict[str, str]]) -> None:
+    def writer(stream: TextIO) -> None:
+        output = csv.DictWriter(stream, fieldnames=SAMPLE_FIELDS, lineterminator="\n")
+        output.writeheader()
+        output.writerows(rows)
+    atomic_write(path, writer)
+
+
 def locate(rows: list[dict[str, str]], commit: str, test: str) -> dict[str, str] | None:
     return next((row for row in rows if row["commit"] == commit and row["test"] == test), None)
 
@@ -105,7 +129,12 @@ def initialize(args: argparse.Namespace) -> None:
     state = output / "run-state.csv"
     metadata_path = output / "run-metadata.json"
     config_hash = hashlib.sha256(args.config.read_bytes()).hexdigest()
-    metadata = {"version": 1, "config_sha256": config_hash, "rocm_repo": str(args.repo.resolve())}
+    metadata = {
+        "version": 1,
+        "config_sha256": config_hash,
+        "rocm_repo": str(args.repo.resolve()),
+        "repeat_runs": args.repeat,
+    }
     if output.exists() and not state.exists() and any(
         (output / name).exists() for name in ("results.csv", "summary.txt", "failures.csv")
     ):
@@ -115,6 +144,8 @@ def initialize(args: argparse.Namespace) -> None:
     output.mkdir(parents=True, exist_ok=True)
     if metadata_path.exists():
         previous = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if "repeat_runs" not in previous:
+            previous["repeat_runs"] = 1
         if previous != metadata:
             raise SystemExit(
                 "Resume metadata mismatch: config content or ROCm repository path changed"
@@ -158,7 +189,34 @@ def start(args: argparse.Namespace) -> None:
     relative_log = f"logs/{row['short_commit']}/{row['test']}.attempt-{attempt}.log"
     row.update(status="running", attempt=str(attempt), log_path=relative_log, message="")
     write_rows(args.state, rows)
+    sample_rows = read_samples(samples_path(args.state))
+    sample_rows = [
+        sample for sample in sample_rows
+        if not (sample["commit"] == args.commit and sample["test"] == args.test)
+    ]
+    write_samples(samples_path(args.state), sample_rows)
     print(relative_log)
+
+
+def record_sample(args: argparse.Namespace) -> None:
+    path = samples_path(args.output / "run-state.csv")
+    rows = read_samples(path)
+    rows = [
+        row for row in rows
+        if not (
+            row["commit"] == args.commit
+            and row["test"] == args.test
+            and row["run"] == str(args.run)
+        )
+    ]
+    rows.append({
+        "commit": args.commit,
+        "test": args.test,
+        "run": str(args.run),
+        "status": args.status,
+        "score": args.score,
+    })
+    write_samples(path, rows)
 
 
 def finish(args: argparse.Namespace) -> None:
@@ -295,6 +353,108 @@ def reuse_task(args: argparse.Namespace) -> None:
         message=args.message,
     )
     write_rows(args.state, rows)
+    sample_path = samples_path(args.state)
+    sample_rows = read_samples(sample_path)
+    sample_rows = [
+        row for row in sample_rows
+        if not (
+            row["commit"] == args.target_commit
+            and row["test"] == args.test
+        )
+    ]
+    source_samples = [
+        row for row in sample_rows
+        if row["commit"] == args.source_commit and row["test"] == args.test
+    ]
+    if not source_samples:
+        source_samples = [{
+            "commit": args.source_commit,
+            "test": args.test,
+            "run": "1",
+            "status": source["status"],
+            "score": source["score"],
+        }]
+    sample_rows.extend([
+        {**row, "commit": args.target_commit}
+        for row in source_samples
+    ])
+    write_samples(sample_path, sample_rows)
+
+
+def numeric_score(raw_score: str) -> float | None:
+    try:
+        value = float(raw_score.rstrip("*"))
+    except ValueError:
+        return None
+    return value if math.isfinite(value) else None
+
+
+def calculate_statistics(
+    sample_rows: list[dict[str, str]],
+) -> dict[str, float | int | bool | str] | None:
+    measured: list[tuple[float, bool]] = []
+    for row in sample_rows:
+        value = numeric_score(row["score"])
+        if value is not None:
+            measured.append((value, row["score"].endswith("*")))
+    if not measured:
+        return None
+
+    values = [value for value, _ in measured]
+    average = sum(values) / len(values)
+    standard_deviation = math.sqrt(
+        sum((value - average) ** 2 for value in values) / len(values)
+    )
+    best_index = max(range(len(values)), key=values.__getitem__)
+    validation_failures = sum(1 for _, failed in measured if failed)
+    best = values[best_index]
+    best_display = f"{best:.9g}" + ("*" if validation_failures else "")
+    return {
+        "count": len(values),
+        "average": average,
+        "best": best,
+        "worst": min(values),
+        "standard_deviation": standard_deviation,
+        "best_display": best_display,
+        "validation_failures": validation_failures,
+        "run_failures": sum(
+            1 for row in sample_rows if row["status"] == "execution-failed"
+        ),
+    }
+
+
+def sample_statistics(args: argparse.Namespace) -> None:
+    state_rows = read_rows(args.output / "run-state.csv")
+    samples = [
+        row for row in read_samples(args.output / "run-samples.csv")
+        if row["commit"] == args.commit and row["test"] == args.test
+    ]
+    if not samples:
+        state_row = locate(state_rows, args.commit, args.test)
+        if state_row is not None and task_done(state_row):
+            samples = [{
+                "commit": args.commit,
+                "test": args.test,
+                "run": "1",
+                "status": state_row["status"],
+                "score": state_row["score"],
+            }]
+    statistics = calculate_statistics(samples)
+    if statistics is None:
+        print("0")
+        return
+    print(
+        "\t".join([
+            str(statistics["count"]),
+            f"{statistics['average']:.9g}",
+            f"{statistics['best']:.9g}",
+            f"{statistics['worst']:.9g}",
+            f"{statistics['standard_deviation']:.9g}",
+            str(statistics["best_display"]),
+            str(statistics["validation_failures"]),
+            str(statistics["run_failures"]),
+        ])
+    )
 
 
 def write_file_diff(left: Path, right: Path, destination: Path) -> None:
@@ -432,7 +592,7 @@ def compare_asm(args: argparse.Namespace) -> None:
     )
 
 
-def format_summary(header: list[str], rows: list[list[str]]) -> str:
+def format_table(header: list[str], rows: list[list[str]]) -> str:
     display_rows: list[list[str]] = []
     for row in rows:
         display = [row[0]]
@@ -456,11 +616,40 @@ def format_summary(header: list[str], rows: list[list[str]]) -> str:
         fields = [row[0].ljust(widths[0])]
         fields.extend(row[i].rjust(widths[i]) for i in range(1, len(row)))
         lines.append("   ".join(fields))
-    lines.extend([
+    return "\n".join(lines) + "\n"
+
+
+def format_summary(
+    best_header: list[str],
+    best_rows: list[list[str]],
+    average_header: list[str],
+    average_rows: list[list[str]],
+) -> str:
+    return "\n".join([
+        "Best",
+        format_table(best_header, best_rows).rstrip("\n"),
+        "",
+        "Average with SD",
+        format_table(average_header, average_rows).rstrip("\n"),
         "",
         "Annotations: = ASM matches previous chronological commit; * validation failed",
-    ])
-    return "\n".join(lines) + "\n"
+    ]) + "\n"
+
+
+def statistics_for_task(
+    state_row: dict[str, str],
+    sample_map: dict[tuple[str, str], list[dict[str, str]]],
+) -> dict[str, float | int | bool | str] | None:
+    samples = sample_map.get((state_row["commit"], state_row["test"]), [])
+    if not samples and task_done(state_row):
+        samples = [{
+            "commit": state_row["commit"],
+            "test": state_row["test"],
+            "run": "1",
+            "status": state_row["status"],
+            "score": state_row["score"],
+        }]
+    return calculate_statistics(samples)
 
 
 def reports(args: argparse.Namespace) -> None:
@@ -477,6 +666,9 @@ def reports(args: argparse.Namespace) -> None:
         if row["test"] not in tests:
             tests.append(row["test"])
     commits = chronological_commits(output, commits)
+    sample_map: dict[tuple[str, str], list[dict[str, str]]] = {}
+    for sample in read_samples(output / "run-samples.csv"):
+        sample_map.setdefault((sample["commit"], sample["test"]), []).append(sample)
     yaml_asm_same: dict[tuple[str, str], bool] = {}
     asm_summary_path = output / "asm-summary.csv"
     if asm_summary_path.exists():
@@ -487,27 +679,73 @@ def reports(args: argparse.Namespace) -> None:
                 ] = asm_row["status"] == "yes"
     by_key = {(row["commit"], row["test"]): row for row in rows}
     commit_rows: list[list[str]] = []
+    average_rows: list[list[str]] = []
+    statistics_rows = [[
+        "commit-id", "source", "test", "unit", "count",
+        "average", "best", "worst", "standard-deviation",
+    ]]
     for commit in commits:
         related = [row for row in rows if row["commit"] == commit]
         if not related:
             continue
         first = related[0]
-        values = []
+        best_values = []
+        average_values = []
         for test in tests:
             row = by_key.get((commit, test))
-            value = row["score"] if row and row["status"] in DONE else ""
-            if value and yaml_asm_same.get((first["short_commit"], test), False):
-                value += "="
-            values.append(value)
+            statistics = (
+                statistics_for_task(row, sample_map)
+                if row and row["status"] in DONE
+                else None
+            )
+            if statistics is None:
+                best_value = row["score"] if row else ""
+                fallback_score = numeric_score(row["score"]) if row else None
+                average_value = (
+                    f"{fallback_score:.2f} +/- 0.00"
+                    if fallback_score is not None
+                    else ""
+                )
+            else:
+                best_value = str(statistics["best_display"])
+                average_value = (
+                    f"{statistics['average']:.2f} +/- "
+                    f"{statistics['standard_deviation']:.2f}"
+                )
+                statistics_rows.append([
+                    first["short_commit"], first["source"], test,
+                    row["unit"], str(statistics["count"]),
+                    f"{statistics['average']:.9g}",
+                    f"{statistics['best']:.9g}",
+                    f"{statistics['worst']:.9g}",
+                    f"{statistics['standard_deviation']:.9g}",
+                ])
+            if best_value and yaml_asm_same.get((first["short_commit"], test), False):
+                best_value += "="
+                average_value += "="
+            best_values.append(best_value)
+            average_values.append(average_value)
         commit_rows.append([
-            first["short_commit"], first["source"], *values,
+            first["short_commit"], first["source"], *best_values,
+        ])
+        average_rows.append([
+            first["short_commit"], first["source"], *average_values,
         ])
     header = ["commit-id", "source", *tests]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),
     )
-    atomic_write(output / "summary.txt", lambda stream: stream.write(format_summary(header, commit_rows)))
+    atomic_write(
+        output / "summary.txt",
+        lambda stream: stream.write(
+            format_summary(header, commit_rows, header, average_rows)
+        ),
+    )
+    atomic_write(
+        output / "run-statistics.csv",
+        lambda stream: csv.writer(stream, lineterminator="\n").writerows(statistics_rows),
+    )
     failures = [["commit-id", "source", "test", "status", "reason", "log"]]
     for row in rows:
         if (
@@ -555,6 +793,7 @@ def parse_args() -> argparse.Namespace:
     init.add_argument("--output", type=Path, required=True)
     init.add_argument("--config", type=Path, required=True)
     init.add_argument("--repo", type=Path, required=True)
+    init.add_argument("--repeat", type=int, default=1)
     init.set_defaults(handler=initialize)
     ensure_parser = commands.add_parser("ensure")
     add_common_task(ensure_parser)
@@ -564,6 +803,14 @@ def parse_args() -> argparse.Namespace:
     start_parser = commands.add_parser("start")
     add_common_task(start_parser)
     start_parser.set_defaults(handler=start)
+    sample_parser = commands.add_parser("record-sample")
+    sample_parser.add_argument("--output", type=Path, required=True)
+    sample_parser.add_argument("--commit", required=True)
+    sample_parser.add_argument("--test", required=True)
+    sample_parser.add_argument("--run", type=int, required=True)
+    sample_parser.add_argument("--status", required=True)
+    sample_parser.add_argument("--score", default="")
+    sample_parser.set_defaults(handler=record_sample)
     finish_parser = commands.add_parser("finish")
     add_common_task(finish_parser)
     finish_parser.add_argument("--status", required=True)
@@ -582,6 +829,11 @@ def parse_args() -> argparse.Namespace:
     asm_status_parser.add_argument("--left", type=Path, required=True)
     asm_status_parser.add_argument("--right", type=Path, required=True)
     asm_status_parser.set_defaults(handler=asm_status)
+    sample_stats_parser = commands.add_parser("sample-stats")
+    sample_stats_parser.add_argument("--output", type=Path, required=True)
+    sample_stats_parser.add_argument("--commit", required=True)
+    sample_stats_parser.add_argument("--test", required=True)
+    sample_stats_parser.set_defaults(handler=sample_statistics)
     asm_parser = commands.add_parser("set-asm")
     asm_parser.add_argument("--state", type=Path, required=True)
     asm_parser.add_argument("--commit", required=True)
