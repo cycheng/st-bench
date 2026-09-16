@@ -21,6 +21,8 @@ Options:
                          st-patch/run-silicon-B0-perf.diff).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
   --live-output          Stream YAML output (or set live_output=true in config).
+  --skip-identical-asm   Build and compare ASM with the previous selected
+                         commit; reuse its score when the ASM is identical.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML, relative to examples/jichang
@@ -89,6 +91,7 @@ ROCM_REPO="${HOME}/rocm-libraries"
 PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
 YAML_TIMEOUT="10m"
 LIVE_OUTPUT=0
+SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
 END_COMMIT=""
@@ -137,6 +140,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --live-output)
       LIVE_OUTPUT=1
+      shift
+      ;;
+    --skip-identical-asm)
+      SKIP_IDENTICAL_ASM=1
       shift
       ;;
     --output-dir)
@@ -384,6 +391,58 @@ cache_generated_asm() {
   rm -rf -- "${destination}"
   mkdir -p -- "$(dirname -- "${destination}")"
   cp -a -- "${artifact_dir}/st" "${destination}"
+}
+
+run_yaml() {
+  local yaml_file="$1"
+  local log_file="$2"
+  local mode="$3"
+  local mode_arg=()
+  local run_status=0
+
+  case "${mode}" in
+    build-only)
+      mode_arg=(--build-only)
+      ;;
+    config)
+      ;;
+    *)
+      echo "Unknown YAML run mode: ${mode}" >&2
+      return 2
+      ;;
+  esac
+
+  if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+    (
+      cd "${PROJECT_DIR}" || exit 1
+      exec setsid --wait timeout --signal=TERM --kill-after=30s \
+        "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
+        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}" --live-output
+    ) </dev/null >"${log_file}" 2>&1 &
+  else
+    (
+      cd "${PROJECT_DIR}" || exit 1
+      exec setsid --wait timeout --signal=TERM --kill-after=30s \
+        "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
+        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}"
+    ) </dev/null >"${log_file}" 2>&1 &
+  fi
+  ACTIVE_RUN_PID=$!
+  if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+    tail --pid="${ACTIVE_RUN_PID}" -n +1 -s 0.2 -f "${log_file}" &
+    ACTIVE_TAIL_PID=$!
+  fi
+
+  wait "${ACTIVE_RUN_PID}" || run_status=$?
+  ACTIVE_RUN_PID=""
+  if [[ -n "${ACTIVE_TAIL_PID}" ]]; then
+    wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
+    ACTIVE_TAIL_PID=""
+  fi
+  if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
+    cat "${log_file}"
+  fi
+  return "${run_status}"
 }
 
 commit_source() {
@@ -756,6 +815,14 @@ for commit_index in "${!COMMITS[@]}"; do
   commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
   mkdir -p "${commit_log_dir}"
   commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
+  previous_commit=""
+  previous_short_commit=""
+  previous_asm_dir=""
+  if [[ ${SKIP_IDENTICAL_ASM} -eq 1 && ${commit_index} -gt 0 ]]; then
+    previous_commit="${COMMITS[$((commit_index - 1))]}"
+    previous_short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${previous_commit}")"
+    previous_asm_dir="${OUTPUT_DIR}/asm/${previous_short_commit}"
+  fi
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
@@ -776,38 +843,46 @@ for commit_index in "${!COMMITS[@]}"; do
       echo "--- ${test_name}: already completed, skipping"
       continue
     fi
+
+    if [[ -n "${previous_commit}" &&
+          -d "${previous_asm_dir}/${test_name}/st" ]]; then
+      preflight_log="${commit_log_dir}/${test_name}.asm-check.log"
+      echo "--- ${test_name}: checking generated ASM against ${previous_short_commit}"
+      preflight_status=0
+      run_yaml "${yaml}" "${preflight_log}" build-only || preflight_status=$?
+      if [[ ${preflight_status} -eq 124 || ${preflight_status} -eq 137 ||
+            ${preflight_status} -eq 129 || ${preflight_status} -eq 130 ||
+            ${preflight_status} -eq 143 || ${preflight_status} -eq 148 ]]; then
+        echo "${test_name}: ASM check interrupted or timed out; task remains pending" >&2
+        exit "${preflight_status}"
+      fi
+
+      preflight_asm_dir="${commit_asm_dir}/${test_name}/st"
+      if [[ ${preflight_status} -eq 0 ]] &&
+         cache_generated_asm "${preflight_log}" "${preflight_asm_dir}"; then
+        asm_match="$(python3 "${STATE_HELPER}" asm-status \
+          --left "${previous_asm_dir}/${test_name}/st" \
+          --right "${preflight_asm_dir}")" || exit 1
+        if [[ "${asm_match}" == "yes" ]]; then
+          if python3 "${STATE_HELPER}" reuse --state "${RUN_STATE}" \
+               --source-commit "${previous_commit}" --target-commit "${commit}" \
+               --test "${test_name}" \
+               --message "ASM identical to ${previous_short_commit}; reused its score"; then
+            rm -rf -- "${preflight_asm_dir}"
+            mkdir -p -- "$(dirname -- "${preflight_asm_dir}")"
+            cp -a -- "${previous_asm_dir}/${test_name}/st" "${preflight_asm_dir}"
+            echo "${test_name}: ASM identical; reused ${previous_short_commit} score"
+            continue
+          fi
+        fi
+      fi
+    fi
+
     log_file="${OUTPUT_DIR}/${start_result}"
     mkdir -p "$(dirname -- "${log_file}")"
     echo "--- ${test_name}: ${TEST_YAMLS[${index}]}"
-    if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
-      (
-        cd "${PROJECT_DIR}" || exit 1
-        exec setsid --wait timeout --signal=TERM --kill-after=30s \
-          "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
-          "${CONFIG_FILE}" "${yaml}" --live-output
-      ) </dev/null >"${log_file}" 2>&1 &
-    else
-      (
-        cd "${PROJECT_DIR}" || exit 1
-        exec setsid --wait timeout --signal=TERM --kill-after=30s \
-          "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh "${CONFIG_FILE}" "${yaml}"
-      ) </dev/null >"${log_file}" 2>&1 &
-    fi
-    ACTIVE_RUN_PID=$!
-    if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
-      tail --pid="${ACTIVE_RUN_PID}" -n +1 -s 0.2 -f "${log_file}" &
-      ACTIVE_TAIL_PID=$!
-    fi
     run_status=0
-    wait "${ACTIVE_RUN_PID}" || run_status=$?
-    ACTIVE_RUN_PID=""
-    if [[ -n "${ACTIVE_TAIL_PID}" ]]; then
-      wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
-      ACTIVE_TAIL_PID=""
-    fi
-    if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
-      cat "${log_file}"
-    fi
+    run_yaml "${yaml}" "${log_file}" config || run_status=$?
 
     if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
           ${run_status} -eq 129 || ${run_status} -eq 130 ||

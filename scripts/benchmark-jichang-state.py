@@ -19,7 +19,7 @@ FIELDS = [
     "status", "score", "metric", "unit", "attempt", "log_path",
     "asm_cache_status", "message",
 ]
-DONE = {"passed", "validation-failed", "execution-failed"}
+DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
 
@@ -257,6 +257,44 @@ def normalized_asm_text(path: Path) -> str:
 
 def file_hash(path: Path) -> str:
     return hashlib.sha256(normalized_asm_bytes(path)).hexdigest()
+
+
+def compare_asm_roots(left_root: Path, right_root: Path) -> str:
+    if not left_root.is_dir() or not right_root.is_dir():
+        return "unknown"
+
+    left_files = asm_files(left_root)
+    right_files = asm_files(right_root)
+    if left_files.keys() != right_files.keys():
+        return "no"
+    return "yes" if all(
+        file_hash(left_files[name]) == file_hash(right_files[name])
+        for name in left_files
+    ) else "no"
+
+
+def asm_status(args: argparse.Namespace) -> None:
+    print(compare_asm_roots(args.left, args.right))
+
+
+def reuse_task(args: argparse.Namespace) -> None:
+    rows = read_rows(args.state)
+    source = locate(rows, args.source_commit, args.test)
+    target = locate(rows, args.target_commit, args.test)
+    if source is None or target is None:
+        raise SystemExit("Source and target tasks must be ensured before reuse")
+    if not task_done(source) or not source["score"]:
+        raise SystemExit("Source task has no completed score to reuse")
+
+    target.update(
+        status="asm-skipped",
+        score=source["score"],
+        attempt="0",
+        log_path="",
+        asm_cache_status="cached",
+        message=args.message,
+    )
+    write_rows(args.state, rows)
 
 
 def write_file_diff(left: Path, right: Path, destination: Path) -> None:
@@ -533,6 +571,17 @@ def parse_args() -> argparse.Namespace:
     finish_parser.add_argument("--asm-status", required=True)
     finish_parser.add_argument("--message", default="")
     finish_parser.set_defaults(handler=finish)
+    reuse_parser = commands.add_parser("reuse")
+    reuse_parser.add_argument("--state", type=Path, required=True)
+    reuse_parser.add_argument("--source-commit", required=True)
+    reuse_parser.add_argument("--target-commit", required=True)
+    reuse_parser.add_argument("--test", required=True)
+    reuse_parser.add_argument("--message", required=True)
+    reuse_parser.set_defaults(handler=reuse_task)
+    asm_status_parser = commands.add_parser("asm-status")
+    asm_status_parser.add_argument("--left", type=Path, required=True)
+    asm_status_parser.add_argument("--right", type=Path, required=True)
+    asm_status_parser.set_defaults(handler=asm_status)
     asm_parser = commands.add_parser("set-asm")
     asm_parser.add_argument("--state", type=Path, required=True)
     asm_parser.add_argument("--commit", required=True)

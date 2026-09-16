@@ -23,6 +23,7 @@ Optional:
   --output-root <dir>    Host output root (default: ./artifacts).
   --env KEY=VALUE        Extra docker env var (repeatable).
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
+  --build-only           Generate and compile kernels without benchmarking.
   --no-build-only        Disable --build-only (default: --build-only is enabled).
   --no-start             Do not auto-start container.
   --isolate-run-dir      Run inside a private subdir of workdir. Required for
@@ -53,6 +54,7 @@ CLIENT_PATH=""
 OUTPUT_ROOT="$(pwd)/artifacts"
 AUTO_START=1
 BUILD_ONLY=1
+BUILD_ONLY_OVERRIDE=""
 KEEP_CONTAINER_OUT=0
 ISOLATE_RUN_DIR=0
 LIVE_OUTPUT=0
@@ -221,8 +223,12 @@ while [[ $# -gt 0 ]]; do
       ENV_FILES+=("$2")
       shift 2
       ;;
+    --build-only)
+      BUILD_ONLY_OVERRIDE=1
+      shift
+      ;;
     --no-build-only)
-      BUILD_ONLY=0
+      BUILD_ONLY_OVERRIDE=0
       shift
       ;;
     --no-start)
@@ -255,6 +261,9 @@ done
 
 if [[ -n "${CONFIG_FILE}" ]]; then
   parse_config_file "${CONFIG_FILE}"
+fi
+if [[ -n "${BUILD_ONLY_OVERRIDE}" ]]; then
+  BUILD_ONLY="${BUILD_ONLY_OVERRIDE}"
 fi
 
 if [[ -z "${YAML_FILE}" || -z "${BUILD_DIR}" ]]; then
