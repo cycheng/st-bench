@@ -134,6 +134,7 @@ def initialize(args: argparse.Namespace) -> None:
         "config_sha256": config_hash,
         "rocm_repo": str(args.repo.resolve()),
         "repeat_runs": args.repeat,
+        "validation_mode": args.validation_mode,
     }
     if output.exists() and not state.exists() and any(
         (output / name).exists() for name in ("results.csv", "summary.txt", "failures.csv")
@@ -146,9 +147,12 @@ def initialize(args: argparse.Namespace) -> None:
         previous = json.loads(metadata_path.read_text(encoding="utf-8"))
         if "repeat_runs" not in previous:
             previous["repeat_runs"] = 1
+        if "validation_mode" not in previous:
+            previous["validation_mode"] = "all"
         if previous != metadata:
             raise SystemExit(
-                "Resume metadata mismatch: config content or ROCm repository path changed"
+                "Resume metadata mismatch: config, repository, repeat count, "
+                "or validation mode changed"
             )
     else:
         write_json(metadata_path, metadata)
@@ -794,6 +798,11 @@ def parse_args() -> argparse.Namespace:
     init.add_argument("--config", type=Path, required=True)
     init.add_argument("--repo", type=Path, required=True)
     init.add_argument("--repeat", type=int, default=1)
+    init.add_argument(
+        "--validation-mode",
+        choices=("all", "none", "first-repeat"),
+        default="all",
+    )
     init.set_defaults(handler=initialize)
     ensure_parser = commands.add_parser("ensure")
     add_common_task(ensure_parser)

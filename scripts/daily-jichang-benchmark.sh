@@ -101,6 +101,8 @@ ARGS=(
   --config "${PROJECT_DIR}/examples/test-silicon-rel.cfg"
   --output-dir "${OUTPUT_DIR}"
   --skip-identical-asm
+  --repeat 2
+  --validate-first-only
   --commit "${START_COMMIT}"
 )
 for commit in "${COMMITS[@]}"; do

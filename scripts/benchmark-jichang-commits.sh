@@ -21,6 +21,9 @@ Options:
                          st-patch/run-silicon-B0-perf.diff).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
   --repeat <num>         Run each commit/YAML this many times (default: 1).
+  --no-validate          Set NumElementsToValidate to 0 for every measured run.
+  --validate-first-only  With --repeat, validate only the first run for each
+                         commit/YAML and disable validation for later runs.
   --live-output          Stream YAML output (or set live_output=true in config).
   --skip-identical-asm   Build and compare ASM with the previous selected
                          commit; reuse its score when the ASM is identical.
@@ -97,6 +100,9 @@ ROCM_REPO="${HOME}/rocm-libraries"
 PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
 YAML_TIMEOUT="10m"
 REPEAT_RUNS=1
+NO_VALIDATE=0
+VALIDATE_FIRST_ONLY=0
+VALIDATION_MODE="all"
 LIVE_OUTPUT=0
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -149,6 +155,14 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "Missing value for --repeat" >&2; exit 2; }
       REPEAT_RUNS="$2"
       shift 2
+      ;;
+    --no-validate)
+      NO_VALIDATE=1
+      shift
+      ;;
+    --validate-first-only)
+      VALIDATE_FIRST_ONLY=1
+      shift
       ;;
     --live-output)
       LIVE_OUTPUT=1
@@ -212,6 +226,15 @@ fi
 if [[ ! "${REPEAT_RUNS}" =~ ^[1-9][0-9]*$ ]]; then
   echo "--repeat must be a positive integer." >&2
   exit 2
+fi
+if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
+  echo "--no-validate and --validate-first-only cannot be combined." >&2
+  exit 2
+fi
+if [[ ${NO_VALIDATE} -eq 1 ]]; then
+  VALIDATION_MODE="none"
+elif [[ ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
+  VALIDATION_MODE="first-repeat"
 fi
 if [[ "${COMPONENT}" != "stinkytofu" &&
       "${COMPONENT}" != "hipblaslt" &&
@@ -357,7 +380,7 @@ done
 
 if ! python3 "${STATE_HELPER}" init \
   --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}" \
-  --repeat "${REPEAT_RUNS}"; then
+  --repeat "${REPEAT_RUNS}" --validation-mode "${VALIDATION_MODE}"; then
   exit 1
 fi
 mkdir -p "${OUTPUT_DIR}/logs"
@@ -512,10 +535,51 @@ yaml_revision_for_commit() {
   fi
 }
 
+prepare_no_validation_yaml() {
+  local source="$1"
+  local destination="$2"
+  local temporary="${destination}.tmp"
+
+  mkdir -p "$(dirname -- "${destination}")"
+  if ! python3 - "${source}" "${temporary}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+source = Path(sys.argv[1])
+destination = Path(sys.argv[2])
+lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
+pattern = re.compile(r"^(\s*NumElementsToValidate\s*:\s*)[^#]*(#.*)?$")
+found = False
+
+for index, line in enumerate(lines):
+    body = line.rstrip("\r\n")
+    newline = line[len(body):]
+    match = pattern.match(body)
+    if match is None:
+        continue
+    comment = match.group(2)
+    lines[index] = match.group(1) + "0" + (f" {comment}" if comment else "") + newline
+    found = True
+
+if not found:
+    raise SystemExit(f"NumElementsToValidate not found in {source}")
+
+destination.write_text("".join(lines), encoding="utf-8")
+PY
+  then
+    rm -f -- "${temporary}"
+    echo "Could not disable validation in YAML: ${source}" >&2
+    return 1
+  fi
+  mv -- "${temporary}" "${destination}"
+}
+
 prepare_yamls() {
   local revision="$1"
   local yaml
   local destination
+  local no_validation_destination
   local temporary
 
   for yaml in "${TEST_YAMLS[@]}"; do
@@ -529,6 +593,13 @@ prepare_yamls() {
         return 1
       fi
       mv -- "${temporary}" "${destination}"
+    fi
+    if [[ ${NO_VALIDATE} -eq 1 ||
+          ( ${VALIDATE_FIRST_ONLY} -eq 1 && ${REPEAT_RUNS} -gt 1 ) ]]; then
+      no_validation_destination="${destination%.yaml}.no-validation.yaml"
+      if ! prepare_no_validation_yaml "${destination}" "${no_validation_destination}"; then
+        return 1
+      fi
     fi
   done
 }
@@ -906,10 +977,15 @@ for commit_index in "${!COMMITS[@]}"; do
       else
         log_file="${OUTPUT_DIR}/${start_result%.log}.run-${run_index}.log"
       fi
+      run_yaml_file="${yaml}"
+      if [[ ${NO_VALIDATE} -eq 1 ||
+            ( ${VALIDATE_FIRST_ONLY} -eq 1 && ${run_index} -gt 1 ) ]]; then
+        run_yaml_file="${yaml%.yaml}.no-validation.yaml"
+      fi
       mkdir -p "$(dirname -- "${log_file}")"
       echo "--- ${test_name}: run ${run_index}/${REPEAT_RUNS}"
       run_status=0
-      run_yaml "${yaml}" "${log_file}" config || run_status=$?
+      run_yaml "${run_yaml_file}" "${log_file}" config || run_status=$?
 
       if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
             ${run_status} -eq 129 || ${run_status} -eq 130 ||
