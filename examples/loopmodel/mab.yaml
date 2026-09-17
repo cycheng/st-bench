@@ -4,7 +4,7 @@ TestParameters:
 GlobalParameters:
   NumBenchmarks: 1
   SyncsPerBenchmark: 1
-  NumElementsToValidate: 0
+  NumElementsToValidate: -1
   KernelTime: False
   BoundsCheck: 0
   PrintSolutionRejectionReason: True
