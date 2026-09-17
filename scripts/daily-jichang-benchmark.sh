@@ -66,7 +66,7 @@ fi
 # the first new commit against it.
 ARGS=(
   --repo "${ROCM_REPO}"
-  --config "${PROJECT_DIR}/examples/test.cfg"
+  --config "${PROJECT_DIR}/examples/test-silicon-rel.cfg"
   --output-dir "${OUTPUT_DIR}"
   --repeat 5
   --skip-identical-asm
