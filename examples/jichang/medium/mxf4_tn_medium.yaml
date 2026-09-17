@@ -14,8 +14,8 @@ GlobalParameters:
   DataInitTypeMXSB: 3
   DataInitTypeAlpha: 1
   DataInitTypeBeta: 0
-  NumWarmups: 2
-  EnqueuesPerSync: 20
+  NumWarmups: 1000
+  EnqueuesPerSync: 2000
   PrintWinnersOnly: True
   Architecture: gfx1250
   CpuThreads: 1
@@ -96,7 +96,7 @@ BenchmarkProblems:
           - Exact: [2048, 2048, 1, 65536]
         - ActivationArgs:
           - [Enum: none]
-          
+
 # BenchmarkProblems:
 #   -
 #     -
@@ -181,7 +181,7 @@ BenchmarkProblems:
 #           - Exact: [2048, 2048, 1, 65536]
 #         - ActivationArgs:
 #           - [Enum: none]
-          
+
 # LibraryLogic:
 #   ScheduleName: "gfx1250"
 #   # DeviceNames: [Device 0049, Device 0050]
