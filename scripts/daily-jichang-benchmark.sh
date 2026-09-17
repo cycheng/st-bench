@@ -21,6 +21,16 @@ mkdir -p -- "${DAILY_DIR}"
 exec 9>"${LOCK_FILE}"
 flock -n 9 || exit 0
 
+commit_touches_targets() {
+  local changed_paths
+  changed_paths="$(
+    git -C "${ROCM_REPO}" diff-tree --root -m --no-commit-id \
+      --name-only -r "$1" -- projects/hipblaslt shared/stinkytofu
+  )"
+  [[ "${changed_paths}" == *"projects/hipblaslt/"* ||
+     "${changed_paths}" == *"shared/stinkytofu/"* ]]
+}
+
 if ! git -C "${ROCM_REPO}" fetch --prune origin develop; then
   echo "Failed to fetch origin/develop." >&2
   exit 1
@@ -31,15 +41,27 @@ END_COMMIT="$(git -C "${ROCM_REPO}" rev-parse "${REMOTE_REF}")"
 if [[ -s "${CURSOR_FILE}" ]]; then
   START_COMMIT="$(<"${CURSOR_FILE}")"
   git -C "${ROCM_REPO}" cat-file -e "${START_COMMIT}^{commit}"
+  if ! commit_touches_targets "${START_COMMIT}"; then
+    START_COMMIT="$(
+      git -C "${ROCM_REPO}" rev-list -1 "${START_COMMIT}" \
+        -- projects/hipblaslt shared/stinkytofu
+    )"
+  fi
 else
   cutoff="$(date -u -d 'yesterday 00:00:00' '+%Y-%m-%dT%H:%M:%SZ')"
   START_COMMIT="$(
-    git -C "${ROCM_REPO}" rev-list -1 --before="${cutoff}" "${END_COMMIT}"
+    git -C "${ROCM_REPO}" rev-list -1 --before="${cutoff}" "${END_COMMIT}" \
+      -- projects/hipblaslt shared/stinkytofu
   )"
   if [[ -z "${START_COMMIT}" ]]; then
     echo "Could not find a baseline commit before yesterday." >&2
     exit 1
   fi
+fi
+
+if [[ -z "${START_COMMIT}" ]]; then
+  echo "Could not find a relevant baseline commit." >&2
+  exit 1
 fi
 
 if ! git -C "${ROCM_REPO}" merge-base --is-ancestor \
@@ -55,6 +77,14 @@ mapfile -t COMMITS < <(
     "${START_COMMIT}..${END_COMMIT}" \
     -- projects/hipblaslt shared/stinkytofu
 )
+
+FILTERED_COMMITS=()
+for commit in "${COMMITS[@]}"; do
+  if commit_touches_targets "${commit}"; then
+    FILTERED_COMMITS+=("${commit}")
+  fi
+done
+COMMITS=("${FILTERED_COMMITS[@]}")
 
 if [[ ${#COMMITS[@]} -eq 0 ]]; then
   echo "No new hipblaslt or stinkytofu commits."
