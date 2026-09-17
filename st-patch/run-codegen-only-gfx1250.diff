@@ -1,5 +1,5 @@
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-index da06f12cd7f..c0b65faf491 100644
+index da06f12cd7..c0b65faf49 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
 @@ -361,10 +361,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
@@ -15,7 +15,7 @@ index da06f12cd7f..c0b65faf491 100644
  
  def detectHostGfxArchs() -> List[str]:
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index 1aba18d4f43..80250c1d1c8 100644
+index 5456caa762..5e256b1de7 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
 @@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
@@ -28,27 +28,26 @@ index 1aba18d4f43..80250c1d1c8 100644
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
 diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-index b2c9a762332..50922ed12aa 100644
+index e74b2dcb95..399bf3f6a0 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
 +++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-@@ -6927,14 +6927,14 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -7418,13 +7418,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
                                             signature=fs,
                                             options=stinky_module_options)
        t1a_end = time.perf_counter()
 -      print2(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
-+      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s", flush=True)
- 
++      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
        # Run pipeline — builder handles O0 internally (skips optimization,
        # still runs required passes like InsertVgprMsb)
        t1b_start = time.perf_counter()
        stModule.runOptimizationPipeline()
        t1b_end = time.perf_counter()
 -      print2(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
-+      print(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s", flush=True)
++      print(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
  
      error = self.states.overflowedResources
      print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
-@@ -6944,7 +6944,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -7434,7 +7434,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
        t2_start = time.perf_counter()
        st_asm = stModule.emitAssembly()
        t2_end = time.perf_counter()
@@ -57,7 +56,7 @@ index b2c9a762332..50922ed12aa 100644
  
        if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None:
          t3_start = time.perf_counter()
-@@ -6964,13 +6964,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -7454,13 +7454,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
            st_path = f"cmpasm/st/{base_name}_{suffix}.s"
            suffix += 1
  
@@ -77,7 +76,7 @@ index b2c9a762332..50922ed12aa 100644
          with open(st_path, "w") as f:
            f.write(st_asm)
  
-@@ -6981,10 +6981,10 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -7471,10 +7471,10 @@ class KernelWriter(metaclass=abc.ABCMeta):
            fcntl.flock(f, fcntl.LOCK_UN)
  
          t3_end = time.perf_counter()
@@ -91,7 +90,7 @@ index b2c9a762332..50922ed12aa 100644
        print2(f"Using StinkyTofu Assembly")
        return (error, st_asm)
 diff --git a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-index beeb90043b0..dcbf4d87d17 100644
+index beeb90043b..dcbf4d87d1 100644
 --- a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
 +++ b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
 @@ -170,35 +170,35 @@ __device__ char
