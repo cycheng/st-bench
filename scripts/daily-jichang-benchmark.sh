@@ -94,11 +94,12 @@ fi
 # Include the cursor as an ASM baseline. This intentionally reruns that one
 # commit in a new daily output directory so --skip-identical-asm can compare
 # the first new commit against it.
+#
+#   --repeat 5 (ignore repeat for now)
 ARGS=(
   --repo "${ROCM_REPO}"
   --config "${PROJECT_DIR}/examples/test-silicon-rel.cfg"
   --output-dir "${OUTPUT_DIR}"
-  --repeat 5
   --skip-identical-asm
   --commit "${START_COMMIT}"
 )
