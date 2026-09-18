@@ -20,7 +20,8 @@ FIELDS = [
     "status", "score", "metric", "unit", "attempt", "log_path",
     "asm_cache_status", "message",
 ]
-SAMPLE_FIELDS = ["commit", "test", "run", "status", "score"]
+LEGACY_SAMPLE_FIELDS = ["commit", "test", "run", "status", "score"]
+SAMPLE_FIELDS = [*LEGACY_SAMPLE_FIELDS, "time-us"]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
@@ -107,9 +108,13 @@ def read_samples(path: Path) -> list[dict[str, str]]:
         return []
     with path.open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
-        if reader.fieldnames != SAMPLE_FIELDS:
+        if reader.fieldnames not in (LEGACY_SAMPLE_FIELDS, SAMPLE_FIELDS):
             raise SystemExit(f"Unexpected run-samples.csv columns in {path}")
-        return list(reader)
+        rows = list(reader)
+    if reader.fieldnames == LEGACY_SAMPLE_FIELDS:
+        for row in rows:
+            row["time-us"] = ""
+    return rows
 
 
 def write_samples(path: Path, rows: list[dict[str, str]]) -> None:
@@ -219,6 +224,7 @@ def record_sample(args: argparse.Namespace) -> None:
         "run": str(args.run),
         "status": args.status,
         "score": args.score,
+        "time-us": args.time_us,
     })
     write_samples(path, rows)
 
@@ -377,6 +383,7 @@ def reuse_task(args: argparse.Namespace) -> None:
             "run": "1",
             "status": source["status"],
             "score": source["score"],
+            "time-us": "",
         }]
     sample_rows.extend([
         {**row, "commit": args.target_commit}
@@ -393,9 +400,17 @@ def numeric_score(raw_score: str) -> float | None:
     return value if math.isfinite(value) else None
 
 
+def numeric_value(raw_value: str) -> float | None:
+    try:
+        value = float(raw_value)
+    except ValueError:
+        return None
+    return value if math.isfinite(value) else None
+
+
 def calculate_statistics(
     sample_rows: list[dict[str, str]],
-) -> dict[str, float | int | bool | str] | None:
+) -> dict[str, float | int | bool | str | None] | None:
     measured: list[tuple[float, bool]] = []
     for row in sample_rows:
         value = numeric_score(row["score"])
@@ -409,6 +424,24 @@ def calculate_statistics(
     standard_deviation = math.sqrt(
         sum((value - average) ** 2 for value in values) / len(values)
     )
+    time_values = [
+        value
+        for row in sample_rows
+        if (value := numeric_value(row.get("time-us", ""))) is not None
+    ]
+    time_average = (
+        sum(time_values) / len(time_values)
+        if time_values
+        else None
+    )
+    time_standard_deviation = (
+        math.sqrt(
+            sum((value - time_average) ** 2 for value in time_values)
+            / len(time_values)
+        )
+        if time_values and time_average is not None
+        else None
+    )
     best_index = max(range(len(values)), key=values.__getitem__)
     validation_failures = sum(1 for _, failed in measured if failed)
     best = values[best_index]
@@ -419,6 +452,11 @@ def calculate_statistics(
         "best": best,
         "worst": min(values),
         "standard_deviation": standard_deviation,
+        "time_count": len(time_values),
+        "time_average": time_average,
+        "time_minimum": min(time_values) if time_values else None,
+        "time_maximum": max(time_values) if time_values else None,
+        "time_standard_deviation": time_standard_deviation,
         "best_display": best_display,
         "validation_failures": validation_failures,
         "run_failures": sum(
@@ -442,6 +480,7 @@ def sample_statistics(args: argparse.Namespace) -> None:
                 "run": "1",
                 "status": state_row["status"],
                 "score": state_row["score"],
+                "time-us": "",
             }]
     statistics = calculate_statistics(samples)
     if statistics is None:
@@ -640,10 +679,26 @@ def format_summary(
     ]) + "\n"
 
 
+def format_time_summary(
+    header: list[str],
+    minimum_rows: list[list[str]],
+    average_rows: list[list[str]],
+) -> str:
+    return "\n".join([
+        "Minimum execution time (us; lower is better)",
+        format_table(header, minimum_rows).rstrip("\n"),
+        "",
+        "Average execution time with SD (us; lower is better)",
+        format_table(header, average_rows).rstrip("\n"),
+        "",
+        "Annotations: = ASM matches previous chronological commit; * validation failed",
+    ]) + "\n"
+
+
 def statistics_for_task(
     state_row: dict[str, str],
     sample_map: dict[tuple[str, str], list[dict[str, str]]],
-) -> dict[str, float | int | bool | str] | None:
+) -> dict[str, float | int | bool | str | None] | None:
     samples = sample_map.get((state_row["commit"], state_row["test"]), [])
     if not samples and task_done(state_row):
         samples = [{
@@ -652,6 +707,7 @@ def statistics_for_task(
             "run": "1",
             "status": state_row["status"],
             "score": state_row["score"],
+            "time-us": "",
         }]
     return calculate_statistics(samples)
 
@@ -684,9 +740,13 @@ def reports(args: argparse.Namespace) -> None:
     by_key = {(row["commit"], row["test"]): row for row in rows}
     commit_rows: list[list[str]] = []
     average_rows: list[list[str]] = []
+    time_minimum_rows: list[list[str]] = []
+    time_average_rows: list[list[str]] = []
     statistics_rows = [[
         "commit-id", "source", "test", "unit", "count",
         "average", "best", "worst", "standard-deviation",
+        "time-us-count", "time-us-average", "time-us-minimum",
+        "time-us-maximum", "time-us-standard-deviation",
     ]]
     for commit in commits:
         related = [row for row in rows if row["commit"] == commit]
@@ -695,6 +755,8 @@ def reports(args: argparse.Namespace) -> None:
         first = related[0]
         best_values = []
         average_values = []
+        time_minimum_values = []
+        time_average_values = []
         for test in tests:
             row = by_key.get((commit, test))
             statistics = (
@@ -723,17 +785,60 @@ def reports(args: argparse.Namespace) -> None:
                     f"{statistics['best']:.9g}",
                     f"{statistics['worst']:.9g}",
                     f"{statistics['standard_deviation']:.9g}",
+                    str(statistics["time_count"]),
+                    (
+                        f"{statistics['time_average']:.9g}"
+                        if statistics["time_average"] is not None
+                        else ""
+                    ),
+                    (
+                        f"{statistics['time_minimum']:.9g}"
+                        if statistics["time_minimum"] is not None
+                        else ""
+                    ),
+                    (
+                        f"{statistics['time_maximum']:.9g}"
+                        if statistics["time_maximum"] is not None
+                        else ""
+                    ),
+                    (
+                        f"{statistics['time_standard_deviation']:.9g}"
+                        if statistics["time_standard_deviation"] is not None
+                        else ""
+                    ),
                 ])
             if best_value and yaml_asm_same.get((first["short_commit"], test), False):
                 best_value += "="
                 average_value += "="
+            time_minimum_value = ""
+            time_average_value = ""
+            if statistics is not None and statistics["time_average"] is not None:
+                time_minimum_value = f"{statistics['time_minimum']:.9g}"
+                time_average_value = (
+                    f"{statistics['time_average']:.2f} +/- "
+                    f"{statistics['time_standard_deviation']:.2f}"
+                )
+                if statistics["validation_failures"]:
+                    time_minimum_value += "*"
+                    time_average_value += "*"
+                if yaml_asm_same.get((first["short_commit"], test), False):
+                    time_minimum_value += "="
+                    time_average_value += "="
             best_values.append(best_value)
             average_values.append(average_value)
+            time_minimum_values.append(time_minimum_value)
+            time_average_values.append(time_average_value)
         commit_rows.append([
             first["short_commit"], first["source"], *best_values,
         ])
         average_rows.append([
             first["short_commit"], first["source"], *average_values,
+        ])
+        time_minimum_rows.append([
+            first["short_commit"], first["source"], *time_minimum_values,
+        ])
+        time_average_rows.append([
+            first["short_commit"], first["source"], *time_average_values,
         ])
     header = ["commit-id", "source", *tests]
     atomic_write(
@@ -744,6 +849,12 @@ def reports(args: argparse.Namespace) -> None:
         output / "summary.txt",
         lambda stream: stream.write(
             format_summary(header, commit_rows, header, average_rows)
+        ),
+    )
+    atomic_write(
+        output / "time-summary.txt",
+        lambda stream: stream.write(
+            format_time_summary(header, time_minimum_rows, time_average_rows)
         ),
     )
     atomic_write(
@@ -819,6 +930,7 @@ def parse_args() -> argparse.Namespace:
     sample_parser.add_argument("--run", type=int, required=True)
     sample_parser.add_argument("--status", required=True)
     sample_parser.add_argument("--score", default="")
+    sample_parser.add_argument("--time-us", default="")
     sample_parser.set_defaults(handler=record_sample)
     finish_parser = commands.add_parser("finish")
     add_common_task(finish_parser)

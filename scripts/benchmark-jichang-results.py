@@ -93,7 +93,9 @@ def update_result(args: argparse.Namespace) -> None:
 
 def extract_max_score(args: argparse.Namespace) -> None:
     maximum = None
+    maximum_time_us = ""
     metric_index = None
+    time_us_index = None
     validation_index = None
     maximum_failed_validation = False
 
@@ -109,6 +111,11 @@ def extract_max_score(args: argparse.Namespace) -> None:
             normalized = [field.strip().lower() for field in row]
             if args.metric in normalized:
                 metric_index = normalized.index(args.metric)
+                time_us_index = (
+                    normalized.index("time-us")
+                    if "time-us" in normalized
+                    else None
+                )
                 validation_index = (
                     normalized.index("validation")
                     if "validation" in normalized
@@ -131,12 +138,25 @@ def extract_max_score(args: argparse.Namespace) -> None:
                     and len(row) > validation_index
                     and row[validation_index].strip().lower() == "failed"
                 )
+                maximum_time_us = ""
+                if time_us_index is not None and len(row) > time_us_index:
+                    try:
+                        time_us = float(row[time_us_index].strip())
+                    except ValueError:
+                        pass
+                    else:
+                        if math.isfinite(time_us):
+                            maximum_time_us = f"{time_us:.9g}"
 
     if maximum is None:
         raise SystemExit(1)
     annotation = "*" if maximum_failed_validation else ""
     divisor = 1000.0 if args.metric == "gflops" else 1.0
-    print(f"{maximum / divisor:.9g}{annotation}")
+    score = f"{maximum / divisor:.9g}{annotation}"
+    if args.include_time_us:
+        print(f"{score}\t{maximum_time_us}")
+    else:
+        print(score)
 
 
 def show_summary(args: argparse.Namespace) -> None:
@@ -166,6 +186,7 @@ def parse_args() -> argparse.Namespace:
         choices=("gflops", "gbps-bandwidth"),
         default="gflops",
     )
+    extract.add_argument("--include-time-us", action="store_true")
     extract.set_defaults(handler=extract_max_score)
 
     show = subparsers.add_parser("show")

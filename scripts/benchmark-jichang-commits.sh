@@ -55,10 +55,12 @@ YAML compatibility is selected automatically for each rocm-libraries commit:
 
 Output:
   run-state.csv           Atomic resumable task ledger (source of truth).
-  run-samples.csv         Individual performance samples from each repetition.
-  run-statistics.csv      Average, best, worst, and standard deviation per YAML.
+  run-samples.csv         Individual score and time-us from each repetition.
+  run-statistics.csv      Score and time-us statistics per YAML.
   results.csv             Tested commits and maximum score per YAML.
   summary.txt             Human-readable table, updated after every YAML.
+  time-summary.txt        Execution-time tables in us; lower is better for
+                           mab, maf, and medium.
   failures.csv            YAML failures and skipped-commit reasons.
   asm-summary.csv         Per-commit-pair and per-YAML ASM comparison counts.
   asm-file-comparisons.csv
@@ -87,6 +89,8 @@ ASM comparison ignores the nondeterministic 16-character hash in
 cluster-barrier basic-block labels.
 Average and standard deviation use finite performance samples; standard
 deviation is the population standard deviation.
+Execution time is read from the time-us column on the row selected for the
+maximum score.
 EOF
 }
 
@@ -387,6 +391,7 @@ mkdir -p "${OUTPUT_DIR}/logs"
 RUN_STATE="${OUTPUT_DIR}/run-state.csv"
 RESULTS_CSV="${OUTPUT_DIR}/results.csv"
 SUMMARY_FILE="${OUTPUT_DIR}/summary.txt"
+TIME_SUMMARY_FILE="${OUTPUT_DIR}/time-summary.txt"
 FAILURES_CSV="${OUTPUT_DIR}/failures.csv"
 
 regenerate_reports() {
@@ -400,8 +405,8 @@ finish_task() {
   regenerate_reports
 }
 
-extract_max_score() {
-  python3 "${RESULT_HELPER}" extract "$1" --metric "$2"
+extract_best_result() {
+  python3 "${RESULT_HELPER}" extract "$1" --metric "$2" --include-time-us
 }
 
 cache_generated_asm() {
@@ -1002,11 +1007,12 @@ for commit_index in "${!COMMITS[@]}"; do
       fi
 
       sample_score=""
+      sample_time_us=""
       sample_status="execution-failed"
-      if score="$(extract_max_score "${log_file}" "${score_metric}")"; then
-        sample_score="${score}"
+      if sample_result="$(extract_best_result "${log_file}" "${score_metric}")"; then
+        IFS=$'\t' read -r sample_score sample_time_us <<< "${sample_result}"
         sample_count=$((sample_count + 1))
-        if [[ "${score}" == *"*" ]]; then
+        if [[ "${sample_score}" == *"*" ]]; then
           sample_status="validation-failed"
           validation_failed_runs=$((validation_failed_runs + 1))
         elif [[ ${run_status} -eq 0 ]]; then
@@ -1019,10 +1025,15 @@ for commit_index in "${!COMMITS[@]}"; do
 
       python3 "${STATE_HELPER}" record-sample --output "${OUTPUT_DIR}" \
         --commit "${commit}" --test "${test_name}" --run "${run_index}" \
-        --status "${sample_status}" --score "${sample_score}" || exit 1
+        --status "${sample_status}" --score "${sample_score}" \
+        --time-us "${sample_time_us}" || exit 1
 
       if [[ -n "${sample_score}" ]]; then
-        echo "${test_name}: run ${run_index} = ${sample_score} ${score_unit}"
+        if [[ -n "${sample_time_us}" ]]; then
+          echo "${test_name}: run ${run_index} = ${sample_score} ${score_unit}, ${sample_time_us} us"
+        else
+          echo "${test_name}: run ${run_index} = ${sample_score} ${score_unit}"
+        fi
       else
         echo "${test_name}: run ${run_index} produced no finite score" >&2
       fi
@@ -1069,6 +1080,7 @@ fi
 echo
 echo "Results: ${RESULTS_CSV}"
 echo "Summary: ${SUMMARY_FILE}"
+echo "Time summary: ${TIME_SUMMARY_FILE}"
 if [[ -f "${SUMMARY_FILE}" ]]; then
   python3 "${RESULT_HELPER}" show "${SUMMARY_FILE}"
 else
