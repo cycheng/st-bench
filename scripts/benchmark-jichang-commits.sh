@@ -25,6 +25,9 @@ Options:
   --validate-first-only  With --repeat, validate only the first run for each
                          commit/YAML and disable validation for later runs.
   --live-output          Stream YAML output (or set live_output=true in config).
+  --pm-log               Run agt_internal PM logging during each workload run.
+  --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
+                         agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
                          commit; reuse its score when the ASM is identical.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
@@ -67,6 +70,8 @@ Output:
                            Exact status and hashes for every ASM file.
   logs/<commit>/<test>.attempt-N.log
   logs/<commit>/<test>.attempt-N.run-M.log (when --repeat is greater than 1)
+  logs/<commit>/<test>.attempt-N_pm.csv
+  logs/<commit>/<test>.attempt-N.pm.log (agt_internal console output)
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
   asm-diffs/<pair>/<test>/<file>.diff
                            Unified diffs for changed ASM files.
@@ -108,6 +113,8 @@ NO_VALIDATE=0
 VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
+PM_LOGGING=0
+AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
@@ -171,6 +178,15 @@ while [[ $# -gt 0 ]]; do
     --live-output)
       LIVE_OUTPUT=1
       shift
+      ;;
+    --pm-log)
+      PM_LOGGING=1
+      shift
+      ;;
+    --agt-internal)
+      [[ $# -ge 2 ]] || { echo "Missing value for --agt-internal" >&2; exit 2; }
+      AGT_INTERNAL="$2"
+      shift 2
       ;;
     --skip-identical-asm)
       SKIP_IDENTICAL_ASM=1
@@ -250,6 +266,7 @@ fi
 CONFIG_FILE="$(readlink -f -- "${CONFIG_FILE}")"
 ROCM_REPO="$(readlink -f -- "${ROCM_REPO}")"
 PATCH_FILE="$(readlink -f -- "${PATCH_FILE}")"
+AGT_INTERNAL="$(readlink -f -- "${AGT_INTERNAL}")"
 OUTPUT_DIR="$(readlink -m -- "${OUTPUT_DIR}")"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
@@ -285,6 +302,20 @@ if ! command -v setsid >/dev/null 2>&1 ||
    ! command -v tail >/dev/null 2>&1; then
   echo "This script requires the setsid, timeout, and tail commands." >&2
   exit 2
+fi
+if [[ ${PM_LOGGING} -eq 1 ]]; then
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "--pm-log requires sudo." >&2
+    exit 2
+  fi
+  if [[ ! -x "${AGT_INTERNAL}" ]]; then
+    echo "agt_internal executable not found: ${AGT_INTERNAL}" >&2
+    exit 2
+  fi
+  if ! sudo -n true >/dev/null 2>&1; then
+    echo "--pm-log requires passwordless sudo or an existing sudo credential." >&2
+    exit 2
+  fi
 fi
 if [[ ${EUID} -eq 0 && -n "${SUDO_USER:-}" ]]; then
   echo "WARNING: running the entire benchmark through sudo is discouraged." >&2
@@ -438,6 +469,68 @@ cache_generated_asm() {
   cp -a -- "${artifact_dir}/st" "${destination}"
 }
 
+ACTIVE_PM_PID=""
+ACTIVE_PM_CSV=""
+ACTIVE_PM_RUNTIME_LOG=""
+
+stop_pm_logging() {
+  local pm_pid="${ACTIVE_PM_PID}"
+  local stop_status=0
+
+  [[ -n "${pm_pid}" ]] || return 0
+
+  sudo -n kill -TERM -- "-${pm_pid}" 2>/dev/null ||
+    sudo -n kill -TERM "${pm_pid}" 2>/dev/null || true
+  for _ in {1..50}; do
+    kill -0 "${pm_pid}" 2>/dev/null || break
+    sleep 0.1
+  done
+  if kill -0 "${pm_pid}" 2>/dev/null; then
+    sudo -n kill -KILL -- "-${pm_pid}" 2>/dev/null ||
+      sudo -n kill -KILL "${pm_pid}" 2>/dev/null || true
+    stop_status=1
+  fi
+  wait "${pm_pid}" 2>/dev/null || true
+  ACTIVE_PM_PID=""
+  ACTIVE_PM_CSV=""
+  ACTIVE_PM_RUNTIME_LOG=""
+  return "${stop_status}"
+}
+
+start_pm_logging() {
+  local workload_log="$1"
+  local pm_csv="${workload_log%.log}_pm.csv"
+  local pm_runtime_log="${workload_log%.log}.pm.log"
+
+  mkdir -p -- "$(dirname -- "${pm_csv}")"
+  echo "--- PM logging: ${pm_csv}"
+  (
+    exec setsid --wait sudo -n "${AGT_INTERNAL}" \
+      -unilog=PM -unilogallgroups -unilogperiod=50 '-i=*' \
+      "-unilogoutput=${pm_csv}"
+  ) </dev/null >"${pm_runtime_log}" 2>&1 &
+  ACTIVE_PM_PID=$!
+  ACTIVE_PM_CSV="${pm_csv}"
+  ACTIVE_PM_RUNTIME_LOG="${pm_runtime_log}"
+
+  for _ in {1..300}; do
+    if grep -Fq '[ ...START LOGGING... ]' "${pm_runtime_log}"; then
+      return 0
+    fi
+    if ! kill -0 "${ACTIVE_PM_PID}" 2>/dev/null; then
+      echo "agt_internal exited before PM logging started." >&2
+      wait "${ACTIVE_PM_PID}" 2>/dev/null || true
+      ACTIVE_PM_PID=""
+      return 1
+    fi
+    sleep 0.1
+  done
+
+  echo "Timed out waiting for agt_internal to start PM logging." >&2
+  stop_pm_logging || true
+  return 1
+}
+
 run_yaml() {
   local yaml_file="$1"
   local log_file="$2"
@@ -456,6 +549,12 @@ run_yaml() {
       return 2
       ;;
   esac
+
+  if [[ ${PM_LOGGING} -eq 1 && "${mode}" == "config" ]]; then
+    if ! start_pm_logging "${log_file}"; then
+      return 1
+    fi
+  fi
 
   if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
     (
@@ -483,6 +582,9 @@ run_yaml() {
   if [[ -n "${ACTIVE_TAIL_PID}" ]]; then
     wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
     ACTIVE_TAIL_PID=""
+  fi
+  if [[ ${PM_LOGGING} -eq 1 && "${mode}" == "config" ]]; then
+    stop_pm_logging || true
   fi
   if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
     cat "${log_file}"
@@ -641,6 +743,9 @@ terminate_active_run() {
     kill -KILL "${ACTIVE_TAIL_PID}" 2>/dev/null || true
     wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
     ACTIVE_TAIL_PID=""
+  fi
+  if [[ -n "${ACTIVE_PM_PID}" ]]; then
+    stop_pm_logging || true
   fi
 }
 
