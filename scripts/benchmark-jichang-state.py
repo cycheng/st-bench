@@ -22,6 +22,11 @@ FIELDS = [
 ]
 LEGACY_SAMPLE_FIELDS = ["commit", "test", "run", "status", "score"]
 SAMPLE_FIELDS = [*LEGACY_SAMPLE_FIELDS, "time-us"]
+PM_FIELDS = [
+    "commit-id", "test", "attempt", "run", "pm-log", "sample-count",
+    *[f"xcd{index}-average" for index in range(8)],
+    "all-xcd-average",
+]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
@@ -120,6 +125,24 @@ def read_samples(path: Path) -> list[dict[str, str]]:
 def write_samples(path: Path, rows: list[dict[str, str]]) -> None:
     def writer(stream: TextIO) -> None:
         output = csv.DictWriter(stream, fieldnames=SAMPLE_FIELDS, lineterminator="\n")
+        output.writeheader()
+        output.writerows(rows)
+    atomic_write(path, writer)
+
+
+def read_pm_rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames != PM_FIELDS:
+            raise SystemExit(f"Unexpected pm-summary.csv columns in {path}")
+        return list(reader)
+
+
+def write_pm_rows(path: Path, rows: list[dict[str, str]]) -> None:
+    def writer(stream: TextIO) -> None:
+        output = csv.DictWriter(stream, fieldnames=PM_FIELDS, lineterminator="\n")
         output.writeheader()
         output.writerows(rows)
     atomic_write(path, writer)
@@ -227,6 +250,83 @@ def record_sample(args: argparse.Namespace) -> None:
         "time-us": args.time_us,
     })
     write_samples(path, rows)
+
+
+def record_pm(args: argparse.Namespace) -> None:
+    output = args.output.resolve()
+    log_path = args.log.resolve()
+    if not log_path.is_file():
+        raise SystemExit(f"PM log does not exist: {log_path}")
+
+    required_columns = [
+        f"GPU0 XCD XCD{index} Post Deep Sleep Freq"
+        for index in range(8)
+    ]
+    values: list[list[float]] = [[] for _ in required_columns]
+    sample_count = 0
+    with log_path.open(encoding="utf-8", errors="replace", newline="") as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames is None or any(
+            column not in reader.fieldnames for column in required_columns
+        ):
+            raise SystemExit(
+                f"PM log is missing one or more Post Deep Sleep Freq columns: {log_path}"
+            )
+        for row in reader:
+            sample_count += 1
+            for index, column in enumerate(required_columns):
+                try:
+                    value = float(row[column])
+                except (TypeError, ValueError):
+                    continue
+                if math.isfinite(value):
+                    values[index].append(value)
+
+    averages = [
+        sum(column_values) / len(column_values)
+        if column_values else None
+        for column_values in values
+    ]
+    available_averages = [
+        value for value in averages if value is not None
+    ]
+    if not available_averages:
+        raise SystemExit(f"PM log has no numeric Post Deep Sleep Freq data: {log_path}")
+    all_average = sum(available_averages) / len(available_averages)
+
+    relative_log = log_path.relative_to(output)
+    log_name = relative_log.name.removesuffix("_pm.csv")
+    test, separator, attempt_and_run = log_name.rpartition(".attempt-")
+    if not separator:
+        raise SystemExit(f"Unexpected PM log filename: {relative_log}")
+    attempt, run_separator, run = attempt_and_run.partition(".run-")
+    if not run_separator:
+        run = "1"
+
+    row = {
+        "commit-id": relative_log.parent.name,
+        "test": test,
+        "attempt": attempt,
+        "run": run,
+        "pm-log": str(relative_log),
+        "sample-count": str(sample_count),
+    }
+    row.update({
+        f"xcd{index}-average": (
+            f"{value:.9g}" if value is not None else ""
+        )
+        for index, value in enumerate(averages)
+    })
+    row["all-xcd-average"] = f"{all_average:.9g}"
+
+    summary_path = output / "pm-summary.csv"
+    rows = [
+        existing for existing in read_pm_rows(summary_path)
+        if existing["pm-log"] != str(relative_log)
+    ]
+    rows.append(row)
+    write_pm_rows(summary_path, rows)
+    log_path.unlink()
 
 
 def finish(args: argparse.Namespace) -> None:
@@ -667,16 +767,29 @@ def format_summary(
     best_rows: list[list[str]],
     average_header: list[str],
     average_rows: list[list[str]],
+    pm_average_rows: list[list[str]],
 ) -> str:
-    return "\n".join([
+    sections = [
         "Best",
         format_table(best_header, best_rows).rstrip("\n"),
         "",
         "Average with SD",
         format_table(average_header, average_rows).rstrip("\n"),
+    ]
+    if pm_average_rows:
+        sections.extend([
+            "",
+            "PM Post Deep Sleep Freq average",
+            format_table(
+                ["commit-id", "source", "test", "all-xcd-average"],
+                pm_average_rows,
+            ).rstrip("\n"),
+        ])
+    sections.extend([
         "",
         "Annotations: = ASM matches previous chronological commit; * validation failed",
-    ]) + "\n"
+    ])
+    return "\n".join(sections) + "\n"
 
 
 def format_time_summary(
@@ -729,6 +842,26 @@ def reports(args: argparse.Namespace) -> None:
     sample_map: dict[tuple[str, str], list[dict[str, str]]] = {}
     for sample in read_samples(output / "run-samples.csv"):
         sample_map.setdefault((sample["commit"], sample["test"]), []).append(sample)
+    latest_pm_rows: dict[tuple[str, str], list[dict[str, str]]] = {}
+    for pm_row in read_pm_rows(output / "pm-summary.csv"):
+        key = (pm_row["commit-id"], pm_row["test"])
+        latest_pm_rows.setdefault(key, [])
+        try:
+            attempt = int(pm_row["attempt"])
+        except ValueError:
+            attempt = -1
+        current_rows = latest_pm_rows[key]
+        if current_rows:
+            try:
+                current_attempt = int(current_rows[0]["attempt"])
+            except ValueError:
+                current_attempt = -1
+            if attempt > current_attempt:
+                latest_pm_rows[key] = [pm_row]
+            elif attempt == current_attempt:
+                current_rows.append(pm_row)
+        else:
+            latest_pm_rows[key] = [pm_row]
     yaml_asm_same: dict[tuple[str, str], bool] = {}
     asm_summary_path = output / "asm-summary.csv"
     if asm_summary_path.exists():
@@ -742,6 +875,7 @@ def reports(args: argparse.Namespace) -> None:
     average_rows: list[list[str]] = []
     time_minimum_rows: list[list[str]] = []
     time_average_rows: list[list[str]] = []
+    pm_average_rows: list[list[str]] = []
     statistics_rows = [[
         "commit-id", "source", "test", "unit", "count",
         "average", "best", "worst", "standard-deviation",
@@ -840,6 +974,21 @@ def reports(args: argparse.Namespace) -> None:
         time_average_rows.append([
             first["short_commit"], first["source"], *time_average_values,
         ])
+        for test in tests:
+            pm_values = [
+                numeric_value(pm_row["all-xcd-average"])
+                for pm_row in latest_pm_rows.get(
+                    (first["short_commit"], test), []
+                )
+            ]
+            pm_values = [value for value in pm_values if value is not None]
+            if pm_values:
+                pm_average_rows.append([
+                    first["short_commit"],
+                    first["source"],
+                    test,
+                    f"{sum(pm_values) / len(pm_values):.9g}",
+                ])
     header = ["commit-id", "source", *tests]
     atomic_write(
         output / "results.csv",
@@ -848,7 +997,9 @@ def reports(args: argparse.Namespace) -> None:
     atomic_write(
         output / "summary.txt",
         lambda stream: stream.write(
-            format_summary(header, commit_rows, header, average_rows)
+            format_summary(
+                header, commit_rows, header, average_rows, pm_average_rows
+            )
         ),
     )
     atomic_write(
@@ -932,6 +1083,10 @@ def parse_args() -> argparse.Namespace:
     sample_parser.add_argument("--score", default="")
     sample_parser.add_argument("--time-us", default="")
     sample_parser.set_defaults(handler=record_sample)
+    pm_parser = commands.add_parser("record-pm")
+    pm_parser.add_argument("--output", type=Path, required=True)
+    pm_parser.add_argument("--log", type=Path, required=True)
+    pm_parser.set_defaults(handler=record_pm)
     finish_parser = commands.add_parser("finish")
     add_common_task(finish_parser)
     finish_parser.add_argument("--status", required=True)

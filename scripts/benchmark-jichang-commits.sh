@@ -65,12 +65,12 @@ Output:
   time-summary.txt        Execution-time tables in us; lower is better for
                            mab, maf, and medium.
   failures.csv            YAML failures and skipped-commit reasons.
+  pm-summary.csv          Per-run XCD averages and combined average.
   asm-summary.csv         Per-commit-pair and per-YAML ASM comparison counts.
   asm-file-comparisons.csv
                            Exact status and hashes for every ASM file.
   logs/<commit>/<test>.attempt-N.log
   logs/<commit>/<test>.attempt-N.run-M.log (when --repeat is greater than 1)
-  logs/<commit>/<test>.attempt-N_pm.csv
   logs/<commit>/<test>.attempt-N.pm.log (agt_internal console output)
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
   asm-diffs/<pair>/<test>/<file>.diff
@@ -537,6 +537,7 @@ run_yaml() {
   local mode="$3"
   local mode_arg=()
   local run_status=0
+  local pm_csv_path=""
 
   case "${mode}" in
     build-only)
@@ -584,7 +585,16 @@ run_yaml() {
     ACTIVE_TAIL_PID=""
   fi
   if [[ ${PM_LOGGING} -eq 1 && "${mode}" == "config" ]]; then
+    pm_csv_path="${ACTIVE_PM_CSV}"
     stop_pm_logging || true
+    if [[ -f "${pm_csv_path}" ]]; then
+      if ! python3 "${STATE_HELPER}" record-pm \
+          --output "${OUTPUT_DIR}" --log "${pm_csv_path}"; then
+        echo "Could not process PM log; keeping ${pm_csv_path}" >&2
+      fi
+    else
+      echo "PM CSV was not produced: ${pm_csv_path}" >&2
+    fi
   fi
   if [[ ${LIVE_OUTPUT} -eq 0 ]]; then
     cat "${log_file}"
