@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, TextIO
@@ -24,8 +25,9 @@ LEGACY_SAMPLE_FIELDS = ["commit", "test", "run", "status", "score"]
 SAMPLE_FIELDS = [*LEGACY_SAMPLE_FIELDS, "time-us"]
 PM_FIELDS = [
     "commit-id", "test", "attempt", "run", "pm-log", "sample-count",
+    "interval-sample-count", "used-sample-count",
     *[f"xcd{index}-average" for index in range(8)],
-    "all-xcd-average",
+    "all-xcd-average-min-row", "warning",
 ]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
@@ -262,7 +264,7 @@ def record_pm(args: argparse.Namespace) -> None:
         f"GPU0 XCD XCD{index} Post Deep Sleep Freq"
         for index in range(8)
     ]
-    values: list[list[float]] = [[] for _ in required_columns]
+    samples: list[list[float | None]] = []
     sample_count = 0
     with log_path.open(encoding="utf-8", errors="replace", newline="") as stream:
         reader = csv.DictReader(stream)
@@ -274,25 +276,86 @@ def record_pm(args: argparse.Namespace) -> None:
             )
         for row in reader:
             sample_count += 1
+            sample: list[float | None] = []
             for index, column in enumerate(required_columns):
                 try:
                     value = float(row[column])
                 except (TypeError, ValueError):
-                    continue
-                if math.isfinite(value):
-                    values[index].append(value)
+                    value = math.nan
+                sample.append(value if math.isfinite(value) else None)
+            samples.append(sample)
 
+    row_averages: list[float | None] = []
+    for sample in samples:
+        numeric_values = [value for value in sample if value is not None]
+        row_averages.append(
+            sum(numeric_values) / len(numeric_values)
+            if numeric_values else None
+        )
+    if not any(value is not None for value in row_averages):
+        raise SystemExit(f"PM log has no numeric Post Deep Sleep Freq data: {log_path}")
+
+    warning = ""
+    begin = next(
+        (
+            index for index, value in enumerate(row_averages)
+            if value is not None and value < 2000
+        ),
+        None,
+    )
+    if begin is None:
+        begin = 0
+        end = len(row_averages) - 1
+        warning = "no row-average transition below 2000"
+    else:
+        end = next(
+            (
+                index for index in range(begin + 1, len(row_averages))
+                if row_averages[index] is not None
+                and row_averages[index] > 2000
+            ),
+            None,
+        )
+        if end is None:
+            end = len(row_averages) - 1
+            warning = "no row-average transition back above 2000"
+
+    interval_sample_count = end - begin + 1
+    if interval_sample_count >= 3:
+        selected_samples = samples[begin + 1:end]
+        selected_row_averages = [
+            value for value in row_averages[begin + 1:end]
+            if value is not None
+        ]
+    else:
+        selected_samples = samples[begin:end + 1]
+        selected_row_averages = [
+            value for value in row_averages[begin:end + 1]
+            if value is not None
+        ]
+        warning = (
+            f"active interval has only {interval_sample_count} row(s)"
+            + (f"; {warning}" if warning else "")
+        )
+    if warning:
+        print(f"WARNING: {warning}: {log_path}", file=sys.stderr)
+
+    values = [
+        [
+            sample[index]
+            for sample in selected_samples
+            if sample[index] is not None
+        ]
+        for index in range(len(required_columns))
+    ]
     averages = [
         sum(column_values) / len(column_values)
         if column_values else None
         for column_values in values
     ]
-    available_averages = [
-        value for value in averages if value is not None
-    ]
-    if not available_averages:
-        raise SystemExit(f"PM log has no numeric Post Deep Sleep Freq data: {log_path}")
-    all_average = sum(available_averages) / len(available_averages)
+    if not selected_row_averages:
+        raise SystemExit(f"PM log has no usable active-interval rows: {log_path}")
+    all_xcd_average_min_row = min(selected_row_averages)
 
     relative_log = log_path.relative_to(output)
     log_name = relative_log.name.removesuffix("_pm.csv")
@@ -310,6 +373,8 @@ def record_pm(args: argparse.Namespace) -> None:
         "run": run,
         "pm-log": str(relative_log),
         "sample-count": str(sample_count),
+        "interval-sample-count": str(interval_sample_count),
+        "used-sample-count": str(len(selected_samples)),
     }
     row.update({
         f"xcd{index}-average": (
@@ -317,7 +382,8 @@ def record_pm(args: argparse.Namespace) -> None:
         )
         for index, value in enumerate(averages)
     })
-    row["all-xcd-average"] = f"{all_average:.9g}"
+    row["all-xcd-average-min-row"] = f"{all_xcd_average_min_row:.9g}"
+    row["warning"] = warning
 
     summary_path = output / "pm-summary.csv"
     rows = [
@@ -767,6 +833,7 @@ def format_summary(
     best_rows: list[list[str]],
     average_header: list[str],
     average_rows: list[list[str]],
+    pm_header: list[str],
     pm_average_rows: list[list[str]],
 ) -> str:
     sections = [
@@ -780,10 +847,8 @@ def format_summary(
         sections.extend([
             "",
             "PM Post Deep Sleep Freq average",
-            format_table(
-                ["commit-id", "source", "test", "all-xcd-average"],
-                pm_average_rows,
-            ).rstrip("\n"),
+            format_table(pm_header, pm_average_rows).rstrip("\n"),
+            "PM annotation: * active interval was too short or incomplete",
         ])
     sections.extend([
         "",
@@ -974,22 +1039,31 @@ def reports(args: argparse.Namespace) -> None:
         time_average_rows.append([
             first["short_commit"], first["source"], *time_average_values,
         ])
-        for test in tests:
+        pm_values_for_commit = []
+        has_pm_value = False
+        for test in (test for test in tests if test.startswith("maf-")):
+            pm_rows = latest_pm_rows.get((first["short_commit"], test), [])
             pm_values = [
-                numeric_value(pm_row["all-xcd-average"])
-                for pm_row in latest_pm_rows.get(
-                    (first["short_commit"], test), []
-                )
+                numeric_value(pm_row["all-xcd-average-min-row"])
+                for pm_row in pm_rows
             ]
             pm_values = [value for value in pm_values if value is not None]
+            pm_value = ""
             if pm_values:
-                pm_average_rows.append([
-                    first["short_commit"],
-                    first["source"],
-                    test,
-                    f"{sum(pm_values) / len(pm_values):.9g}",
-                ])
+                has_pm_value = True
+                pm_value = f"{sum(pm_values) / len(pm_values):.9g}"
+                if any(pm_row["warning"] for pm_row in pm_rows):
+                    pm_value += "*"
+            pm_values_for_commit.append(pm_value)
+        if has_pm_value:
+            pm_average_rows.append([
+                first["short_commit"], first["source"], *pm_values_for_commit,
+            ])
     header = ["commit-id", "source", *tests]
+    pm_header = [
+        "commit-id", "source",
+        *(test for test in tests if test.startswith("maf-")),
+    ]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),
@@ -998,7 +1072,8 @@ def reports(args: argparse.Namespace) -> None:
         output / "summary.txt",
         lambda stream: stream.write(
             format_summary(
-                header, commit_rows, header, average_rows, pm_average_rows
+                header, commit_rows, header, average_rows,
+                pm_header, pm_average_rows,
             )
         ),
     )

@@ -25,7 +25,8 @@ Options:
   --validate-first-only  With --repeat, validate only the first run for each
                          commit/YAML and disable validation for later runs.
   --live-output          Stream YAML output (or set live_output=true in config).
-  --pm-log               Run agt_internal PM logging during each workload run.
+  --pm-log-maf           Run agt_internal PM logging during MAF workload runs
+                         using longer MAF warmup/enqueue settings.
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
@@ -65,7 +66,7 @@ Output:
   time-summary.txt        Execution-time tables in us; lower is better for
                            mab, maf, and medium.
   failures.csv            YAML failures and skipped-commit reasons.
-  pm-summary.csv          Per-run XCD averages and combined average.
+  pm-summary.csv          Per-run active-window PM frequency statistics.
   asm-summary.csv         Per-commit-pair and per-YAML ASM comparison counts.
   asm-file-comparisons.csv
                            Exact status and hashes for every ASM file.
@@ -113,7 +114,7 @@ NO_VALIDATE=0
 VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
-PM_LOGGING=0
+PM_LOG_MAF=0
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -179,8 +180,8 @@ while [[ $# -gt 0 ]]; do
       LIVE_OUTPUT=1
       shift
       ;;
-    --pm-log)
-      PM_LOGGING=1
+    --pm-log-maf)
+      PM_LOG_MAF=1
       shift
       ;;
     --agt-internal)
@@ -303,9 +304,9 @@ if ! command -v setsid >/dev/null 2>&1 ||
   echo "This script requires the setsid, timeout, and tail commands." >&2
   exit 2
 fi
-if [[ ${PM_LOGGING} -eq 1 ]]; then
+if [[ ${PM_LOG_MAF} -eq 1 ]]; then
   if ! command -v sudo >/dev/null 2>&1; then
-    echo "--pm-log requires sudo." >&2
+    echo "--pm-log-maf requires sudo." >&2
     exit 2
   fi
   if [[ ! -x "${AGT_INTERNAL}" ]]; then
@@ -313,7 +314,7 @@ if [[ ${PM_LOGGING} -eq 1 ]]; then
     exit 2
   fi
   if ! sudo -n true >/dev/null 2>&1; then
-    echo "--pm-log requires passwordless sudo or an existing sudo credential." >&2
+    echo "--pm-log-maf requires passwordless sudo or an existing sudo credential." >&2
     exit 2
   fi
 fi
@@ -506,7 +507,7 @@ start_pm_logging() {
   echo "--- PM logging: ${pm_csv}"
   (
     exec setsid --wait sudo -n "${AGT_INTERNAL}" \
-      -unilog=PM -unilogallgroups -unilogperiod=50 '-i=*' \
+      -unilog=PM -unilogallgroups -unilogperiod=50 -i=0 \
       "-unilogoutput=${pm_csv}"
   ) </dev/null >"${pm_runtime_log}" 2>&1 &
   ACTIVE_PM_PID=$!
@@ -538,6 +539,7 @@ run_yaml() {
   local mode_arg=()
   local run_status=0
   local pm_csv_path=""
+  local pm_started=0
 
   case "${mode}" in
     build-only)
@@ -551,10 +553,12 @@ run_yaml() {
       ;;
   esac
 
-  if [[ ${PM_LOGGING} -eq 1 && "${mode}" == "config" ]]; then
+  if [[ ${PM_LOG_MAF} -eq 1 && "${mode}" == "config" &&
+        "${yaml_file}" == */maf/* ]]; then
     if ! start_pm_logging "${log_file}"; then
       return 1
     fi
+    pm_started=1
   fi
 
   if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
@@ -584,7 +588,7 @@ run_yaml() {
     wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
     ACTIVE_TAIL_PID=""
   fi
-  if [[ ${PM_LOGGING} -eq 1 && "${mode}" == "config" ]]; then
+  if [[ ${pm_started} -eq 1 ]]; then
     pm_csv_path="${ACTIVE_PM_CSV}"
     stop_pm_logging || true
     if [[ -f "${pm_csv_path}" ]]; then
@@ -692,10 +696,67 @@ PY
   mv -- "${temporary}" "${destination}"
 }
 
+prepare_pm_maf_yaml() {
+  local source="$1"
+  local destination="$2"
+  local temporary="${destination}.tmp"
+
+  mkdir -p "$(dirname -- "${destination}")"
+  if ! python3 - "${source}" "${temporary}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+source = Path(sys.argv[1])
+destination = Path(sys.argv[2])
+settings = {
+    "bbs_tn_maf.yaml": {"NumWarmups": 100, "EnqueuesPerSync": 1000},
+    "f8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "mxf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
+    "mxf8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "nvf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
+}
+replacement_values = settings.get(source.name)
+if replacement_values is None:
+    raise SystemExit(f"No PM MAF settings for {source.name}")
+
+lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
+found = {key: 0 for key in replacement_values}
+for index, line in enumerate(lines):
+    body = line.rstrip("\r\n")
+    newline = line[len(body):]
+    for key, value in replacement_values.items():
+        match = re.match(rf"^(\s*{re.escape(key)}\s*:\s*)[^#]*(#.*)?$", body)
+        if match is None:
+            continue
+        comment = match.group(2)
+        lines[index] = (
+            match.group(1) + str(value)
+            + (f" {comment}" if comment else "") + newline
+        )
+        found[key] += 1
+        break
+
+missing_or_duplicate = [key for key, count in found.items() if count != 1]
+if missing_or_duplicate:
+    raise SystemExit(
+        f"Expected exactly one {', '.join(missing_or_duplicate)} in {source}"
+    )
+destination.write_text("".join(lines), encoding="utf-8")
+PY
+  then
+    rm -f -- "${temporary}"
+    echo "Could not prepare PM MAF YAML: ${source}" >&2
+    return 1
+  fi
+  mv -- "${temporary}" "${destination}"
+}
+
 prepare_yamls() {
   local revision="$1"
   local yaml
   local destination
+  local run_destination
   local no_validation_destination
   local temporary
 
@@ -711,10 +772,17 @@ prepare_yamls() {
       fi
       mv -- "${temporary}" "${destination}"
     fi
+    run_destination="${destination}"
+    if [[ ${PM_LOG_MAF} -eq 1 && "${yaml}" == examples/jichang/maf/* ]]; then
+      run_destination="${destination%.yaml}.pm-log-maf.yaml"
+      if ! prepare_pm_maf_yaml "${destination}" "${run_destination}"; then
+        return 1
+      fi
+    fi
     if [[ ${NO_VALIDATE} -eq 1 ||
           ( ${VALIDATE_FIRST_ONLY} -eq 1 && ${REPEAT_RUNS} -gt 1 ) ]]; then
-      no_validation_destination="${destination%.yaml}.no-validation.yaml"
-      if ! prepare_no_validation_yaml "${destination}" "${no_validation_destination}"; then
+      no_validation_destination="${run_destination%.yaml}.no-validation.yaml"
+      if ! prepare_no_validation_yaml "${run_destination}" "${no_validation_destination}"; then
         return 1
       fi
     fi
@@ -1037,6 +1105,9 @@ for commit_index in "${!COMMITS[@]}"; do
     yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#examples/jichang/}"
     test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
     test_category="${test_category%%/*}"
+    if [[ ${PM_LOG_MAF} -eq 1 && "${test_category}" == "maf" ]]; then
+      yaml="${yaml%.yaml}.pm-log-maf.yaml"
+    fi
     if [[ "${test_category}" == "mab" ]]; then
       score_metric="gbps-bandwidth"
       score_unit="GB/s"
