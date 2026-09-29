@@ -27,6 +27,7 @@ Options:
   --live-output          Stream YAML output (or set live_output=true in config).
   --pm-log-maf           Run agt_internal PM logging during MAF workload runs
                          using longer MAF warmup/enqueue settings.
+  --keep-pm-log          Keep raw PM CSV files after extracting their summary.
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
@@ -115,6 +116,7 @@ VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
 PM_LOG_MAF=0
+KEEP_PM_LOG=0
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -184,6 +186,10 @@ while [[ $# -gt 0 ]]; do
       PM_LOG_MAF=1
       shift
       ;;
+    --keep-pm-log)
+      KEEP_PM_LOG=1
+      shift
+      ;;
     --agt-internal)
       [[ $# -ge 2 ]] || { echo "Missing value for --agt-internal" >&2; exit 2; }
       AGT_INTERNAL="$2"
@@ -250,6 +256,10 @@ if [[ ! "${REPEAT_RUNS}" =~ ^[1-9][0-9]*$ ]]; then
 fi
 if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
   echo "--no-validate and --validate-first-only cannot be combined." >&2
+  exit 2
+fi
+if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 ]]; then
+  echo "--keep-pm-log requires --pm-log-maf." >&2
   exit 2
 fi
 if [[ ${NO_VALIDATE} -eq 1 ]]; then
@@ -541,6 +551,7 @@ run_yaml() {
   local mode_arg=()
   local run_status=0
   local pm_csv_path=""
+  local pm_record_args=()
   local pm_started=0
 
   case "${mode}" in
@@ -594,8 +605,14 @@ run_yaml() {
     pm_csv_path="${ACTIVE_PM_CSV}"
     stop_pm_logging || true
     if [[ -f "${pm_csv_path}" ]]; then
-      if ! python3 "${STATE_HELPER}" record-pm \
-          --output "${OUTPUT_DIR}" --log "${pm_csv_path}"; then
+      pm_record_args=(
+        --output "${OUTPUT_DIR}"
+        --log "${pm_csv_path}"
+      )
+      if [[ ${KEEP_PM_LOG} -eq 1 ]]; then
+        pm_record_args+=(--keep-log)
+      fi
+      if ! python3 "${STATE_HELPER}" record-pm "${pm_record_args[@]}"; then
         echo "Could not process PM log; keeping ${pm_csv_path}" >&2
       fi
     else

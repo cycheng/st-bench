@@ -392,7 +392,8 @@ def record_pm(args: argparse.Namespace) -> None:
     ]
     rows.append(row)
     write_pm_rows(summary_path, rows)
-    log_path.unlink()
+    if not args.keep_log:
+        log_path.unlink()
 
 
 def finish(args: argparse.Namespace) -> None:
@@ -1180,6 +1181,7 @@ def parse_args() -> argparse.Namespace:
     pm_parser = commands.add_parser("record-pm")
     pm_parser.add_argument("--output", type=Path, required=True)
     pm_parser.add_argument("--log", type=Path, required=True)
+    pm_parser.add_argument("--keep-log", action="store_true")
     pm_parser.set_defaults(handler=record_pm)
     finish_parser = commands.add_parser("finish")
     add_common_task(finish_parser)
