@@ -17,8 +17,8 @@ Options:
   --end <commit>         Last range boundary (inclusive; requires --start).
   --config <file>        run-single-yaml config (default: examples/test.cfg).
   --repo <dir>           rocm-libraries repository (default: ~/rocm-libraries).
-  --patch <file>         Patch applied to every checked-out commit (default:
-                         st-patch/run-silicon-B0-perf.diff).
+  --patch <file>         Patch applied to every checked-out commit (disabled
+                         by default).
   --timeout <duration>   Maximum time for one YAML (default: 10m).
   --repeat <num>         Run each commit/YAML this many times (default: 1).
   --no-validate          Set NumElementsToValidate to 0 for every measured run.
@@ -50,7 +50,7 @@ commits in the supplied order, without component filtering. The source column
 identifies which component each commit changes. When at least two commits are
 selected, asm-same reports whether each commit's complete generated st ASM
 matches the previous chronological commit. Local tracked changes are stashed
-once, and --patch is applied to each tested commit.
+once. When supplied, --patch is applied to each tested commit.
 
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
@@ -107,7 +107,7 @@ RESULT_HELPER="${SCRIPT_DIR}/benchmark-jichang-results.py"
 STATE_HELPER="${SCRIPT_DIR}/benchmark-jichang-state.py"
 CONFIG_FILE="${PROJECT_DIR}/examples/test.cfg"
 ROCM_REPO="${HOME}/rocm-libraries"
-PATCH_FILE="${PROJECT_DIR}/st-patch/run-silicon-B0-perf.diff"
+PATCH_FILE=""
 YAML_TIMEOUT="10m"
 REPEAT_RUNS=1
 NO_VALIDATE=0
@@ -266,7 +266,9 @@ fi
 
 CONFIG_FILE="$(readlink -f -- "${CONFIG_FILE}")"
 ROCM_REPO="$(readlink -f -- "${ROCM_REPO}")"
-PATCH_FILE="$(readlink -f -- "${PATCH_FILE}")"
+if [[ -n "${PATCH_FILE}" ]]; then
+  PATCH_FILE="$(readlink -f -- "${PATCH_FILE}")"
+fi
 AGT_INTERNAL="$(readlink -f -- "${AGT_INTERNAL}")"
 OUTPUT_DIR="$(readlink -m -- "${OUTPUT_DIR}")"
 
@@ -294,7 +296,7 @@ while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
       ;;
   esac
 done < "${CONFIG_FILE}"
-if [[ ! -f "${PATCH_FILE}" ]]; then
+if [[ -n "${PATCH_FILE}" && ! -f "${PATCH_FILE}" ]]; then
   echo "Patch file not found: ${PATCH_FILE}" >&2
   exit 2
 fi
@@ -1072,15 +1074,17 @@ for commit_index in "${!COMMITS[@]}"; do
       exit 1
     fi
 
-    if ! timeout --signal=TERM --kill-after=10s 10m \
-         git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
-         </dev/null >>"${setup_log}" 2>&1; then
-      echo "Git patch apply failed for ${short_commit}; tasks remain not run." >&2
-      cat "${setup_log}" >&2
-      git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
-      exit 1
+    if [[ -n "${PATCH_FILE}" ]]; then
+      if ! timeout --signal=TERM --kill-after=10s 10m \
+           git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
+           </dev/null >>"${setup_log}" 2>&1; then
+        echo "Git patch apply failed for ${short_commit}; tasks remain not run." >&2
+        cat "${setup_log}" >&2
+        git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+        exit 1
+      fi
+      PATCH_APPLIED=1
     fi
-    PATCH_APPLIED=1
   fi
 
   if ! prepare_yamls "${yaml_revision}"; then
