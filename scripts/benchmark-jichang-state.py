@@ -846,7 +846,7 @@ def format_summary(
     if pm_average_rows:
         sections.extend([
             "",
-            "PM Post Deep Sleep Freq average",
+            "PM Post Deep Sleep Freq average (best benchmark run)",
             format_table(pm_header, pm_average_rows).rstrip("\n"),
             "PM annotation: * active interval was too short or incomplete",
         ])
@@ -888,6 +888,17 @@ def statistics_for_task(
             "time-us": "",
         }]
     return calculate_statistics(samples)
+
+
+def best_sample_run(sample_rows: list[dict[str, str]]) -> str | None:
+    best_run = None
+    best_score = None
+    for sample in sample_rows:
+        score = numeric_score(sample["score"])
+        if score is not None and (best_score is None or score > best_score):
+            best_run = sample["run"]
+            best_score = score
+    return best_run
 
 
 def reports(args: argparse.Namespace) -> None:
@@ -1043,16 +1054,24 @@ def reports(args: argparse.Namespace) -> None:
         has_pm_value = False
         for test in (test for test in tests if test.startswith("maf-")):
             pm_rows = latest_pm_rows.get((first["short_commit"], test), [])
-            pm_values = [
-                numeric_value(pm_row["all-xcd-average-min-row"])
-                for pm_row in pm_rows
-            ]
-            pm_values = [value for value in pm_values if value is not None]
+            best_run = best_sample_run(sample_map.get((commit, test), []))
+            if best_run is None and by_key.get((commit, test)):
+                best_run = "1"
+            best_pm_row = next(
+                (pm_row for pm_row in pm_rows if pm_row["run"] == best_run),
+                None,
+            )
             pm_value = ""
-            if pm_values:
+            if best_pm_row is not None:
+                value = numeric_value(
+                    best_pm_row["all-xcd-average-min-row"]
+                )
+            else:
+                value = None
+            if value is not None:
                 has_pm_value = True
-                pm_value = f"{sum(pm_values) / len(pm_values):.9g}"
-                if any(pm_row["warning"] for pm_row in pm_rows):
+                pm_value = f"{value:.9g}"
+                if best_pm_row["warning"]:
                     pm_value += "*"
             pm_values_for_commit.append(pm_value)
         if has_pm_value:
