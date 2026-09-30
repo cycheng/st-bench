@@ -22,6 +22,7 @@ Config file format (key=value):
   env=TARGET_ARCH=gfx1250               # repeatable
   env_file=./my-env.list                # repeatable
   build_only=true                       # default true; set false to skip --build-only
+  live_output=true                      # default true; set false to print each log after the run
   continue_on_failure=false             # keep running remaining YAMLs after a failure
   jobs=16                               # concurrent YAML runs; 1 runs serially
   docker_auto_start=true
@@ -47,6 +48,7 @@ EXTRA_ENVS=()
 ENV_FILES=()
 DOCKER_AUTO_START=1
 BUILD_ONLY=1
+LIVE_OUTPUT=1
 CONTINUE_ON_FAILURE=0
 KEEP_CONTAINER_OUT=0
 JOBS=50
@@ -132,6 +134,7 @@ parse_config_file() {
       docker_auto_start) DOCKER_AUTO_START="$(parse_bool "${value}")" ;;
       no_start) DOCKER_AUTO_START="$((1 - $(parse_bool "${value}")))" ;;
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
+      live_output) LIVE_OUTPUT="$(parse_bool "${value}")" ;;
       continue_on_failure) CONTINUE_ON_FAILURE="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       jobs) JOBS="$(parse_jobs "${value}")" ;;
@@ -227,6 +230,11 @@ run_yaml() {
   [[ -n "${WORKDIR}" ]] && args+=(--workdir "${WORKDIR}")
   [[ -n "${OUTPUT_ROOT}" ]] && args+=(--output-root "${OUTPUT_ROOT}")
   [[ ${BUILD_ONLY} -eq 0 ]] && args+=(--no-build-only)
+  if [[ ${LIVE_OUTPUT} -eq 1 ]]; then
+    args+=(--live-output)
+  else
+    args+=(--no-live-output)
+  fi
   [[ ${KEEP_CONTAINER_OUT} -eq 1 ]] && args+=(--keep-container-out)
   # Concurrent runs would otherwise share cmpasm/ and <base>.out in workdir.
   [[ ${PARALLEL} -eq 1 ]] && args+=(--isolate-run-dir)

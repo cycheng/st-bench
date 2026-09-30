@@ -29,7 +29,8 @@ Optional:
   --isolate-run-dir      Run inside a private subdir of workdir. Required for
                          concurrent runs, which otherwise share cmpasm/.out.
   --keep-container-out   Keep <yaml-base>.out in container workdir.
-  --live-output          Stream command output while also saving its log.
+  --live-output          Stream command output while also saving its log (default).
+  --no-live-output       Save the log quietly, then print it when the run finishes.
   -h, --help             Show help.
 
 Examples:
@@ -57,7 +58,8 @@ BUILD_ONLY=1
 BUILD_ONLY_OVERRIDE=""
 KEEP_CONTAINER_OUT=0
 ISOLATE_RUN_DIR=0
-LIVE_OUTPUT=0
+LIVE_OUTPUT=1
+LIVE_OUTPUT_OVERRIDE=""
 RUN_DIR=""
 EXTRA_ENVS=()
 ENV_FILES=()
@@ -244,7 +246,11 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --live-output)
-      LIVE_OUTPUT=1
+      LIVE_OUTPUT_OVERRIDE=1
+      shift
+      ;;
+    --no-live-output)
+      LIVE_OUTPUT_OVERRIDE=0
       shift
       ;;
     -h|--help)
@@ -264,6 +270,9 @@ if [[ -n "${CONFIG_FILE}" ]]; then
 fi
 if [[ -n "${BUILD_ONLY_OVERRIDE}" ]]; then
   BUILD_ONLY="${BUILD_ONLY_OVERRIDE}"
+fi
+if [[ -n "${LIVE_OUTPUT_OVERRIDE}" ]]; then
+  LIVE_OUTPUT="${LIVE_OUTPUT_OVERRIDE}"
 fi
 
 if [[ -z "${YAML_FILE}" || -z "${BUILD_DIR}" ]]; then
