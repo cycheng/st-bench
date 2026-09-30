@@ -7,10 +7,10 @@ usage() {
 Compare asm folder pairs.
 
 Mode 1 (default): Compare orig vs st within the same root
-  scripts/diff-asm.sh [--asm-root <dir>] [--side-by-side] [--ignore-cluster-label-hash]
+  scripts/diff-asm.sh [--asm-root <dir>] [--side-by-side] [--ignore-cluster-label-hash] [--ignore-comments]
 
 Mode 2 (cross-compare): Compare across two different top folders
-  scripts/diff-asm.sh --left <dir> --right <dir> [--left-sub orig|st] [--right-sub orig|st] [--side-by-side] [--ignore-cluster-label-hash]
+  scripts/diff-asm.sh --left <dir> --right <dir> [--left-sub orig|st] [--right-sub orig|st] [--side-by-side] [--ignore-cluster-label-hash] [--ignore-comments]
 
   Examples:
     # asm0/A/orig vs asm1/A/orig
@@ -31,6 +31,7 @@ Options:
   --side-by-side       Use side-by-side diff output (default: recursive brief diff)
   --ignore-cluster-label-hash
                        Ignore random 16-character hashes in cluster barrier labels
+  --ignore-comments    Ignore // comments (block comments are kept)
   -h, --help           Show help
 EOF
 }
@@ -42,6 +43,7 @@ RIGHT_ROOT=""
 LEFT_SUB="orig"
 RIGHT_SUB="orig"
 IGNORE_CLUSTER_LABEL_HASH=0
+IGNORE_COMMENTS=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -52,6 +54,7 @@ while [[ $# -gt 0 ]]; do
     --right-sub) RIGHT_SUB="$2"; shift 2 ;;
     --side-by-side) SIDE_BY_SIDE=1; shift ;;
     --ignore-cluster-label-hash) IGNORE_CLUSTER_LABEL_HASH=1; shift ;;
+    --ignore-comments) IGNORE_COMMENTS=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *)
       echo "Unknown argument: $1" >&2
@@ -99,15 +102,24 @@ run_diff() {
   local diff_right="${right_dir}"
   local temp_dir=""
 
-  if [[ ${IGNORE_CLUSTER_LABEL_HASH} -eq 1 ]]; then
+  if [[ ${IGNORE_CLUSTER_LABEL_HASH} -eq 1 || ${IGNORE_COMMENTS} -eq 1 ]]; then
     temp_dir=$(mktemp -d)
     mkdir -p "${temp_dir}/left" "${temp_dir}/right"
     cp -a "${left_dir}/." "${temp_dir}/left/"
     cp -a "${right_dir}/." "${temp_dir}/right/"
 
-    # Normalize only the random portion while preserving the rest of each line.
-    find "${temp_dir}/left" "${temp_dir}/right" -type f \( -name "*.s" -o -name "*.asm" \) \
-      -exec perl -pi -e 's/(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}/$1<hash>/g' {} +
+    if [[ ${IGNORE_CLUSTER_LABEL_HASH} -eq 1 ]]; then
+      # Normalize only the random portion while preserving the rest of each line.
+      find "${temp_dir}/left" "${temp_dir}/right" -type f \( -name "*.s" -o -name "*.asm" \) \
+        -exec perl -pi -e 's/(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}/$1<hash>/g' {} +
+    fi
+
+    if [[ ${IGNORE_COMMENTS} -eq 1 ]]; then
+      # Drop // comments only. A line that is nothing but a // comment is removed.
+      # /* */ block comments are left unchanged.
+      find "${temp_dir}/left" "${temp_dir}/right" -type f \( -name "*.s" -o -name "*.asm" \) \
+        -exec perl -pi -e 'if (s/[ \t]*\/\/.*//) { $_ = "" if /^\s*$/; }' {} +
+    fi
 
     diff_left="${temp_dir}/left"
     diff_right="${temp_dir}/right"

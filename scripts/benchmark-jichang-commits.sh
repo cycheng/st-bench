@@ -92,8 +92,8 @@ measured performance is shown but its output was incorrect. A YAML with no
 finite value for its metric is recorded as 0, and the remaining YAMLs still
 run. A score followed by = generated the same ASM as the previous chronological
 commit for that YAML.
-ASM comparison ignores the nondeterministic 16-character hash in
-cluster-barrier basic-block labels.
+ASM comparison ignores // comments and the nondeterministic 16-character
+hash in cluster-barrier basic-block labels.
 Average and standard deviation use finite performance samples; standard
 deviation is the population standard deviation.
 Execution time is read from the time-us column on the row selected for the

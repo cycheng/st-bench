@@ -476,18 +476,35 @@ def asm_files(root: Path) -> dict[str, Path]:
 CLUSTER_LABEL_HASH_RE = re.compile(
     r"(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}"
 )
-CLUSTER_LABEL_HASH_BYTES_RE = re.compile(
-    rb"(label_skipCBPreSignal_(?:LCL_)?)[A-Za-z0-9]{16}"
-)
+SLASH_COMMENT_RE = re.compile(r"[ \t]*//.*")
 
 
-def normalized_asm_bytes(path: Path) -> bytes:
-    return CLUSTER_LABEL_HASH_BYTES_RE.sub(rb"\1<hash>", path.read_bytes())
+def strip_slash_comments(text: str) -> str:
+    """Drop // comments. A line that is only a // comment is removed."""
+    kept: list[str] = []
+    for line in text.splitlines(keepends=True):
+        ending = ""
+        body = line
+        if body.endswith("\r\n"):
+            ending = "\r\n"
+            body = body[:-2]
+        elif body.endswith(("\n", "\r")):
+            ending = body[-1]
+            body = body[:-1]
+        updated, count = SLASH_COMMENT_RE.subn("", body, count=1)
+        if count and not updated.strip():
+            continue
+        kept.append(updated + ending)
+    return "".join(kept)
 
 
 def normalized_asm_text(path: Path) -> str:
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = strip_slash_comments(path.read_text(encoding="utf-8", errors="replace"))
     return CLUSTER_LABEL_HASH_RE.sub(r"\1<hash>", text)
+
+
+def normalized_asm_bytes(path: Path) -> bytes:
+    return normalized_asm_text(path).encode("utf-8")
 
 
 def file_hash(path: Path) -> str:
