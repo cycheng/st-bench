@@ -15,12 +15,14 @@ sudo -n /opt/amd-apps/agt_internal/agt_internal \
 ```
 
 - `-unilogperiod=50` samples the PM counters every 50 us.
-- `-i=0` means monitor GPU0. To monitor GPUn, use `-i=5n`.
+- `-i=0` monitors GPU0.
+- For any nonzero GPU, the script uses `-i=*` and extracts only that GPU's
+  columns from the resulting PM log.
 
 The benchmark script enables this collection with `--pm-log-maf`. Pass
 `--gpu <n>` to run the workload with `HIP_VISIBLE_DEVICES=<n>` and to monitor
-that GPU (`-i=0` for GPU 0, `-i=5` for GPU 1). Add `--keep-pm-log` if the raw
-PM CSV files should be retained.
+that physical GPU. Add `--keep-pm-log` if the raw PM CSV files should be
+retained.
 
 ## Calculation
 

@@ -260,7 +260,7 @@ def record_pm(args: argparse.Namespace) -> None:
         raise SystemExit(f"PM log does not exist: {log_path}")
 
     required_columns = [
-        f"GPU0 XCD XCD{index} Post Deep Sleep Freq"
+        f"GPU{args.gpu} XCD XCD{index} Post Deep Sleep Freq"
         for index in range(8)
     ]
     samples: list[list[float | None]] = []
@@ -271,7 +271,8 @@ def record_pm(args: argparse.Namespace) -> None:
             column not in reader.fieldnames for column in required_columns
         ):
             raise SystemExit(
-                f"PM log is missing one or more Post Deep Sleep Freq columns: {log_path}"
+                f"PM log is missing one or more GPU{args.gpu} "
+                f"Post Deep Sleep Freq columns: {log_path}"
             )
         for row in reader:
             sample_count += 1
@@ -1174,6 +1175,7 @@ def parse_args() -> argparse.Namespace:
     pm_parser = commands.add_parser("record-pm")
     pm_parser.add_argument("--output", type=Path, required=True)
     pm_parser.add_argument("--log", type=Path, required=True)
+    pm_parser.add_argument("--gpu", type=int, default=0)
     pm_parser.add_argument("--keep-log", action="store_true")
     pm_parser.set_defaults(handler=record_pm)
     finish_parser = commands.add_parser("finish")

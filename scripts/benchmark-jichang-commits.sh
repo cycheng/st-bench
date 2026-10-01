@@ -31,7 +31,7 @@ Options:
   --gpu <index>          Physical GPU index (default: 0). Sets
                          HIP_VISIBLE_DEVICES for every YAML run, overriding
                          the same key in the config. PM logging monitors that
-                         GPU with agt_internal -i=5*<index> (-i=0 for GPU 0).
+                         GPU with -i=0 for GPU 0 and -i=* otherwise.
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
@@ -123,7 +123,7 @@ PM_LOG_MAF=0
 KEEP_PM_LOG=0
 GPU_EXPLICIT=0
 GPU_INDEX=0
-PM_I_INDEX=0
+PM_DEVICE_SELECTOR=0
 YAML_GPU_ARGS=()
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
@@ -337,14 +337,18 @@ if [[ ${GPU_EXPLICIT} -eq 0 && -n "${CONFIG_GPU}" ]]; then
 elif [[ ${GPU_EXPLICIT} -eq 1 && -n "${CONFIG_GPU}" && "${CONFIG_GPU}" != "${GPU_INDEX}" ]]; then
   echo "Config HIP_VISIBLE_DEVICES=${CONFIG_GPU} overridden by --gpu ${GPU_INDEX}." >&2
 fi
-PM_I_INDEX=$((10#${GPU_INDEX} * 5))
+if (( 10#${GPU_INDEX} == 0 )); then
+  PM_DEVICE_SELECTOR=0
+else
+  PM_DEVICE_SELECTOR='*'
+fi
 if [[ ${GPU_EXPLICIT} -eq 1 ]]; then
   YAML_GPU_ARGS=(--env "HIP_VISIBLE_DEVICES=${GPU_INDEX}")
 fi
 if [[ ${GPU_EXPLICIT} -eq 1 || -n "${CONFIG_GPU}" ]]; then
-  echo "GPU ${GPU_INDEX}: HIP_VISIBLE_DEVICES=${GPU_INDEX}, agt_internal -i=${PM_I_INDEX}"
+  echo "GPU ${GPU_INDEX}: HIP_VISIBLE_DEVICES=${GPU_INDEX}, agt_internal -i=${PM_DEVICE_SELECTOR}"
 else
-  echo "GPU ${GPU_INDEX}: agt_internal -i=${PM_I_INDEX} (HIP_VISIBLE_DEVICES unchanged)"
+  echo "GPU ${GPU_INDEX}: agt_internal -i=${PM_DEVICE_SELECTOR} (HIP_VISIBLE_DEVICES unchanged)"
 fi
 if [[ -n "${PATCH_FILE}" && ! -f "${PATCH_FILE}" ]]; then
   echo "Patch file not found: ${PATCH_FILE}" >&2
@@ -556,10 +560,10 @@ start_pm_logging() {
   local pm_runtime_log="${workload_log%.log}.pm.log"
 
   mkdir -p -- "$(dirname -- "${pm_csv}")"
-  echo "--- PM logging: ${pm_csv} (-i=${PM_I_INDEX})"
+  echo "--- PM logging: ${pm_csv} (-i=${PM_DEVICE_SELECTOR})"
   (
     exec setsid --wait sudo -n "${AGT_INTERNAL}" \
-      -unilog=PM -unilogallgroups -unilogperiod=50 "-i=${PM_I_INDEX}" \
+      -unilog=PM -unilogallgroups -unilogperiod=50 "-i=${PM_DEVICE_SELECTOR}" \
       "-unilogoutput=${pm_csv}"
   ) </dev/null >"${pm_runtime_log}" 2>&1 &
   ACTIVE_PM_PID=$!
@@ -648,6 +652,7 @@ run_yaml() {
       pm_record_args=(
         --output "${OUTPUT_DIR}"
         --log "${pm_csv_path}"
+        --gpu "${GPU_INDEX}"
       )
       if [[ ${KEEP_PM_LOG} -eq 1 ]]; then
         pm_record_args+=(--keep-log)
