@@ -470,9 +470,14 @@ for yaml in "${TEST_YAMLS[@]}"; do
   fi
 done
 
-if ! python3 "${STATE_HELPER}" init \
-  --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}" \
-  --repeat "${REPEAT_RUNS}" --validation-mode "${VALIDATION_MODE}"; then
+init_args=(
+  --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}"
+  --repeat "${REPEAT_RUNS}" --validation-mode "${VALIDATION_MODE}"
+)
+if [[ ${PM_LOG_MAF} -eq 1 ]]; then
+  init_args+=(--pm-log-maf)
+fi
+if ! python3 "${STATE_HELPER}" init "${init_args[@]}"; then
   exit 1
 fi
 mkdir -p "${OUTPUT_DIR}/logs"
@@ -773,6 +778,7 @@ from pathlib import Path
 
 source = Path(sys.argv[1])
 destination = Path(sys.argv[2])
+# Keep in sync with PM_MAF_SETTINGS in benchmark-jichang-state.py.
 settings = {
     "bbs_tn_maf.yaml": {"NumWarmups": 100, "EnqueuesPerSync": 1000},
     "f8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
