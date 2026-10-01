@@ -26,8 +26,7 @@ SAMPLE_FIELDS = [*LEGACY_SAMPLE_FIELDS, "time-us"]
 PM_FIELDS = [
     "commit-id", "test", "attempt", "run", "pm-log", "sample-count",
     "interval-sample-count", "used-sample-count",
-    *[f"xcd{index}-average" for index in range(8)],
-    "all-xcd-average-min-row", "warning",
+    "all-xcd-min", "warning",
 ]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
@@ -321,18 +320,8 @@ def record_pm(args: argparse.Namespace) -> None:
             warning = "no row-average transition back above 2000"
 
     interval_sample_count = end - begin + 1
-    if interval_sample_count >= 3:
-        selected_samples = samples[begin + 1:end]
-        selected_row_averages = [
-            value for value in row_averages[begin + 1:end]
-            if value is not None
-        ]
-    else:
-        selected_samples = samples[begin:end + 1]
-        selected_row_averages = [
-            value for value in row_averages[begin:end + 1]
-            if value is not None
-        ]
+    selected_samples = samples[begin:end + 1]
+    if interval_sample_count < 3:
         warning = (
             f"active interval has only {interval_sample_count} row(s)"
             + (f"; {warning}" if warning else "")
@@ -340,22 +329,15 @@ def record_pm(args: argparse.Namespace) -> None:
     if warning:
         print(f"WARNING: {warning}: {log_path}", file=sys.stderr)
 
-    values = [
-        [
-            sample[index]
-            for sample in selected_samples
-            if sample[index] is not None
-        ]
-        for index in range(len(required_columns))
+    selected_values = [
+        value
+        for sample in selected_samples
+        for value in sample
+        if value is not None
     ]
-    averages = [
-        sum(column_values) / len(column_values)
-        if column_values else None
-        for column_values in values
-    ]
-    if not selected_row_averages:
+    if not selected_values:
         raise SystemExit(f"PM log has no usable active-interval rows: {log_path}")
-    all_xcd_average_min_row = min(selected_row_averages)
+    all_xcd_min = min(selected_values)
 
     relative_log = log_path.relative_to(output)
     log_name = relative_log.name.removesuffix("_pm.csv")
@@ -375,15 +357,9 @@ def record_pm(args: argparse.Namespace) -> None:
         "sample-count": str(sample_count),
         "interval-sample-count": str(interval_sample_count),
         "used-sample-count": str(len(selected_samples)),
+        "all-xcd-min": f"{all_xcd_min:.9g}",
+        "warning": warning,
     }
-    row.update({
-        f"xcd{index}-average": (
-            f"{value:.9g}" if value is not None else ""
-        )
-        for index, value in enumerate(averages)
-    })
-    row["all-xcd-average-min-row"] = f"{all_xcd_average_min_row:.9g}"
-    row["warning"] = warning
 
     summary_path = output / "pm-summary.csv"
     rows = [
@@ -852,7 +828,7 @@ def format_summary(
     average_header: list[str],
     average_rows: list[list[str]],
     pm_header: list[str],
-    pm_average_rows: list[list[str]],
+    pm_minimum_rows: list[list[str]],
 ) -> str:
     sections = [
         "Best",
@@ -861,11 +837,11 @@ def format_summary(
         "Average with SD",
         format_table(average_header, average_rows).rstrip("\n"),
     ]
-    if pm_average_rows:
+    if pm_minimum_rows:
         sections.extend([
             "",
-            "PM Post Deep Sleep Freq average (best benchmark run)",
-            format_table(pm_header, pm_average_rows).rstrip("\n"),
+            "PM Post Deep Sleep Freq minimum (best benchmark run)",
+            format_table(pm_header, pm_minimum_rows).rstrip("\n"),
             "PM annotation: * active interval was too short or incomplete",
         ])
     sections.extend([
@@ -969,7 +945,7 @@ def reports(args: argparse.Namespace) -> None:
     average_rows: list[list[str]] = []
     time_minimum_rows: list[list[str]] = []
     time_average_rows: list[list[str]] = []
-    pm_average_rows: list[list[str]] = []
+    pm_minimum_rows: list[list[str]] = []
     statistics_rows = [[
         "commit-id", "source", "test", "unit", "count",
         "average", "best", "worst", "standard-deviation",
@@ -1082,7 +1058,7 @@ def reports(args: argparse.Namespace) -> None:
             pm_value = ""
             if best_pm_row is not None:
                 value = numeric_value(
-                    best_pm_row["all-xcd-average-min-row"]
+                    best_pm_row["all-xcd-min"]
                 )
             else:
                 value = None
@@ -1093,7 +1069,7 @@ def reports(args: argparse.Namespace) -> None:
                     pm_value += "*"
             pm_values_for_commit.append(pm_value)
         if has_pm_value:
-            pm_average_rows.append([
+            pm_minimum_rows.append([
                 first["short_commit"], first["source"], *pm_values_for_commit,
             ])
     header = ["commit-id", "source", *tests]
@@ -1110,7 +1086,7 @@ def reports(args: argparse.Namespace) -> None:
         lambda stream: stream.write(
             format_summary(
                 header, commit_rows, header, average_rows,
-                pm_header, pm_average_rows,
+                pm_header, pm_minimum_rows,
             )
         ),
     )

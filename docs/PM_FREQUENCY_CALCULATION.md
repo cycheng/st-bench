@@ -1,6 +1,6 @@
 # PM Frequency Calculation
 
-This document explains how `PM Post Deep Sleep Freq average (best benchmark run)`
+This document explains how `PM Post Deep Sleep Freq minimum (best benchmark run)`
 is calculated.
 
 ## PM collection command
@@ -27,13 +27,14 @@ PM CSV files should be retained.
 For every PM row:
 
 1. Read `Post Deep Sleep Freq` for XCD0 through XCD7.
-2. Average the eight XCD frequencies to get the row average.
+2. Average the eight XCD frequencies only to locate the workload boundaries.
 3. Find the first row average below 2000. This is the begin row.
 4. Find the first subsequent row average above 2000. This is the end row.
-5. Drop the begin and end rows.
-6. Select the minimum row average from the remaining rows.
+5. Include every row from the begin row through the end row.
+6. Select the single minimum XCD value across all eight XCD columns and all
+   rows in that interval.
 
-That minimum is `all-xcd-average-min-row`.
+That minimum is `all-xcd-min`. The final value does not use an average.
 
 ## Example
 
@@ -48,20 +49,20 @@ Row 6:  2287  2297  2296  2291  2290  2289  2304  2299   2294  <- end
 ```
 
 Row 2 is the first row below 2000, and Row 6 is the first row back above
-2000. Drop these two boundary rows and keep Rows 3 through 5:
+2000. Include Rows 2 through 6 and inspect every XCD value:
 
 ```text
-all-xcd-average-min-row = min(1647, 1646, 1618) = 1618
+all-xcd-min = minimum XCD value in Rows 2-6 = 1592
 ```
 
 ## Repeated benchmark runs
 
 If the benchmark is repeated three times, the script uses the PM log from the
 best-performing run—the run with the highest GFLOPS for MAF. Its
-`all-xcd-average-min-row` is shown under:
+`all-xcd-min` is shown under:
 
 ```text
-PM Post Deep Sleep Freq average (best benchmark run)
+PM Post Deep Sleep Freq minimum (best benchmark run)
 ```
 
 If multiple runs have the same best score, the first best run is used.

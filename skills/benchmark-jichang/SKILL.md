@@ -4,8 +4,9 @@ description: >-
   Sets up and runs Jichang silicon benchmarks with
   scripts/benchmark-jichang-commits.sh. Use when a developer asks to benchmark
   stinkytofu or hipblaslt commits, create or fill test-silicon-rel.cfg, clone
-  rocm-libraries, build the tensilelite gfx1250 release, choose a GPU, run
-  MAF, MAB, or medium YAMLs, enable PM logging, or report the benchmark summary.
+  rocm-libraries, build the tensilelite gfx1250 release, install python3-joblib
+  and python3-msgpack, choose a GPU, run MAF, MAB, or medium YAMLs, enable PM
+  logging, or report the benchmark summary.
 ---
 
 # Benchmark Jichang commits
@@ -23,8 +24,9 @@ Copy and update this checklist:
 - [ ] 2. Write test-silicon-rel.cfg
 - [ ] 3. rocm-libraries present (clone only if the user says yes)
 - [ ] 4. Release build present (build only if the user says yes)
-- [ ] 5. Collect benchmark options and run
-- [ ] 6. Dump summary.txt
+- [ ] 5. python3-joblib and python3-msgpack import
+- [ ] 6. Collect benchmark options and run
+- [ ] 7. Dump summary.txt
 ```
 
 ## 1. Locate st-codegen-test
@@ -67,7 +69,7 @@ build_only=false
 live_output=true
 ```
 
-Ask which physical GPU to use before writing this file. `<gpu>` is that index (`1` means `env=HIP_VISIBLE_DEVICES=1`). If an `env=HIP_VISIBLE_DEVICES=` line is already present, replace it instead of adding a second one. The same index is passed as `--gpu` in step 5.
+Ask which physical GPU to use before writing this file. `<gpu>` is that index (`1` means `env=HIP_VISIBLE_DEVICES=1`). If an `env=HIP_VISIBLE_DEVICES=` line is already present, replace it instead of adding a second one. The same index is passed as `--gpu` in step 6.
 
 This file holds machine-local paths. Do not commit it unless the user asks.
 
@@ -124,7 +126,24 @@ If the user chose a different `build_dir`, use that path as `-B` instead of `ten
 
 This compile is long. Wait until it exits, then check that both files above exist. Do not start the benchmark until they do. If cmake fails, show the error and stop.
 
-## 5. Ask what to benchmark
+## 5. Install python3-joblib and python3-msgpack
+
+The benchmark imports `joblib` and `msgpack`. Before running, check:
+
+```
+python3 -c "import joblib, msgpack"
+```
+
+If that fails, install the distro packages and check again:
+
+```
+sudo apt-get install -y python3-joblib python3-msgpack
+python3 -c "import joblib, msgpack"
+```
+
+Do not start the benchmark until the import succeeds. If install fails, show the error and stop.
+
+## 6. Ask what to benchmark
 
 Ask in one turn. Use these defaults when the user does not care:
 
@@ -169,7 +188,7 @@ Before starting, tell the user that the script stashes tracked local changes in 
 
 The run can take a long time. Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
 
-## 6. Dump the summary
+## 7. Dump the summary
 
 When the process exits, print the full contents of `<output-dir>/summary.txt` in the reply. The script writes `summary.txt`, not `summary.log`.
 
