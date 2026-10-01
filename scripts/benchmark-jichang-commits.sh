@@ -28,6 +28,10 @@ Options:
   --pm-log-maf           Run agt_internal PM logging during MAF workload runs
                          using longer MAF warmup/enqueue settings.
   --keep-pm-log          Keep raw PM CSV files after extracting their summary.
+  --gpu <index>          Physical GPU index (default: 0). Sets
+                         HIP_VISIBLE_DEVICES for every YAML run, overriding
+                         the same key in the config. PM logging monitors that
+                         GPU with agt_internal -i=5*<index> (-i=0 for GPU 0).
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
@@ -117,6 +121,10 @@ VALIDATION_MODE="all"
 LIVE_OUTPUT=0
 PM_LOG_MAF=0
 KEEP_PM_LOG=0
+GPU_EXPLICIT=0
+GPU_INDEX=0
+PM_I_INDEX=0
+YAML_GPU_ARGS=()
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
@@ -190,6 +198,12 @@ while [[ $# -gt 0 ]]; do
       KEEP_PM_LOG=1
       shift
       ;;
+    --gpu)
+      [[ $# -ge 2 ]] || { echo "Missing value for --gpu" >&2; exit 2; }
+      GPU_INDEX="$2"
+      GPU_EXPLICIT=1
+      shift 2
+      ;;
     --agt-internal)
       [[ $# -ge 2 ]] || { echo "Missing value for --agt-internal" >&2; exit 2; }
       AGT_INTERNAL="$2"
@@ -254,6 +268,10 @@ if [[ ! "${REPEAT_RUNS}" =~ ^[1-9][0-9]*$ ]]; then
   echo "--repeat must be a positive integer." >&2
   exit 2
 fi
+if [[ ! "${GPU_INDEX}" =~ ^[0-9]+$ ]]; then
+  echo "--gpu must be a non-negative integer." >&2
+  exit 2
+fi
 if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
   echo "--no-validate and --validate-first-only cannot be combined." >&2
   exit 2
@@ -286,6 +304,7 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Config file not found: ${CONFIG_FILE}" >&2
   exit 2
 fi
+CONFIG_GPU=""
 while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
   config_line="${config_line#"${config_line%%[![:space:]]*}"}"
   config_line="${config_line%"${config_line##*[![:space:]]}"}"
@@ -294,9 +313,12 @@ while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
   config_value="${config_line#*=}"
   config_key="${config_key#"${config_key%%[![:space:]]*}"}"
   config_key="${config_key%"${config_key##*[![:space:]]}"}"
-  [[ "${config_key}" == "live_output" ]] || continue
   config_value="${config_value#"${config_value%%[![:space:]]*}"}"
   config_value="${config_value%"${config_value##*[![:space:]]}"}"
+  if [[ "${config_key}" == "env" && "${config_value}" == HIP_VISIBLE_DEVICES=* ]]; then
+    CONFIG_GPU="${config_value#HIP_VISIBLE_DEVICES=}"
+  fi
+  [[ "${config_key}" == "live_output" ]] || continue
   case "${config_value,,}" in
     1|true|yes|on) LIVE_OUTPUT=1 ;;
     0|false|no|off) ;;
@@ -306,6 +328,24 @@ while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
       ;;
   esac
 done < "${CONFIG_FILE}"
+if [[ -n "${CONFIG_GPU}" && ! "${CONFIG_GPU}" =~ ^[0-9]+$ ]]; then
+  echo "Invalid HIP_VISIBLE_DEVICES in ${CONFIG_FILE}: ${CONFIG_GPU}" >&2
+  exit 2
+fi
+if [[ ${GPU_EXPLICIT} -eq 0 && -n "${CONFIG_GPU}" ]]; then
+  GPU_INDEX="${CONFIG_GPU}"
+elif [[ ${GPU_EXPLICIT} -eq 1 && -n "${CONFIG_GPU}" && "${CONFIG_GPU}" != "${GPU_INDEX}" ]]; then
+  echo "Config HIP_VISIBLE_DEVICES=${CONFIG_GPU} overridden by --gpu ${GPU_INDEX}." >&2
+fi
+PM_I_INDEX=$((10#${GPU_INDEX} * 5))
+if [[ ${GPU_EXPLICIT} -eq 1 ]]; then
+  YAML_GPU_ARGS=(--env "HIP_VISIBLE_DEVICES=${GPU_INDEX}")
+fi
+if [[ ${GPU_EXPLICIT} -eq 1 || -n "${CONFIG_GPU}" ]]; then
+  echo "GPU ${GPU_INDEX}: HIP_VISIBLE_DEVICES=${GPU_INDEX}, agt_internal -i=${PM_I_INDEX}"
+else
+  echo "GPU ${GPU_INDEX}: agt_internal -i=${PM_I_INDEX} (HIP_VISIBLE_DEVICES unchanged)"
+fi
 if [[ -n "${PATCH_FILE}" && ! -f "${PATCH_FILE}" ]]; then
   echo "Patch file not found: ${PATCH_FILE}" >&2
   exit 2
@@ -516,10 +556,10 @@ start_pm_logging() {
   local pm_runtime_log="${workload_log%.log}.pm.log"
 
   mkdir -p -- "$(dirname -- "${pm_csv}")"
-  echo "--- PM logging: ${pm_csv}"
+  echo "--- PM logging: ${pm_csv} (-i=${PM_I_INDEX})"
   (
     exec setsid --wait sudo -n "${AGT_INTERNAL}" \
-      -unilog=PM -unilogallgroups -unilogperiod=50 -i=0 \
+      -unilog=PM -unilogallgroups -unilogperiod=50 "-i=${PM_I_INDEX}" \
       "-unilogoutput=${pm_csv}"
   ) </dev/null >"${pm_runtime_log}" 2>&1 &
   ACTIVE_PM_PID=$!
@@ -579,14 +619,14 @@ run_yaml() {
       cd "${PROJECT_DIR}" || exit 1
       exec setsid --wait timeout --signal=TERM --kill-after=30s \
         "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
-        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}" --live-output
+        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}" "${YAML_GPU_ARGS[@]}" --live-output
     ) </dev/null >"${log_file}" 2>&1 &
   else
     (
       cd "${PROJECT_DIR}" || exit 1
       exec setsid --wait timeout --signal=TERM --kill-after=30s \
         "${YAML_TIMEOUT}" ./scripts/run-single-yaml.sh \
-        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}"
+        "${CONFIG_FILE}" "${yaml_file}" "${mode_arg[@]}" "${YAML_GPU_ARGS[@]}"
     ) </dev/null >"${log_file}" 2>&1 &
   fi
   ACTIVE_RUN_PID=$!

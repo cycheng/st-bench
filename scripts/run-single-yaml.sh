@@ -21,7 +21,8 @@ Optional:
   --workdir <dir>        Working directory inside container (default: current directory).
   --client <path>        Prebuilt client path (default: <build-dir>/tensilelite/client/tensilelite-client).
   --output-root <dir>    Host output root (default: ./artifacts).
-  --env KEY=VALUE        Extra docker env var (repeatable).
+  --env KEY=VALUE        Extra env var (repeatable). Overrides the same
+                         key from --config.
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
   --build-only           Generate and compile kernels without benchmarking.
   --no-build-only        Disable --build-only (default: --build-only is enabled).
@@ -62,6 +63,7 @@ LIVE_OUTPUT=1
 LIVE_OUTPUT_OVERRIDE=""
 RUN_DIR=""
 EXTRA_ENVS=()
+CLI_ENVS=()
 ENV_FILES=()
 
 normalize_execution_mode() {
@@ -218,7 +220,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --env)
-      EXTRA_ENVS+=("$2")
+      CLI_ENVS+=("$2")
       shift 2
       ;;
     --env-file)
@@ -268,6 +270,10 @@ done
 if [[ -n "${CONFIG_FILE}" ]]; then
   parse_config_file "${CONFIG_FILE}"
 fi
+# Command-line --env is applied after the config so it overrides the same key.
+for kv in "${CLI_ENVS[@]}"; do
+  EXTRA_ENVS+=("${kv}")
+done
 if [[ -n "${BUILD_ONLY_OVERRIDE}" ]]; then
   BUILD_ONLY="${BUILD_ONLY_OVERRIDE}"
 fi
