@@ -62,6 +62,12 @@ YAML compatibility is selected automatically for each rocm-libraries commit:
   f2a6c23df523 onward: st-codegen-test revision c394e5b
   9a9953849d8 onward:  st-codegen-test HEAD at benchmark start
 
+For that current HEAD revision, each selected YAML is copied from the working
+tree. If the working tree file differs from HEAD, the script warns and still
+uses that dirty copy. Pinned older revisions are loaded with git show and
+ignore working tree edits. An output directory that already contains the
+extracted YAML reuses it.
+
 Output:
   run-state.csv           Atomic resumable task ledger (source of truth).
   run-samples.csv         Individual score and time-us from each repetition.
@@ -822,6 +828,23 @@ PY
   mv -- "${temporary}" "${destination}"
 }
 
+warn_if_head_yaml_dirty() {
+  local yaml="$1"
+  local action="$2"
+  local diff_status=0
+  local head_short=""
+
+  git -C "${PROJECT_DIR}" diff --quiet "${HEAD_YAML_REVISION}" -- "${yaml}" || diff_status=$?
+  if [[ ${diff_status} -gt 1 ]]; then
+    echo "Could not compare ${yaml} with HEAD ${HEAD_YAML_REVISION}." >&2
+    return 1
+  fi
+  if [[ ${diff_status} -eq 1 ]]; then
+    head_short="$(git -C "${PROJECT_DIR}" rev-parse --short=12 "${HEAD_YAML_REVISION}")"
+    echo "Warning: ${yaml} differs from HEAD ${head_short}; ${action}." >&2
+  fi
+}
+
 prepare_yamls() {
   local revision="$1"
   local yaml
@@ -832,7 +855,21 @@ prepare_yamls() {
 
   for yaml in "${TEST_YAMLS[@]}"; do
     destination="${OUTPUT_DIR}/yamls/${revision}/${yaml#examples/jichang/}"
-    if [[ ! -f "${destination}" ]]; then
+    if [[ "${revision}" == "${HEAD_YAML_REVISION}" ]]; then
+      if [[ -f "${destination}" ]]; then
+        if ! warn_if_head_yaml_dirty "${yaml}" "reusing extracted copy ${destination}"; then
+          return 1
+        fi
+      else
+        if ! warn_if_head_yaml_dirty "${yaml}" "using the working tree copy"; then
+          return 1
+        fi
+        mkdir -p "$(dirname -- "${destination}")"
+        temporary="${destination}.tmp"
+        cp -f -- "${PROJECT_DIR}/${yaml}" "${temporary}"
+        mv -- "${temporary}" "${destination}"
+      fi
+    elif [[ ! -f "${destination}" ]]; then
       mkdir -p "$(dirname -- "${destination}")"
       temporary="${destination}.tmp"
       if ! git -C "${PROJECT_DIR}" show "${revision}:${yaml}" > "${temporary}"; then
