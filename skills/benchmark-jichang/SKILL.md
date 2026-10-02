@@ -259,7 +259,7 @@ Ask in one turn. Use these defaults when the user does not care:
 | commits | current checkout; do not change it | repeat `--commit <sha>`, or `--start` with `--end`. Never mix `--commit` with `--start`/`--end`. |
 | repeat | 1 | `--repeat <n>` |
 | category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. |
-| yaml | all catalog YAMLs | `--yaml <path>` under `examples/jichang`. A file that is not in the mab/maf/medium catalog is accepted. |
+| yaml | all catalog YAMLs | Repeat `--yaml <path>` under `examples/jichang`. A file that is not in the mab/maf/medium catalog is accepted. Order is the order of the flags. |
 | pm-log-maf | no | `--pm-log-maf`. Logs only `examples/jichang/maf/*` and rewrites those warmup counts. |
 | force-pm-log | no | `--force-pm-log`. Logs every selected YAML and leaves warmup counts unchanged. |
 | keep raw PM CSV | no | `--keep-pm-log`. Requires `--pm-log-maf` or `--force-pm-log`. |

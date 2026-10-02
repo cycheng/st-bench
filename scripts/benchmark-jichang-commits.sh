@@ -41,9 +41,10 @@ Options:
                          commit; reuse its score when the ASM is identical.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
-  --yaml <file>          Only run one YAML under examples/jichang. Catalog
-                         names such as maf/f8_tn_maf.yaml are accepted, and
-                         so is any other file there, such as maf/f8_tn_maf_henry.yaml.
+  --yaml <file>          Only run this YAML under examples/jichang. Repeat
+                         to run several, in the order given. Catalog names
+                         such as maf/f8_tn_maf.yaml are accepted, and so is
+                         any other file there, such as maf/f8_tn_maf_henry.yaml.
   --exclude-yaml <file>  Skip one YAML, relative to examples/jichang. Repeat
                          this option to skip multiple YAMLs.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
@@ -143,7 +144,7 @@ START_COMMIT=""
 END_COMMIT=""
 SELECTED_COMMITS=()
 CATEGORY=""
-ONLY_YAML=""
+ONLY_YAMLS=()
 EXCLUDED_YAMLS=()
 COMPONENT="either"
 
@@ -240,7 +241,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --yaml)
       [[ $# -ge 2 ]] || { echo "Missing value for --yaml" >&2; exit 2; }
-      ONLY_YAML="$2"
+      ONLY_YAMLS+=("$2")
       shift 2
       ;;
     --exclude-yaml)
@@ -438,19 +439,52 @@ ALL_TEST_YAMLS=(
   examples/jichang/medium/mxf4_tn_medium.yaml
 )
 
-if [[ -n "${ONLY_YAML}" ]]; then
-  ONLY_YAML="${ONLY_YAML#./}"
-  if [[ "${ONLY_YAML}" == *"/examples/jichang/"* ]]; then
-    ONLY_YAML="examples/jichang/${ONLY_YAML#*examples/jichang/}"
-  elif [[ "${ONLY_YAML}" != examples/jichang/* ]]; then
-    ONLY_YAML="examples/jichang/${ONLY_YAML#examples/jichang/}"
+normalize_jichang_yaml() {
+  local yaml="$1"
+  yaml="${yaml#./}"
+  if [[ "${yaml}" == *"/examples/jichang/"* ]]; then
+    yaml="examples/jichang/${yaml#*examples/jichang/}"
+  elif [[ "${yaml}" != examples/jichang/* ]]; then
+    yaml="examples/jichang/${yaml#examples/jichang/}"
   fi
-  case "${ONLY_YAML}" in
+  case "${yaml}" in
     *..*)
-      echo "YAML path must stay under examples/jichang: ${ONLY_YAML}" >&2
-      exit 2
+      echo "YAML path must stay under examples/jichang: ${yaml}" >&2
+      return 2
       ;;
   esac
+  printf '%s\n' "${yaml}"
+}
+
+yaml_is_excluded() {
+  local yaml="$1"
+  local excluded_yaml
+  for excluded_yaml in "${EXCLUDED_YAMLS[@]}"; do
+    if [[ "${yaml}" == "${excluded_yaml}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+yaml_matches_category() {
+  local yaml="$1"
+  local yaml_category="${yaml#examples/jichang/}"
+  if [[ "${yaml_category}" == */* ]]; then
+    yaml_category="${yaml_category%%/*}"
+  else
+    yaml_category=""
+  fi
+  [[ -z "${CATEGORY}" || "${yaml_category}" == "${CATEGORY}" ]]
+}
+
+if [[ ${#ONLY_YAMLS[@]} -gt 0 ]]; then
+  normalized_yamls=()
+  for yaml in "${ONLY_YAMLS[@]}"; do
+    yaml="$(normalize_jichang_yaml "${yaml}")" || exit 2
+    normalized_yamls+=("${yaml}")
+  done
+  ONLY_YAMLS=("${normalized_yamls[@]}")
 fi
 for index in "${!EXCLUDED_YAMLS[@]}"; do
   yaml="${EXCLUDED_YAMLS[${index}]#./}"
@@ -460,45 +494,53 @@ done
 
 TEST_NAMES=()
 TEST_YAMLS=()
-for index in "${!ALL_TEST_NAMES[@]}"; do
-  yaml="${ALL_TEST_YAMLS[${index}]}"
-  yaml_category="${yaml#examples/jichang/}"
-  yaml_category="${yaml_category%%/*}"
-  [[ -z "${CATEGORY}" || "${yaml_category}" == "${CATEGORY}" ]] || continue
-  [[ -z "${ONLY_YAML}" || "${yaml}" == "${ONLY_YAML}" ]] || continue
-  excluded=0
-  for excluded_yaml in "${EXCLUDED_YAMLS[@]}"; do
-    if [[ "${yaml}" == "${excluded_yaml}" ]]; then
-      excluded=1
-      break
+if [[ ${#ONLY_YAMLS[@]} -eq 0 ]]; then
+  for index in "${!ALL_TEST_NAMES[@]}"; do
+    yaml="${ALL_TEST_YAMLS[${index}]}"
+    yaml_matches_category "${yaml}" || continue
+    yaml_is_excluded "${yaml}" && continue
+    TEST_NAMES+=("${ALL_TEST_NAMES[${index}]}")
+    TEST_YAMLS+=("${yaml}")
+  done
+else
+  for requested in "${ONLY_YAMLS[@]}"; do
+    if [[ ${#TEST_YAMLS[@]} -gt 0 ]]; then
+      for selected in "${TEST_YAMLS[@]}"; do
+        if [[ "${selected}" == "${requested}" ]]; then
+          echo "Duplicate YAML: ${requested}" >&2
+          exit 2
+        fi
+      done
+    fi
+    if yaml_is_excluded "${requested}" || ! yaml_matches_category "${requested}"; then
+      echo "Unknown YAML or YAML excluded by filters: ${requested}" >&2
+      exit 2
+    fi
+    found=0
+    for index in "${!ALL_TEST_YAMLS[@]}"; do
+      if [[ "${ALL_TEST_YAMLS[${index}]}" == "${requested}" ]]; then
+        TEST_NAMES+=("${ALL_TEST_NAMES[${index}]}")
+        TEST_YAMLS+=("${requested}")
+        found=1
+        break
+      fi
+    done
+    if [[ ${found} -eq 0 ]]; then
+      if [[ ! -f "${PROJECT_DIR}/${requested}" ]]; then
+        echo "Unknown YAML or YAML excluded by filters: ${requested}" >&2
+        exit 2
+      fi
+      rel="${requested#examples/jichang/}"
+      test_name="${rel%.yaml}"
+      test_name="${test_name//\//-}"
+      TEST_NAMES+=("${test_name}")
+      TEST_YAMLS+=("${requested}")
     fi
   done
-  [[ ${excluded} -eq 0 ]] || continue
-  TEST_NAMES+=("${ALL_TEST_NAMES[${index}]}")
-  TEST_YAMLS+=("${yaml}")
-done
-
-if [[ ${#TEST_YAMLS[@]} -eq 0 && -n "${ONLY_YAML}" && -f "${PROJECT_DIR}/${ONLY_YAML}" ]]; then
-  rel="${ONLY_YAML#examples/jichang/}"
-  if [[ "${rel}" == */* ]]; then
-    yaml_category="${rel%%/*}"
-  else
-    yaml_category=""
-  fi
-  if [[ -z "${CATEGORY}" || "${yaml_category}" == "${CATEGORY}" ]]; then
-    test_name="${rel%.yaml}"
-    test_name="${test_name//\//-}"
-    TEST_NAMES+=("${test_name}")
-    TEST_YAMLS+=("${ONLY_YAML}")
-  fi
 fi
 
 if [[ ${#TEST_YAMLS[@]} -eq 0 ]]; then
-  if [[ -n "${ONLY_YAML}" ]]; then
-    echo "Unknown YAML or YAML excluded by filters: ${ONLY_YAML}" >&2
-  else
-    echo "No YAMLs selected after applying filters." >&2
-  fi
+  echo "No YAMLs selected after applying filters." >&2
   exit 2
 fi
 
