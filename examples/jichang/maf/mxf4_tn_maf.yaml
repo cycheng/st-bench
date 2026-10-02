@@ -20,8 +20,8 @@ GlobalParameters:
   # PrintTensorC: 1
   # PrintTensorD: 1
   # PrintTensorRef: 1
-  NumWarmups: 2
-  EnqueuesPerSync: 1000
+  NumWarmups: 200
+  EnqueuesPerSync: 2000
   PrintWinnersOnly: True
   Architecture: gfx1250
   KeepBuildTmp: True
