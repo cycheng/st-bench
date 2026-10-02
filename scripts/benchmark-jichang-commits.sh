@@ -43,7 +43,7 @@ Options:
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run one YAML under examples/jichang. Catalog
                          names such as maf/f8_tn_maf.yaml are accepted, and
-                         so is any other file there, such as f8_tn_henry.yaml.
+                         so is any other file there, such as maf/f8_tn_maf_henry.yaml.
   --exclude-yaml <file>  Skip one YAML, relative to examples/jichang. Repeat
                          this option to skip multiple YAMLs.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
@@ -821,6 +821,7 @@ destination = Path(sys.argv[2])
 settings = {
     "bbs_tn_maf.yaml": {"NumWarmups": 100, "EnqueuesPerSync": 1000},
     "f8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "f8_tn_maf_henry.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "mxf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
     "mxf8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "nvf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
