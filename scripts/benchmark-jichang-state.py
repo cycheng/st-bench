@@ -936,6 +936,14 @@ def best_sample_run(sample_rows: list[dict[str, str]]) -> str | None:
     return best_run
 
 
+def pm_table_tests(
+    tests: list[str],
+    latest_pm_rows: dict[tuple[str, str], list[dict[str, str]]],
+) -> list[str]:
+    present = {test for _, test in latest_pm_rows}
+    return [test for test in tests if test.startswith("maf-") or test in present]
+
+
 def pm_maf_yaml_names(
     rows: list[dict[str, str]],
     pm_log_maf: bool,
@@ -1104,7 +1112,7 @@ def reports(args: argparse.Namespace) -> None:
         ])
         pm_values_for_commit = []
         has_pm_value = False
-        for test in (test for test in tests if test.startswith("maf-")):
+        for test in pm_table_tests(tests, latest_pm_rows):
             pm_rows = latest_pm_rows.get((first["short_commit"], test), [])
             best_run = best_sample_run(sample_map.get((commit, test), []))
             if best_run is None and by_key.get((commit, test)):
@@ -1131,10 +1139,7 @@ def reports(args: argparse.Namespace) -> None:
                 first["short_commit"], first["source"], *pm_values_for_commit,
             ])
     header = ["commit-id", "source", *tests]
-    pm_header = [
-        "commit-id", "source",
-        *(test for test in tests if test.startswith("maf-")),
-    ]
+    pm_header = ["commit-id", "source", *pm_table_tests(tests, latest_pm_rows)]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),

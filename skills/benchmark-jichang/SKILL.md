@@ -259,12 +259,14 @@ Ask in one turn. Use these defaults when the user does not care:
 | commits | current checkout; do not change it | repeat `--commit <sha>`, or `--start` with `--end`. Never mix `--commit` with `--start`/`--end`. |
 | repeat | 1 | `--repeat <n>` |
 | category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. |
-| pm-log-maf | no | `--pm-log-maf` |
-| keep raw PM CSV | no | `--keep-pm-log`. Only valid together with `--pm-log-maf`. |
+| yaml | all catalog YAMLs | `--yaml <path>` under `examples/jichang`. A file that is not in the mab/maf/medium catalog is accepted. |
+| pm-log-maf | no | `--pm-log-maf`. Logs only `examples/jichang/maf/*` and rewrites those warmup counts. |
+| force-pm-log | no | `--force-pm-log`. Logs every selected YAML and leaves warmup counts unchanged. |
+| keep raw PM CSV | no | `--keep-pm-log`. Requires `--pm-log-maf` or `--force-pm-log`. |
 | validation | validate every run | `--validate-first-only` is the usual choice when repeat is greater than 1. `--no-validate` disables validation. |
 | output-dir | `benchmark-results/<YYYYMMDD-HHMMSS>` | `--output-dir <dir>` |
 
-`--pm-log-maf`, `--keep-pm-log`, and `--category` are optional. `--gpu` is not.
+`--pm-log-maf`, `--force-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--force-pm-log` is the flag for a YAML outside `examples/jichang/maf/`.
 
 Ask which physical GPU to use, for example `0` or `1`. Before running:
 
@@ -273,7 +275,7 @@ Ask which physical GPU to use, for example `0` or `1`. Before running:
 
 `--gpu <n>` runs the workload on that GPU and, with `--pm-log-maf`, monitors it. `agt_internal -i=0` is GPU 0. For GPU n the script passes `-i=5n` (`-i=5` for GPU 1, `-i=10` for GPU 2). Do not pass `-i` yourself.
 
-`--pm-log-maf` needs `/opt/amd-apps/agt_internal/agt_internal` and passwordless `sudo`. Check both before adding the flag. If either is missing, say so and run without PM logging unless the user fixes it. `--gpu` is still required.
+`--pm-log-maf` and `--force-pm-log` need `/opt/amd-apps/agt_internal/agt_internal` and passwordless `sudo`. Check both before adding either flag. If either is missing, say so and run without PM logging unless the user fixes it. `--gpu` is still required.
 
 Show the full command, then run it from the st-codegen-test root. Always pass `--config` and `--repo`.
 

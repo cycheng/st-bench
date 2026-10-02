@@ -27,7 +27,10 @@ Options:
   --live-output          Stream YAML output (or set live_output=true in config).
   --pm-log-maf           Run agt_internal PM logging during MAF workload runs
                          using longer MAF warmup/enqueue settings.
+  --force-pm-log         Run agt_internal PM logging for every selected YAML.
+                         Does not rewrite warmup or enqueue counts.
   --keep-pm-log          Keep raw PM CSV files after extracting their summary.
+                         Requires --pm-log-maf or --force-pm-log.
   --gpu <index>          Physical GPU index (default: 0). Sets
                          HIP_VISIBLE_DEVICES for every YAML run, overriding
                          the same key in the config. PM logging monitors that
@@ -38,8 +41,9 @@ Options:
                          commit; reuse its score when the ASM is identical.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
-  --yaml <file>          Only run one YAML, relative to examples/jichang
-                         (for example: maf/f8_tn_maf.yaml).
+  --yaml <file>          Only run one YAML under examples/jichang. Catalog
+                         names such as maf/f8_tn_maf.yaml are accepted, and
+                         so is any other file there, such as f8_tn_henry.yaml.
   --exclude-yaml <file>  Skip one YAML, relative to examples/jichang. Repeat
                          this option to skip multiple YAMLs.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
@@ -126,6 +130,7 @@ VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
 PM_LOG_MAF=0
+FORCE_PM_LOG=0
 KEEP_PM_LOG=0
 GPU_EXPLICIT=0
 GPU_INDEX=0
@@ -198,6 +203,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --pm-log-maf)
       PM_LOG_MAF=1
+      shift
+      ;;
+    --force-pm-log)
+      FORCE_PM_LOG=1
       shift
       ;;
     --keep-pm-log)
@@ -282,8 +291,8 @@ if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
   echo "--no-validate and --validate-first-only cannot be combined." >&2
   exit 2
 fi
-if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 ]]; then
-  echo "--keep-pm-log requires --pm-log-maf." >&2
+if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 && ${FORCE_PM_LOG} -eq 0 ]]; then
+  echo "--keep-pm-log requires --pm-log-maf or --force-pm-log." >&2
   exit 2
 fi
 if [[ ${NO_VALIDATE} -eq 1 ]]; then
@@ -366,9 +375,9 @@ if ! command -v setsid >/dev/null 2>&1 ||
   echo "This script requires the setsid, timeout, and tail commands." >&2
   exit 2
 fi
-if [[ ${PM_LOG_MAF} -eq 1 ]]; then
+if [[ ${PM_LOG_MAF} -eq 1 || ${FORCE_PM_LOG} -eq 1 ]]; then
   if ! command -v sudo >/dev/null 2>&1; then
-    echo "--pm-log-maf requires sudo." >&2
+    echo "PM logging requires sudo." >&2
     exit 2
   fi
   if [[ ! -x "${AGT_INTERNAL}" ]]; then
@@ -376,7 +385,7 @@ if [[ ${PM_LOG_MAF} -eq 1 ]]; then
     exit 2
   fi
   if ! sudo -n true >/dev/null 2>&1; then
-    echo "--pm-log-maf requires passwordless sudo or an existing sudo credential." >&2
+    echo "PM logging requires passwordless sudo or an existing sudo credential." >&2
     exit 2
   fi
 fi
@@ -431,8 +440,17 @@ ALL_TEST_YAMLS=(
 
 if [[ -n "${ONLY_YAML}" ]]; then
   ONLY_YAML="${ONLY_YAML#./}"
-  ONLY_YAML="${ONLY_YAML#examples/jichang/}"
-  ONLY_YAML="examples/jichang/${ONLY_YAML}"
+  if [[ "${ONLY_YAML}" == *"/examples/jichang/"* ]]; then
+    ONLY_YAML="examples/jichang/${ONLY_YAML#*examples/jichang/}"
+  elif [[ "${ONLY_YAML}" != examples/jichang/* ]]; then
+    ONLY_YAML="examples/jichang/${ONLY_YAML#examples/jichang/}"
+  fi
+  case "${ONLY_YAML}" in
+    *..*)
+      echo "YAML path must stay under examples/jichang: ${ONLY_YAML}" >&2
+      exit 2
+      ;;
+  esac
 fi
 for index in "${!EXCLUDED_YAMLS[@]}"; do
   yaml="${EXCLUDED_YAMLS[${index}]#./}"
@@ -459,6 +477,21 @@ for index in "${!ALL_TEST_NAMES[@]}"; do
   TEST_NAMES+=("${ALL_TEST_NAMES[${index}]}")
   TEST_YAMLS+=("${yaml}")
 done
+
+if [[ ${#TEST_YAMLS[@]} -eq 0 && -n "${ONLY_YAML}" && -f "${PROJECT_DIR}/${ONLY_YAML}" ]]; then
+  rel="${ONLY_YAML#examples/jichang/}"
+  if [[ "${rel}" == */* ]]; then
+    yaml_category="${rel%%/*}"
+  else
+    yaml_category=""
+  fi
+  if [[ -z "${CATEGORY}" || "${yaml_category}" == "${CATEGORY}" ]]; then
+    test_name="${rel%.yaml}"
+    test_name="${test_name//\//-}"
+    TEST_NAMES+=("${test_name}")
+    TEST_YAMLS+=("${ONLY_YAML}")
+  fi
+fi
 
 if [[ ${#TEST_YAMLS[@]} -eq 0 ]]; then
   if [[ -n "${ONLY_YAML}" ]]; then
@@ -621,8 +654,8 @@ run_yaml() {
       ;;
   esac
 
-  if [[ ${PM_LOG_MAF} -eq 1 && "${mode}" == "config" &&
-        "${yaml_file}" == */maf/* ]]; then
+  if [[ "${mode}" == "config" && ( ${FORCE_PM_LOG} -eq 1 ||
+        ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ) ]]; then
     if ! start_pm_logging "${log_file}"; then
       return 1
     fi
