@@ -33,8 +33,8 @@ Options:
                          Requires --pm-log-maf or --force-pm-log.
   --gpu <index>          Physical GPU index (default: 0). Sets
                          HIP_VISIBLE_DEVICES for every YAML run, overriding
-                         the same key in the config. PM logging monitors that
-                         GPU with -i=0 for GPU 0 and -i=* otherwise.
+                         the same key in the config. PM logging monitors GPU n
+                         with agt_internal -i=5n (-i=0 for GPU 0).
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
@@ -98,7 +98,9 @@ are skipped; interrupted running YAMLs receive a new attempt log.
 After an unexpected interruption, manually restore the rocm-libraries worktree
 before resuming; the script does not validate the recovered Git state.
 SIGINT, SIGTERM, SIGHUP, and SIGTSTP cancel the active YAML and leave it
-pending. Rerun the command to resume; do not use shell fg/bg for recovery.
+pending. agt_internal is stopped with SIGTERM and is never SIGKILL'd; a
+second interrupt during that cleanup is ignored. Rerun the command to
+resume; do not use shell fg/bg for recovery.
 
 MAB scores use max(gbps-bandwidth) in GB/s. MAF and medium scores use
 max(gflops) / 1000 in PFLOPS.
@@ -353,11 +355,8 @@ if [[ ${GPU_EXPLICIT} -eq 0 && -n "${CONFIG_GPU}" ]]; then
 elif [[ ${GPU_EXPLICIT} -eq 1 && -n "${CONFIG_GPU}" && "${CONFIG_GPU}" != "${GPU_INDEX}" ]]; then
   echo "Config HIP_VISIBLE_DEVICES=${CONFIG_GPU} overridden by --gpu ${GPU_INDEX}." >&2
 fi
-if (( 10#${GPU_INDEX} == 0 )); then
-  PM_DEVICE_SELECTOR=0
-else
-  PM_DEVICE_SELECTOR='*'
-fi
+# agt_internal device n*5 is physical GPU n. -i=0 is GPU 0, -i=5 is GPU 1.
+PM_DEVICE_SELECTOR=$((10#${GPU_INDEX} * 5))
 if [[ ${GPU_EXPLICIT} -eq 1 ]]; then
   YAML_GPU_ARGS=(--env "HIP_VISIBLE_DEVICES=${GPU_INDEX}")
 fi
@@ -617,27 +616,38 @@ ACTIVE_PM_PID=""
 ACTIVE_PM_CSV=""
 ACTIVE_PM_RUNTIME_LOG=""
 
+pm_logger_alive() {
+  local pm_pid="$1"
+  sudo -n kill -0 -- "-${pm_pid}" 2>/dev/null ||
+    sudo -n kill -0 -- "${pm_pid}" 2>/dev/null
+}
+
 stop_pm_logging() {
   local pm_pid="${ACTIVE_PM_PID}"
   local stop_status=0
 
   [[ -n "${pm_pid}" ]] || return 0
-
-  sudo -n kill -TERM -- "-${pm_pid}" 2>/dev/null ||
-    sudo -n kill -TERM "${pm_pid}" 2>/dev/null || true
-  for _ in {1..50}; do
-    kill -0 "${pm_pid}" 2>/dev/null || break
-    sleep 0.1
-  done
-  if kill -0 "${pm_pid}" 2>/dev/null; then
-    sudo -n kill -KILL -- "-${pm_pid}" 2>/dev/null ||
-      sudo -n kill -KILL "${pm_pid}" 2>/dev/null || true
-    stop_status=1
-  fi
-  wait "${pm_pid}" 2>/dev/null || true
+  # Clear first so a nested interrupt cannot stop this logger twice.
   ACTIVE_PM_PID=""
   ACTIVE_PM_CSV=""
   ACTIVE_PM_RUNTIME_LOG=""
+
+  # setsid makes this pid the session leader. Signal that process group so
+  # both sudo and agt_internal receive SIGTERM. Never SIGKILL agt_internal:
+  # an uncatchable kill leaves the SMU PM interface dead until reboot.
+  sudo -n kill -TERM -- "-${pm_pid}" 2>/dev/null ||
+    sudo -n kill -TERM "${pm_pid}" 2>/dev/null || true
+  for _ in {1..100}; do
+    pm_logger_alive "${pm_pid}" || break
+    sleep 0.1
+  done
+  if pm_logger_alive "${pm_pid}"; then
+    echo "agt_internal pid ${pm_pid} is still running after SIGTERM." >&2
+    echo "Do not SIGKILL it. That leaves the PM interface dead until reboot." >&2
+    stop_status=1
+  else
+    wait "${pm_pid}" 2>/dev/null || true
+  fi
   return "${stop_status}"
 }
 
@@ -661,7 +671,7 @@ start_pm_logging() {
     if grep -Fq '[ ...START LOGGING... ]' "${pm_runtime_log}"; then
       return 0
     fi
-    if ! kill -0 "${ACTIVE_PM_PID}" 2>/dev/null; then
+    if ! pm_logger_alive "${ACTIVE_PM_PID}"; then
       echo "agt_internal exited before PM logging started." >&2
       wait "${ACTIVE_PM_PID}" 2>/dev/null || true
       ACTIVE_PM_PID=""
@@ -981,6 +991,7 @@ RANGE_MODE=0
 RESTORED=0
 ACTIVE_RUN_PID=""
 ACTIVE_TAIL_PID=""
+SIGNAL_CLEANUP=0
 
 # Git checkout may invoke credential, SSH, or LFS helpers. Unattended runs must
 # fail instead of stopping to read from a terminal.
@@ -992,6 +1003,11 @@ if [[ -z "${GIT_SSH_COMMAND:-}" ]]; then
 fi
 
 terminate_active_run() {
+  # Stop the logger before the workload. The workload wait is several seconds,
+  # and a second Ctrl+C during it used to exit before agt_internal was signaled.
+  if [[ -n "${ACTIVE_PM_PID}" ]]; then
+    stop_pm_logging || true
+  fi
   if [[ -n "${ACTIVE_RUN_PID}" ]]; then
     kill -TERM -- "-${ACTIVE_RUN_PID}" 2>/dev/null || true
     sleep 5
@@ -1006,13 +1022,13 @@ terminate_active_run() {
     wait "${ACTIVE_TAIL_PID}" 2>/dev/null || true
     ACTIVE_TAIL_PID=""
   fi
-  if [[ -n "${ACTIVE_PM_PID}" ]]; then
-    stop_pm_logging || true
-  fi
 }
 
 handle_signal() {
   local status="$1"
+  [[ ${SIGNAL_CLEANUP} -eq 0 ]] || return 0
+  SIGNAL_CLEANUP=1
+  trap '' HUP INT TERM TSTP
   terminate_active_run
   exit "${status}"
 }

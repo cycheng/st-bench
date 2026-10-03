@@ -15,9 +15,11 @@ sudo -n /opt/amd-apps/agt_internal/agt_internal \
 ```
 
 - `-unilogperiod=50` samples the PM counters every 50 us.
-- `-i=0` monitors GPU0.
-- For any nonzero GPU, the script uses `-i=*` and extracts only that GPU's
-  columns from the resulting PM log.
+- `-i=0` monitors GPU 0. GPU n is monitored with `-i=5n`
+  (`-i=5` for GPU 1, `-i=10` for GPU 2).
+- The log contains that one device. Its Post Deep Sleep Freq columns are
+  used whether AGT labels them with the physical GPU number or as the only
+  GPU in the file.
 
 The benchmark script enables this collection with `--pm-log-maf`. Pass
 `--gpu <n>` to run the workload with `HIP_VISIBLE_DEVICES=<n>` and to monitor

@@ -268,20 +268,53 @@ def record_sample(args: argparse.Namespace) -> None:
     write_samples(path, rows)
 
 
+def pm_freq_columns(gpu_index: int) -> list[str]:
+    return [
+        f"GPU{gpu_index} XCD XCD{index} Post Deep Sleep Freq"
+        for index in range(8)
+    ]
+
+
+def gpu_indexes_in_pm_log(fieldnames: list[str] | None) -> list[int]:
+    if not fieldnames:
+        return []
+    indexes: list[int] = []
+    for name in fieldnames:
+        match = re.fullmatch(r"GPU(\d+) XCD XCD0 Post Deep Sleep Freq", name)
+        if match:
+            indexes.append(int(match.group(1)))
+    return indexes
+
+
+def select_pm_columns(fieldnames: list[str] | None, gpu_index: int) -> list[str]:
+    """Columns for one device selected with agt_internal -i=5n.
+
+    Prefer the physical GPU number. A single-device log may instead label
+    that GPU as GPU0, so a file with exactly one GPU prefix uses that prefix.
+    """
+    preferred = pm_freq_columns(gpu_index)
+    names = fieldnames or []
+    if all(column in names for column in preferred):
+        return preferred
+    present = gpu_indexes_in_pm_log(names)
+    if len(present) == 1 and all(
+        column in names for column in pm_freq_columns(present[0])
+    ):
+        return pm_freq_columns(present[0])
+    return preferred
+
+
 def record_pm(args: argparse.Namespace) -> None:
     output = args.output.resolve()
     log_path = args.log.resolve()
     if not log_path.is_file():
         raise SystemExit(f"PM log does not exist: {log_path}")
 
-    required_columns = [
-        f"GPU{args.gpu} XCD XCD{index} Post Deep Sleep Freq"
-        for index in range(8)
-    ]
     samples: list[list[float | None]] = []
     sample_count = 0
     with log_path.open(encoding="utf-8", errors="replace", newline="") as stream:
         reader = csv.DictReader(stream)
+        required_columns = select_pm_columns(reader.fieldnames, args.gpu)
         if reader.fieldnames is None or any(
             column not in reader.fieldnames for column in required_columns
         ):
