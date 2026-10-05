@@ -92,11 +92,11 @@ BenchmarkProblems:
         - CompactLoopStore: [False]
         - PreloadKernArgs: [True]
 
-        - ClusterDim: [[4,4],[2,4]]
-        - PrefetchGL2: [1,2]
         - InitCIterWmma: [0]
         - SwInstructionPrefetch: [0]
         # - ClusterBarrierRule3SignalLeadCycles: [100,300,500]
+        - ClusterDim: [[4,4],[2,4]]
+        - PrefetchGL2: [1,2]
         - DsReadDrainLatency: [32, 64, 72]
         - DsReadPerWmma: [2]
         - DsReadThrottleLatency: [72, 96, 112]

@@ -104,24 +104,12 @@ BenchmarkProblems:
         - SwInstructionPrefetch: [0]
         # - PrefetchGL2SAddr: [True]
         # - ClusterBarrierRule3SignalLeadCycles: [100,300,500]
+        - ClusterDim: [[4,4],[2,4]]
+        - PrefetchGL2: [1,2]
+        - DsReadDrainLatency: [32, 64, 72]
+        - DsReadPerWmma: [2,3]
+        - DsReadThrottleLatency: [72, 96, 112]
 
-        # - PrefetchGL2: [1,2]
-        # - ClusterDim: [[4,4],[2,4]]
-        # - DsReadDrainLatency: [32, 64, 72]
-        # - DsReadPerWmma: [2,3]
-        # - DsReadThrottleLatency: [72, 96, 112]
-
-        # - PrefetchGL2: [2]
-        # - ClusterDim: [[2,4]]
-        # - DsReadDrainLatency: [32,64]
-        # - DsReadPerWmma: [2]
-        # - DsReadThrottleLatency: [96]
-
-        - PrefetchGL2: [2]
-        - ClusterDim: [[4,4]]
-        - DsReadDrainLatency: [32,64]
-        - DsReadPerWmma: [2]
-        - DsReadThrottleLatency: [112]
 
       BenchmarkForkParameters:
       JoinParameters:
@@ -141,4 +129,3 @@ BenchmarkProblems:
 #    LibraryType: "GridBased"
 #
 #LibraryClient:
-
