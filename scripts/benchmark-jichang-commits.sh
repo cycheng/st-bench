@@ -62,6 +62,16 @@ selected, asm-same reports whether each commit's complete generated st ASM
 matches the previous chronological commit. Local tracked changes are stashed
 once. When supplied, --patch is applied to each tested commit.
 
+With two or more commits, each commit is copied to codebases/<sha> (a git
+worktree) and every selected YAML is built before any measured run. Kernel
+generation checks that commit out in the main repository, because Tensile.sh
+compiles against it; the copy and the kernels/<sha>/<test> directory keep
+that commit's results. The script then runs one YAML across all commits
+before the next YAML, replaying the saved run.sh. With --repeat, each
+repetition of that YAML runs on every commit before the next repetition
+starts (A, B, C, then A, B, C again). A single commit still builds and
+measures each YAML before the next one.
+
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
   f2a6c23df523 onward: st-codegen-test revision c394e5b
@@ -90,6 +100,8 @@ Output:
   logs/<commit>/<test>.attempt-N.run-M.log (when --repeat is greater than 1)
   logs/<commit>/<test>.attempt-N.pm.log (agt_internal console output)
   asm/<commit>/<test>/st  Cached generated ASM used for comparison.
+  codebases/<commit>      Git worktree of that commit, for multi-commit runs.
+  kernels/<commit>/<test> Generated kernels replayed across those commits.
   asm-diffs/<pair>/<test>/<file>.diff
                            Unified diffs for changed ASM files.
 
@@ -689,17 +701,24 @@ run_yaml() {
   local yaml_file="$1"
   local log_file="$2"
   local mode="$3"
-  local mode_arg=()
+  shift 3
+  local mode_arg=("$@")
   local run_status=0
   local pm_csv_path=""
   local pm_record_args=()
   local pm_started=0
+  local measured=0
 
   case "${mode}" in
     build-only)
-      mode_arg=(--build-only)
+      mode_arg+=(--build-only)
+      ;;
+    reuse)
+      mode_arg+=(--reuse-build)
+      measured=1
       ;;
     config)
+      measured=1
       ;;
     *)
       echo "Unknown YAML run mode: ${mode}" >&2
@@ -707,7 +726,7 @@ run_yaml() {
       ;;
   esac
 
-  if [[ "${mode}" == "config" && ( ${FORCE_PM_LOG} -eq 1 ||
+  if [[ ${measured} -eq 1 && ( ${FORCE_PM_LOG} -eq 1 ||
         ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ) ]]; then
     if ! start_pm_logging "${log_file}"; then
       return 1
@@ -1236,6 +1255,530 @@ regenerate_reports
 python3 "${STATE_HELPER}" compare-asm --output "${OUTPUT_DIR}" || exit 1
 regenerate_reports
 
+die_if_interrupted() {
+  local status="$1"
+  local test_name="$2"
+  if [[ ${status} -eq 124 || ${status} -eq 137 || ${status} -eq 129 ||
+        ${status} -eq 130 || ${status} -eq 143 || ${status} -eq 148 ]]; then
+    echo "${test_name}: interrupted or timed out; task remains pending" >&2
+    exit "${status}"
+  fi
+}
+
+task_pending() {
+  local commit="$1"
+  local test_name="$2"
+  local answer
+  answer="$(python3 "${STATE_HELPER}" pending --state "${RUN_STATE}" \
+    --commit "${commit}" --test "${test_name}")" || exit 1
+  [[ "${answer}" == "yes" ]]
+}
+
+commit_has_pending() {
+  local commit="$1"
+  local test_name
+  for test_name in "${TEST_NAMES[@]}"; do
+    if task_pending "${commit}" "${test_name}"; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+yaml_for_test() {
+  local revision="$1"
+  local catalog="$2"
+  local drop_validation="$3"
+  local category="${catalog#examples/jichang/}"
+  local path="${OUTPUT_DIR}/yamls/${revision}/${catalog#examples/jichang/}"
+  category="${category%%/*}"
+  if [[ ${PM_LOG_MAF} -eq 1 && "${category}" == "maf" ]]; then
+    path="${path%.yaml}.pm-log-maf.yaml"
+  fi
+  if [[ "${drop_validation}" == "1" ]]; then
+    path="${path%.yaml}.no-validation.yaml"
+  fi
+  printf '%s\n' "${path}"
+}
+
+kernels_ready() {
+  local kernel_dir="$1"
+  local yaml_file="$2"
+  local base found
+  base="$(basename "${yaml_file}" .yaml)"
+  # --build-only writes ClientParameters.ini and does not write run.sh.
+  # run.sh appears only when Tensile actually launches the client.
+  found="$(find "${kernel_dir}/${base}.out/1_BenchmarkProblems" \
+    \( -path '*/build/run.sh' -o -name 'ClientParameters.ini' \) \
+    -type f -print -quit 2>/dev/null || true)"
+  [[ -n "${found}" ]]
+}
+
+prepare_commit_checkout() {
+  local commit="$1"
+  local short_commit="$2"
+  local setup_log
+
+  [[ ${RANGE_MODE} -eq 1 ]] || return 0
+  if [[ ${PATCH_APPLIED} -eq 1 ]]; then
+    git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+    PATCH_APPLIED=0
+  fi
+  mkdir -p -- "${OUTPUT_DIR}/logs/${short_commit}"
+  setup_log="${OUTPUT_DIR}/logs/${short_commit}/git-setup.log"
+  if ! timeout --signal=TERM --kill-after=10s 10m \
+       git -C "${ROCM_REPO}" checkout --detach "${commit}" \
+       </dev/null >"${setup_log}" 2>&1; then
+    echo "Git checkout failed for ${short_commit}; tasks remain not run." >&2
+    cat "${setup_log}" >&2
+    return 1
+  fi
+  if [[ -n "${PATCH_FILE}" ]]; then
+    if ! timeout --signal=TERM --kill-after=10s 10m \
+         git -C "${ROCM_REPO}" apply --3way --whitespace=nowarn "${PATCH_FILE}" \
+         </dev/null >>"${setup_log}" 2>&1; then
+      echo "Git patch apply failed for ${short_commit}; tasks remain not run." >&2
+      cat "${setup_log}" >&2
+      git -C "${ROCM_REPO}" reset --hard HEAD >/dev/null
+      return 1
+    fi
+    PATCH_APPLIED=1
+  fi
+}
+
+copy_commit_codebase() {
+  local commit="$1"
+  local short_commit="$2"
+  local dest="${OUTPUT_DIR}/codebases/${short_commit}"
+  local have patch
+
+  mkdir -p -- "${OUTPUT_DIR}/codebases"
+  if [[ -d "${dest}" ]]; then
+    have="$(git -C "${dest}" rev-parse HEAD 2>/dev/null || true)"
+    if [[ "${have}" != "${commit}" ]]; then
+      echo "Existing codebase ${dest} is ${have:-not a checkout}, expected ${commit}." >&2
+      return 1
+    fi
+  else
+    echo "Copying ${short_commit} to ${dest}"
+    # A previous run can leave the path registered after the directory is gone.
+    git -C "${ROCM_REPO}" worktree prune
+    if ! git -C "${ROCM_REPO}" worktree add --detach "${dest}" "${commit}"; then
+      if ! git -C "${ROCM_REPO}" worktree add --force --detach "${dest}" "${commit}"; then
+        echo "Could not copy codebase for ${short_commit}." >&2
+        return 1
+      fi
+    fi
+  fi
+  if [[ -n "${PATCH_FILE}" && ! -f "${dest}/.benchmark-patch-applied" ]]; then
+    patch="${PATCH_FILE}"
+    if [[ "${patch}" != /* ]]; then
+      patch="$(readlink -f -- "${patch}")"
+    fi
+    if ! git -C "${dest}" apply --3way --whitespace=nowarn "${patch}"; then
+      echo "Git patch apply failed in codebase ${dest}." >&2
+      return 1
+    fi
+    touch -- "${dest}/.benchmark-patch-applied"
+  fi
+}
+
+build_saved_yaml() {
+  local yaml_file="$1"
+  local kernel_dir="$2"
+  local log_file="$3"
+  local test_name="$4"
+  local run_status=0
+
+  if kernels_ready "${kernel_dir}" "${yaml_file}"; then
+    echo "--- ${test_name}: kernels already built ($(basename "${yaml_file}"))"
+    return 0
+  fi
+  mkdir -p -- "${kernel_dir}" "$(dirname -- "${log_file}")"
+  echo "--- ${test_name}: building $(basename "${yaml_file}")"
+  run_yaml "${yaml_file}" "${log_file}" build-only \
+    --run-dir "${kernel_dir}" --keep-container-out || run_status=$?
+  die_if_interrupted "${run_status}" "${test_name}"
+  if [[ ${run_status} -ne 0 ]] || ! kernels_ready "${kernel_dir}" "${yaml_file}"; then
+    echo "--- ${test_name}: kernel build failed" >&2
+    return 1
+  fi
+}
+
+record_build_failure() {
+  local commit="$1"
+  local test_name="$2"
+  local build_log="$3"
+  local asm_dir="$4"
+  local start_result asm_status
+
+  start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+    --commit "${commit}" --test "${test_name}")" || exit 1
+  if [[ "${start_result}" == "skip" ]]; then
+    return 0
+  fi
+  if [[ -n "${build_log}" && -f "${build_log}" ]]; then
+    mkdir -p -- "$(dirname -- "${OUTPUT_DIR}/${start_result}")"
+    cp -- "${build_log}" "${OUTPUT_DIR}/${start_result}"
+  fi
+  asm_status="missing"
+  if [[ -d "${asm_dir}/st" ]]; then
+    asm_status="cached"
+  fi
+  finish_task "${commit}" "${test_name}" "execution-failed" 0 \
+    "${asm_status}" "kernel build failed"
+}
+
+measure_saved_run() {
+  local commit="$1"
+  local short_commit="$2"
+  local test_name="$3"
+  local yaml="$4"
+  local kernel_dir="$5"
+  local attempt_log="$6"
+  local run_index="$7"
+  local score_metric="$8"
+  local score_unit="$9"
+  local log_file run_yaml_file run_status
+  local sample_score sample_time_us sample_status sample_result
+
+  if [[ ${run_index} -eq 1 ]]; then
+    log_file="${OUTPUT_DIR}/${attempt_log}"
+  else
+    log_file="${OUTPUT_DIR}/${attempt_log%.log}.run-${run_index}.log"
+  fi
+  run_yaml_file="${yaml}"
+  if [[ ${NO_VALIDATE} -eq 1 ||
+        ( ${VALIDATE_FIRST_ONLY} -eq 1 && ${run_index} -gt 1 ) ]]; then
+    run_yaml_file="${yaml%.yaml}.no-validation.yaml"
+  fi
+  mkdir -p -- "$(dirname -- "${log_file}")"
+  echo "--- ${short_commit} ${test_name}: run ${run_index}/${REPEAT_RUNS}"
+  run_status=0
+  run_yaml "${run_yaml_file}" "${log_file}" reuse \
+    --run-dir "${kernel_dir}" --keep-container-out || run_status=$?
+  die_if_interrupted "${run_status}" "${test_name}"
+
+  sample_score=""
+  sample_time_us=""
+  sample_status="execution-failed"
+  if sample_result="$(extract_best_result "${log_file}" "${score_metric}")"; then
+    IFS=$'\t' read -r sample_score sample_time_us <<< "${sample_result}"
+    if [[ "${sample_score}" == *"*" ]]; then
+      sample_status="validation-failed"
+    elif [[ ${run_status} -eq 0 ]]; then
+      sample_status="passed"
+    fi
+  fi
+
+  python3 "${STATE_HELPER}" record-sample --output "${OUTPUT_DIR}" \
+    --commit "${commit}" --test "${test_name}" --run "${run_index}" \
+    --status "${sample_status}" --score "${sample_score}" \
+    --time-us "${sample_time_us}" || exit 1
+
+  if [[ -n "${sample_score}" ]]; then
+    if [[ -n "${sample_time_us}" ]]; then
+      echo "${short_commit} ${test_name}: run ${run_index} = ${sample_score} ${score_unit}, ${sample_time_us} us"
+    else
+      echo "${short_commit} ${test_name}: run ${run_index} = ${sample_score} ${score_unit}"
+    fi
+  else
+    echo "${short_commit} ${test_name}: run ${run_index} produced no finite score" >&2
+  fi
+  return "${run_status}"
+}
+
+finish_saved_yaml() {
+  local commit="$1"
+  local short_commit="$2"
+  local test_name="$3"
+  local kernel_dir="$4"
+  local score_metric="$5"
+  local score_unit="$6"
+  local failed_runs="$7"
+  local asm_status asm_message
+  local stats_line measured_count average best worst standard_deviation
+  local best_score validation_failures sample_failures terminal_status message
+
+  asm_status="missing"
+  asm_message=""
+  if [[ -d "${OUTPUT_DIR}/asm/${short_commit}/${test_name}/st" ]]; then
+    asm_status="cached"
+  else
+    asm_message="generated st ASM could not be cached"
+  fi
+
+  stats_line="$(python3 "${STATE_HELPER}" sample-stats \
+    --output "${OUTPUT_DIR}" --commit "${commit}" --test "${test_name}")" || exit 1
+  IFS=$'\t' read -r measured_count average best worst standard_deviation \
+    best_score validation_failures sample_failures <<< "${stats_line}"
+  if [[ ${measured_count} -eq 0 ]]; then
+    finish_task "${commit}" "${test_name}" "execution-failed" 0 \
+      "${asm_status}" "no finite ${score_metric} value found in ${REPEAT_RUNS} run(s)"
+    rm -rf -- "${kernel_dir}"
+    return 0
+  fi
+  terminal_status="passed"
+  message="${measured_count}/${REPEAT_RUNS} run(s) produced finite scores"
+  if [[ ${validation_failures} -gt 0 ]]; then
+    terminal_status="validation-failed"
+    message="${message}; ${validation_failures} validation-failed run(s)"
+  elif [[ ${failed_runs} -gt 0 ]]; then
+    terminal_status="execution-failed"
+    message="${message}; ${failed_runs} run(s) failed"
+  fi
+  if [[ -n "${asm_message}" ]]; then
+    message="${message}; ${asm_message}"
+  fi
+  echo "${short_commit} ${test_name}: best=${best_score}, average=${average}, worst=${worst}, SD=${standard_deviation} ${score_unit}"
+  finish_task "${commit}" "${test_name}" "${terminal_status}" "${best_score}" \
+    "${asm_status}" "${message}"
+  rm -rf -- "${kernel_dir}"
+}
+
+build_one_commit() {
+  local commit_index="$1"
+  local commit="${COMMITS[${commit_index}]}"
+  local short_commit source yaml_revision index test_name catalog yaml
+  local kernel_dir commit_log_dir commit_asm_dir previous_commit
+  local previous_short_commit previous_asm_dir variant build_log failed
+  local primary_log preflight_log preflight_asm_dir asm_match needs_build
+
+  short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
+  if ! commit_has_pending "${commit}"; then
+    echo "${short_commit}: all YAMLs already completed; skipping build"
+    return 0
+  fi
+  source="$(commit_source "${commit}")"
+  yaml_revision="$(yaml_revision_for_commit "${commit}")"
+  echo
+  echo "===== Building ${short_commit} (${source}; YAML revision ${yaml_revision}) ====="
+  if ! prepare_yamls "${yaml_revision}"; then
+    echo "YAML preparation failed for ${short_commit}; tasks remain not run." >&2
+    return 1
+  fi
+  needs_build=0
+  for index in "${!TEST_NAMES[@]}"; do
+    test_name="${TEST_NAMES[${index}]}"
+    if ! task_pending "${commit}" "${test_name}"; then
+      continue
+    fi
+    catalog="${TEST_YAMLS[${index}]}"
+    yaml="$(yaml_for_test "${yaml_revision}" "${catalog}" 0)"
+    kernel_dir="${OUTPUT_DIR}/kernels/${short_commit}/${test_name}"
+    if [[ ${SKIP_IDENTICAL_ASM} -eq 1 && ${commit_index} -gt 0 ]]; then
+      previous_short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 \
+        "${COMMITS[$((commit_index - 1))]}")"
+      if [[ -d "${OUTPUT_DIR}/asm/${previous_short_commit}/${test_name}/st" ]] &&
+         ! kernels_ready "${kernel_dir}" "${yaml}"; then
+        needs_build=1
+      fi
+    fi
+    if [[ ${NO_VALIDATE} -eq 1 ]]; then
+      if ! kernels_ready "${kernel_dir}" "${yaml%.yaml}.no-validation.yaml"; then
+        needs_build=1
+      fi
+    else
+      if ! kernels_ready "${kernel_dir}" "${yaml}"; then
+        needs_build=1
+      fi
+      if [[ ${VALIDATE_FIRST_ONLY} -eq 1 && ${REPEAT_RUNS} -gt 1 ]] &&
+         ! kernels_ready "${kernel_dir}" "${yaml%.yaml}.no-validation.yaml"; then
+        needs_build=1
+      fi
+    fi
+  done
+  if [[ ${needs_build} -eq 1 ]]; then
+    if ! prepare_commit_checkout "${commit}" "${short_commit}"; then
+      return 1
+    fi
+  else
+    echo "${short_commit}: kernels already built; leaving the repository checkout unchanged"
+  fi
+
+  commit_log_dir="${OUTPUT_DIR}/logs/${short_commit}"
+  mkdir -p -- "${commit_log_dir}"
+  commit_asm_dir="${OUTPUT_DIR}/asm/${short_commit}"
+  previous_commit=""
+  previous_short_commit=""
+  previous_asm_dir=""
+  if [[ ${SKIP_IDENTICAL_ASM} -eq 1 && ${commit_index} -gt 0 ]]; then
+    previous_commit="${COMMITS[$((commit_index - 1))]}"
+    previous_short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${previous_commit}")"
+    previous_asm_dir="${OUTPUT_DIR}/asm/${previous_short_commit}"
+  fi
+
+  for index in "${!TEST_NAMES[@]}"; do
+    test_name="${TEST_NAMES[${index}]}"
+    catalog="${TEST_YAMLS[${index}]}"
+    if ! task_pending "${commit}" "${test_name}"; then
+      continue
+    fi
+    yaml="$(yaml_for_test "${yaml_revision}" "${catalog}" 0)"
+    kernel_dir="${OUTPUT_DIR}/kernels/${short_commit}/${test_name}"
+
+    if [[ -n "${previous_commit}" && -d "${previous_asm_dir}/${test_name}/st" ]]; then
+      preflight_log="${commit_log_dir}/${test_name}.asm-check.log"
+      echo "--- ${test_name}: checking generated ASM against ${previous_short_commit}"
+      if ! build_saved_yaml "${yaml}" "${kernel_dir}" "${preflight_log}" "${test_name}"; then
+        record_build_failure "${commit}" "${test_name}" "${preflight_log}" \
+          "${commit_asm_dir}/${test_name}"
+        continue
+      fi
+      preflight_asm_dir="${commit_asm_dir}/${test_name}/st"
+      if [[ ! -d "${preflight_asm_dir}" ]]; then
+        cache_generated_asm "${preflight_log}" "${preflight_asm_dir}" || true
+      fi
+      if [[ -d "${preflight_asm_dir}" ]]; then
+        asm_match="$(python3 "${STATE_HELPER}" asm-status \
+          --left "${previous_asm_dir}/${test_name}/st" \
+          --right "${preflight_asm_dir}")" || return 1
+        if [[ "${asm_match}" == "yes" ]]; then
+          if python3 "${STATE_HELPER}" reuse --state "${RUN_STATE}" \
+               --source-commit "${previous_commit}" --target-commit "${commit}" \
+               --test "${test_name}" \
+               --message "ASM identical to ${previous_short_commit}; reused its score"; then
+            rm -rf -- "${preflight_asm_dir}"
+            mkdir -p -- "$(dirname -- "${preflight_asm_dir}")"
+            cp -a -- "${previous_asm_dir}/${test_name}/st" "${preflight_asm_dir}"
+            rm -rf -- "${kernel_dir}"
+            echo "${test_name}: ASM identical; reused ${previous_short_commit} score"
+            continue
+          fi
+        fi
+      fi
+    fi
+
+    failed=0
+    primary_log=""
+    while IFS= read -r variant; do
+      build_log="${commit_log_dir}/${test_name}.$(basename "${variant}" .yaml).build.log"
+      if [[ -z "${primary_log}" ]]; then
+        primary_log="${build_log}"
+      fi
+      if ! build_saved_yaml "${variant}" "${kernel_dir}" "${build_log}" "${test_name}"; then
+        failed=1
+        break
+      fi
+    done < <(
+      if [[ ${NO_VALIDATE} -eq 1 ]]; then
+        printf '%s\n' "${yaml%.yaml}.no-validation.yaml"
+      else
+        printf '%s\n' "${yaml}"
+        if [[ ${VALIDATE_FIRST_ONLY} -eq 1 && ${REPEAT_RUNS} -gt 1 ]]; then
+          printf '%s\n' "${yaml%.yaml}.no-validation.yaml"
+        fi
+      fi
+    )
+    if [[ ${failed} -eq 1 ]]; then
+      record_build_failure "${commit}" "${test_name}" "${build_log}" \
+        "${commit_asm_dir}/${test_name}"
+      continue
+    fi
+    if [[ ! -d "${commit_asm_dir}/${test_name}/st" && -n "${primary_log}" ]]; then
+      cache_generated_asm "${primary_log}" "${commit_asm_dir}/${test_name}/st" || true
+    fi
+  done
+}
+
+run_grouped_commits() {
+  local commit_index commit short_commit index test_name catalog
+  local yaml_revision yaml kernel_dir score_metric score_unit
+  local start_result run_index slot
+  local active_commits active_short_commits active_yamls active_kernel_dirs
+  local active_logs active_failed_runs
+
+  echo
+  echo "===== Copying a codebase for each commit ====="
+  for commit_index in "${!COMMITS[@]}"; do
+    commit="${COMMITS[${commit_index}]}"
+    short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
+    if ! commit_has_pending "${commit}"; then
+      echo "${short_commit}: all YAMLs already completed; not copying"
+      continue
+    fi
+    copy_commit_codebase "${commit}" "${short_commit}" || exit 1
+  done
+
+  echo
+  echo "===== Building kernels for every commit ====="
+  for commit_index in "${!COMMITS[@]}"; do
+    build_one_commit "${commit_index}" || exit 1
+  done
+
+  echo
+  echo "===== Running each YAML across commits ====="
+  for index in "${!TEST_NAMES[@]}"; do
+    test_name="${TEST_NAMES[${index}]}"
+    catalog="${TEST_YAMLS[${index}]}"
+    if [[ "${catalog#examples/jichang/}" == mab/* ]]; then
+      score_metric="gbps-bandwidth"
+      score_unit="GB/s"
+    else
+      score_metric="gflops"
+      score_unit="PFLOPS"
+    fi
+    echo
+    echo "===== ${test_name} across ${#COMMITS[@]} commits ====="
+    active_commits=()
+    active_short_commits=()
+    active_yamls=()
+    active_kernel_dirs=()
+    active_logs=()
+    active_failed_runs=()
+    for commit_index in "${!COMMITS[@]}"; do
+      commit="${COMMITS[${commit_index}]}"
+      if ! task_pending "${commit}" "${test_name}"; then
+        continue
+      fi
+      short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
+      yaml_revision="$(yaml_revision_for_commit "${commit}")"
+      yaml="$(yaml_for_test "${yaml_revision}" "${catalog}" 0)"
+      kernel_dir="${OUTPUT_DIR}/kernels/${short_commit}/${test_name}"
+      if ! kernels_ready "${kernel_dir}" "${yaml}" &&
+         ! kernels_ready "${kernel_dir}" "${yaml%.yaml}.no-validation.yaml"; then
+        record_build_failure "${commit}" "${test_name}" "" \
+          "${OUTPUT_DIR}/asm/${short_commit}/${test_name}"
+        continue
+      fi
+      start_result="$(python3 "${STATE_HELPER}" start --state "${RUN_STATE}" \
+        --commit "${commit}" --test "${test_name}")" || exit 1
+      if [[ "${start_result}" == "skip" ]]; then
+        echo "--- ${short_commit} ${test_name}: already completed, skipping"
+        continue
+      fi
+      active_commits+=("${commit}")
+      active_short_commits+=("${short_commit}")
+      active_yamls+=("${yaml}")
+      active_kernel_dirs+=("${kernel_dir}")
+      active_logs+=("${start_result}")
+      active_failed_runs+=(0)
+    done
+
+    for ((run_index = 1; run_index <= REPEAT_RUNS; run_index++)); do
+      for slot in "${!active_commits[@]}"; do
+        if ! measure_saved_run "${active_commits[${slot}]}" \
+             "${active_short_commits[${slot}]}" "${test_name}" \
+             "${active_yamls[${slot}]}" "${active_kernel_dirs[${slot}]}" \
+             "${active_logs[${slot}]}" "${run_index}" \
+             "${score_metric}" "${score_unit}"; then
+          active_failed_runs[${slot}]=$((active_failed_runs[slot] + 1))
+        fi
+      done
+    done
+
+    for slot in "${!active_commits[@]}"; do
+      finish_saved_yaml "${active_commits[${slot}]}" \
+        "${active_short_commits[${slot}]}" "${test_name}" \
+        "${active_kernel_dirs[${slot}]}" "${score_metric}" "${score_unit}" \
+        "${active_failed_runs[${slot}]}"
+    done
+  done
+}
+
+if [[ ${#COMMITS[@]} -gt 1 ]]; then
+  run_grouped_commits
+else
 for commit_index in "${!COMMITS[@]}"; do
   commit="${COMMITS[${commit_index}]}"
   short_commit="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${commit}")"
@@ -1457,6 +2000,7 @@ for commit_index in "${!COMMITS[@]}"; do
       "${asm_status}" "${message}"
   done
 done
+fi
 python3 "${STATE_HELPER}" compare-asm --output "${OUTPUT_DIR}" || exit 1
 regenerate_reports
 

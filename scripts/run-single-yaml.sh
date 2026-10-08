@@ -26,7 +26,11 @@ Optional:
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
   --build-only           Generate and compile kernels without benchmarking.
   --no-build-only        Disable --build-only (default: --build-only is enabled).
+  --reuse-build          Skip Tensile and re-run the run.sh scripts already
+                         generated under <yaml-base>.out in the run directory.
   --no-start             Do not auto-start container.
+  --run-dir <dir>        Generate <yaml-base>.out in this directory instead of
+                         the workdir. The directory is kept.
   --isolate-run-dir      Run inside a private subdir of workdir. Required for
                          concurrent runs, which otherwise share cmpasm/.out.
   --keep-container-out   Keep <yaml-base>.out in container workdir.
@@ -57,8 +61,11 @@ OUTPUT_ROOT="$(pwd)/artifacts"
 AUTO_START=1
 BUILD_ONLY=1
 BUILD_ONLY_OVERRIDE=""
+REUSE_BUILD=0
 KEEP_CONTAINER_OUT=0
+KEEP_CONTAINER_OUT_OVERRIDE=""
 ISOLATE_RUN_DIR=0
+RUN_DIR_ARG=""
 LIVE_OUTPUT=1
 LIVE_OUTPUT_OVERRIDE=""
 RUN_DIR=""
@@ -235,6 +242,15 @@ while [[ $# -gt 0 ]]; do
       BUILD_ONLY_OVERRIDE=0
       shift
       ;;
+    --reuse-build)
+      REUSE_BUILD=1
+      shift
+      ;;
+    --run-dir)
+      [[ $# -ge 2 ]] || { echo "Missing value for --run-dir" >&2; exit 2; }
+      RUN_DIR_ARG="$2"
+      shift 2
+      ;;
     --no-start)
       AUTO_START=0
       shift
@@ -244,7 +260,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --keep-container-out)
-      KEEP_CONTAINER_OUT=1
+      KEEP_CONTAINER_OUT_OVERRIDE=1
       shift
       ;;
     --live-output)
@@ -276,6 +292,12 @@ for kv in "${CLI_ENVS[@]}"; do
 done
 if [[ -n "${BUILD_ONLY_OVERRIDE}" ]]; then
   BUILD_ONLY="${BUILD_ONLY_OVERRIDE}"
+fi
+if [[ -n "${KEEP_CONTAINER_OUT_OVERRIDE}" ]]; then
+  KEEP_CONTAINER_OUT="${KEEP_CONTAINER_OUT_OVERRIDE}"
+fi
+if [[ ${REUSE_BUILD} -eq 1 ]]; then
+  KEEP_CONTAINER_OUT=1
 fi
 if [[ -n "${LIVE_OUTPUT_OVERRIDE}" ]]; then
   LIVE_OUTPUT="${LIVE_OUTPUT_OVERRIDE}"
@@ -321,7 +343,17 @@ GIT_COMMIT_ID="$(detect_git_commit_id)"
 # Tensile writes cmpasm/ and <base>.out relative to its working directory, so
 # concurrent runs must not share one. Everything handed to Tensile below is an
 # absolute path, which lets each run own a private directory instead.
-if [[ ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+if [[ -n "${RUN_DIR_ARG}" && ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+  echo "--run-dir cannot be combined with --isolate-run-dir." >&2
+  exit 1
+fi
+if [[ ${REUSE_BUILD} -eq 1 && ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+  echo "--reuse-build cannot be combined with --isolate-run-dir." >&2
+  exit 1
+fi
+if [[ -n "${RUN_DIR_ARG}" ]]; then
+  RUN_DIR="${RUN_DIR_ARG}"
+elif [[ ${ISOLATE_RUN_DIR} -eq 1 ]]; then
   RUN_DIR="${WORKDIR}/.runs/${BASE_NAME}.$$"
 else
   RUN_DIR="${WORKDIR}"
@@ -340,12 +372,13 @@ remove_run_dir() {
   runtime_sh "rm -rf '${RUN_DIR}'" >/dev/null 2>&1 || true
 }
 
-if [[ ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+if [[ -n "${RUN_DIR_ARG}" || ${ISOLATE_RUN_DIR} -eq 1 ]]; then
+  mkdir -p -- "${RUN_DIR}"
   runtime_sh "mkdir -p '${RUN_DIR}'"
-  if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
-    # Also clean up when Tensile fails and set -e aborts the script.
-    trap remove_run_dir EXIT
-  fi
+fi
+if [[ ${ISOLATE_RUN_DIR} -eq 1 && ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
+  # Also clean up when Tensile fails and set -e aborts the script.
+  trap remove_run_dir EXIT
 fi
 
 RUNTIME_ENV_VARS=()
@@ -364,10 +397,12 @@ for env_file in "${ENV_FILES[@]}"; do
   done < "${env_file}"
 done
 
-if [[ "${EXECUTION_MODE}" == "docker" ]]; then
-  docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
-else
-  (cd "${RUN_DIR}" && rm -rf "${BASE_NAME}.out" "cmpasm")
+if [[ ${REUSE_BUILD} -eq 0 ]]; then
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out' 'cmpasm'"
+  else
+    (cd "${RUN_DIR}" && rm -rf "${BASE_NAME}.out" "cmpasm")
+  fi
 fi
 
 if [[ "${EXECUTION_MODE}" == "docker" ]]; then
@@ -375,11 +410,47 @@ if [[ "${EXECUTION_MODE}" == "docker" ]]; then
 else
   echo "Running ${ABS_YAML} on host at ${RUN_DIR}"
 fi
-TENSILE_ARGS="'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out'"
-if [[ ${BUILD_ONLY} -eq 1 ]]; then
-  TENSILE_ARGS+=" --build-only"
+if [[ ${REUSE_BUILD} -eq 1 ]]; then
+  echo "Reusing kernels already built in ${RUN_DIR}/${BASE_NAME}.out"
+  # Tensile writes one run.sh per benchmark step, holding absolute paths to the
+  # client and that step's ClientParameters.ini, and runs it from its own
+  # directory. Replaying them benchmarks again without regenerating kernels.
+  # Build-only compiles kernels and writes ClientParameters.ini, but run.sh is
+  # created only when Tensile itself launches the client. Replay run.sh when it
+  # exists; otherwise launch the prebuilt client against those ini files. Their
+  # library paths are absolute, and the client prints the gflops CSV to stdout.
+  TENSILE_ARGS="$(cat <<EOF
+shopt -s nullglob
+status=0
+scripts=( '${BASE_NAME}.out'/1_BenchmarkProblems/*/*/build/run.sh )
+if [ \${#scripts[@]} -gt 0 ]; then
+  for script in "\${scripts[@]}"; do
+    ( cd "\$(dirname "\${script}")" && bash ./run.sh ) || status=\$?
+  done
+  exit \${status}
 fi
-TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
+inis=( '${BASE_NAME}.out'/1_BenchmarkProblems/*/*/caches/*/source/ClientParameters.ini )
+if [ \${#inis[@]} -eq 0 ]; then
+  echo 'No generated run.sh or ClientParameters.ini found; rerun this YAML without --reuse-build.' >&2
+  exit 1
+fi
+for ini in "\${inis[@]}"; do
+  '${CLIENT_PATH}' --config-file "\${ini}" || status=\$?
+  granularity="\${ini%/ClientParameters.ini}/ClientParameters_Granularity.ini"
+  if [ -f "\${granularity}" ]; then
+    '${CLIENT_PATH}' --config-file "\${granularity}" || status=\$?
+  fi
+done
+exit \${status}
+EOF
+)"
+else
+  TENSILE_ARGS="'${TENSILE_PATH}' '${ABS_YAML}' '${BASE_NAME}.out'"
+  if [[ ${BUILD_ONLY} -eq 1 ]]; then
+    TENSILE_ARGS+=" --build-only"
+  fi
+  TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
+fi
 
 run_status=0
 run_log="${HOST_OUTPUT_DIR}/${BASE_NAME}.log"
@@ -433,6 +504,8 @@ if [[ -f "${run_log}" ]]; then
   grep -oE 'NO_CHECK.{0,10}' "${run_log}" || true
 fi
 
+# A reused build regenerates no cmpasm. Leave the artifacts from the build run.
+if [[ ${REUSE_BUILD} -eq 0 ]]; then
 # Do not let missing output from this run look like an artifact from an older
 # run of the same YAML.
 rm -rf "${HOST_OUTPUT_DIR}/orig" "${HOST_OUTPUT_DIR}/st"
@@ -458,6 +531,7 @@ else
 fi
 
 cp "${ABS_YAML}" "${HOST_OUTPUT_DIR}/"
+fi
 
 if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
