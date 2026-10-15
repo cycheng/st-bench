@@ -429,7 +429,7 @@ HEAD_YAML_REVISION="$(git -C "${PROJECT_DIR}" rev-parse HEAD)"
 
 ALL_TEST_NAMES=(
   mab-bf16 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4 mab-bf16-m64
-  maf-bf16 maf-FP8 maf-FP8-henry maf-MXFP8 maf-MXFP4 maf-NVFP4
+  maf-bf16 maf-FP8 maf-FP8-henry maf-MXFP8 maf-MXFP8-henry maf-MXFP4 maf-NVFP4
   medium-bf16 medium-FP8 medium-MXFP8 medium-MXFP4
 )
 ALL_TEST_YAMLS=(
@@ -443,6 +443,7 @@ ALL_TEST_YAMLS=(
   examples/jichang/maf/f8_tn_maf.yaml
   examples/jichang/maf/f8_tn_maf_henry.yaml
   examples/jichang/maf/mxf8_tn_maf.yaml
+  examples/jichang/maf/mxf8_tn_maf_henry.yaml
   examples/jichang/maf/mxf4_tn_maf.yaml
   examples/jichang/maf/nvf4_tn_maf.yaml
   examples/jichang/medium/bbs_tn_medium.yaml
@@ -896,6 +897,7 @@ settings = {
     "f8_tn_maf_henry.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "mxf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
     "mxf8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "mxf8_tn_maf_henry.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "nvf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
 }
 replacement_values = settings.get(source.name)
