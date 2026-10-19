@@ -122,7 +122,7 @@ BenchmarkProblems:
 
         - PrefetchGL2: [2]
         - ClusterDim: [[4,4]]
-        - LDSSegmentBRotate: [1]
+        # - ClusterAIDMapping: [-2]
         - StinkyTofuParameters:
           - {DsReadDrainLatency: 64, DsReadPerCap: 2, DsReadThrottleLatency: 112}
 

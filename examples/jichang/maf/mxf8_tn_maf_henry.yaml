@@ -91,12 +91,10 @@ BenchmarkProblems:
         - 1LDSBuffer: [0]
         - SourceSwap: [True]
         - ClusterDim: [[4,4]]
-        # Unsupported on current develop.
         # - ClusterAIDMapping: [-2]
         - StinkyTofuParameters:
           - {DsReadDrainLatency: 128, DsReadPerCap: 3, DsReadThrottleLatency: 112}
         - LDSSegmentInterleave: [1]
-        - LDSSegmentBRotate: [1]
         - WorkGroupMapping: [1]
         - StoreVectorWidth: [-1]
         - NumElementsPerBatchStore: [16]
@@ -121,3 +119,4 @@ BenchmarkProblems:
 #    LibraryType: "GridBased"
 #
 #LibraryClient:
+
