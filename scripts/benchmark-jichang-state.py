@@ -37,6 +37,7 @@ PM_MAF_SETTINGS = {
     "f8_tn_maf.yaml": (160, 1600),
     "f8_tn_maf_henry.yaml": (160, 1600),
     "mxf8_tn_maf.yaml": (160, 1600),
+    "mxf8_tn_maf_henry.yaml": (160, 1600),
     "mxf4_tn_maf.yaml": (200, 2000),
     "nvf4_tn_maf.yaml": (200, 2000),
 }

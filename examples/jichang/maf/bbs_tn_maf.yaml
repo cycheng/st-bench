@@ -88,6 +88,7 @@ BenchmarkProblems:
         - 1LDSBuffer: [0]
         - SourceSwap: [True]
         - ClusterDim: [[4,4]]
+        - LDSSegmentBRotate: [1]
         - InitCIterWmma: [1]
         #- ClusterDim: [[1,1]]
         - WorkGroupMapping: [1]

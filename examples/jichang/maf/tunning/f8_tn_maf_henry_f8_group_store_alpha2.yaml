@@ -99,6 +99,7 @@ BenchmarkProblems:
         - SwInstructionPrefetch: [0]
         # - ClusterBarrierRule3SignalLeadCycles: [100,300,500]
         - ClusterDim: [[4,4],[2,4]]
+        - LDSSegmentBRotate: [0,1]
         - PrefetchGL2: [1,2]
         - StinkyTofuParameters:
           - {DsReadDrainLatency: 32, DsReadPerCap: 2, DsReadThrottleLatency: 72}
