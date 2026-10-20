@@ -41,11 +41,11 @@ Options:
                          commit; reuse its score when the ASM is identical.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
-  --yaml <file>          Only run this YAML under examples/jichang. Repeat
+  --yaml <file>          Only run this YAML under projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250. Repeat
                          to run several, in the order given. Catalog names
                          such as maf/f8_tn_maf.yaml are accepted, and so is
-                         any other file under examples/jichang.
-  --exclude-yaml <file>  Skip one YAML, relative to examples/jichang. Repeat
+                         any other file under projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250.
+  --exclude-yaml <file>  Skip one YAML, relative to projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250. Repeat
                          this option to skip multiple YAMLs.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
                          (default: either).
@@ -425,44 +425,47 @@ if ! git -C "${PROJECT_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; th
   echo "Benchmark project is not a Git repository: ${PROJECT_DIR}" >&2
   exit 2
 fi
-HEAD_YAML_REVISION="$(git -C "${PROJECT_DIR}" rev-parse HEAD)"
+HEAD_YAML_REVISION="$(git -C "${ROCM_REPO}" rev-parse HEAD)"
 
 ALL_TEST_NAMES=(
   mab-bf16 mab-FP8 mab-MXFP8 mab-MXFP4 mab-NVFP4 mab-bf16-m64
-  maf-bf16 maf-FP8 maf-FP8-henry maf-MXFP8 maf-MXFP8-henry maf-MXFP4 maf-NVFP4
+  maf-bf16 maf-FP8 maf-FP8-finetune maf-FP8-finetune-k128k
+  maf-MXFP8 maf-MXFP8-finetune maf-MXFP8-finetune-k128k maf-MXFP4 maf-NVFP4
   medium-bf16 medium-FP8 medium-MXFP8 medium-MXFP4
 )
 ALL_TEST_YAMLS=(
-  examples/jichang/mab/bbs_tn_mab.yaml
-  examples/jichang/mab/f8_tn_mab.yaml
-  examples/jichang/mab/mxf8_tn_mab.yaml
-  examples/jichang/mab/mxf4_tn_mab.yaml
-  examples/jichang/mab/nvf4_tn_mab.yaml
-  examples/jichang/mab/bbs_tn_m_64_mab.yaml
-  examples/jichang/maf/bbs_tn_maf.yaml
-  examples/jichang/maf/f8_tn_maf.yaml
-  examples/jichang/maf/f8_tn_maf_henry.yaml
-  examples/jichang/maf/mxf8_tn_maf.yaml
-  examples/jichang/maf/mxf8_tn_maf_henry.yaml
-  examples/jichang/maf/mxf4_tn_maf.yaml
-  examples/jichang/maf/nvf4_tn_maf.yaml
-  examples/jichang/medium/bbs_tn_medium.yaml
-  examples/jichang/medium/f8_tn_medium.yaml
-  examples/jichang/medium/mxf8_tn_medium.yaml
-  examples/jichang/medium/mxf4_tn_medium.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/bbs_tn_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/f8_tn_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/mxf8_tn_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/mxf4_tn_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/nvf4_tn_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/mab/bbs_tn_m64_mab.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/bbs_tn_maf.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/f8_tn_maf.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/f8_tn_maf_finetune.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/f8_tn_maf_finetune_k128k.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/mxf8_tn_maf.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/mxf8_tn_maf_finetune.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/mxf8_tn_maf_finetune_k128k.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/mxf4_tn_maf.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/nvf4_tn_maf.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/medium/bbs_tn_medium.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/medium/f8_tn_medium.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/medium/mxf8_tn_medium.yaml
+  projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/medium/mxf4_tn_medium.yaml
 )
 
-normalize_jichang_yaml() {
+normalize_catalog_yaml() {
   local yaml="$1"
   yaml="${yaml#./}"
-  if [[ "${yaml}" == *"/examples/jichang/"* ]]; then
-    yaml="examples/jichang/${yaml#*examples/jichang/}"
-  elif [[ "${yaml}" != examples/jichang/* ]]; then
-    yaml="examples/jichang/${yaml#examples/jichang/}"
+  if [[ "${yaml}" == *"/projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/"* ]]; then
+    yaml="projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/${yaml#*projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
+  elif [[ "${yaml}" != projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/* ]]; then
+    yaml="projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/${yaml#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
   fi
   case "${yaml}" in
     *..*)
-      echo "YAML path must stay under examples/jichang: ${yaml}" >&2
+      echo "YAML path must stay under projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250: ${yaml}" >&2
       return 2
       ;;
   esac
@@ -482,7 +485,7 @@ yaml_is_excluded() {
 
 yaml_matches_category() {
   local yaml="$1"
-  local yaml_category="${yaml#examples/jichang/}"
+  local yaml_category="${yaml#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
   if [[ "${yaml_category}" == */* ]]; then
     yaml_category="${yaml_category%%/*}"
   else
@@ -494,15 +497,15 @@ yaml_matches_category() {
 if [[ ${#ONLY_YAMLS[@]} -gt 0 ]]; then
   normalized_yamls=()
   for yaml in "${ONLY_YAMLS[@]}"; do
-    yaml="$(normalize_jichang_yaml "${yaml}")" || exit 2
+    yaml="$(normalize_catalog_yaml "${yaml}")" || exit 2
     normalized_yamls+=("${yaml}")
   done
   ONLY_YAMLS=("${normalized_yamls[@]}")
 fi
 for index in "${!EXCLUDED_YAMLS[@]}"; do
   yaml="${EXCLUDED_YAMLS[${index}]#./}"
-  yaml="${yaml#examples/jichang/}"
-  EXCLUDED_YAMLS[${index}]="examples/jichang/${yaml}"
+  yaml="${yaml#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
+  EXCLUDED_YAMLS[${index}]="projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/${yaml}"
 done
 
 TEST_NAMES=()
@@ -539,11 +542,11 @@ else
       fi
     done
     if [[ ${found} -eq 0 ]]; then
-      if [[ ! -f "${PROJECT_DIR}/${requested}" ]]; then
+      if [[ ! -f "${ROCM_REPO}/${requested}" ]]; then
         echo "Unknown YAML or YAML excluded by filters: ${requested}" >&2
         exit 2
       fi
-      rel="${requested#examples/jichang/}"
+      rel="${requested#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
       test_name="${rel%.yaml}"
       test_name="${test_name//\//-}"
       TEST_NAMES+=("${test_name}")
@@ -558,8 +561,8 @@ if [[ ${#TEST_YAMLS[@]} -eq 0 ]]; then
 fi
 
 for yaml in "${TEST_YAMLS[@]}"; do
-  if [[ ! -f "${PROJECT_DIR}/${yaml}" ]]; then
-    echo "YAML file not found: ${PROJECT_DIR}/${yaml}" >&2
+  if [[ ! -f "${ROCM_REPO}/${yaml}" ]]; then
+    echo "YAML file not found: ${ROCM_REPO}/${yaml}" >&2
     exit 2
   fi
 done
@@ -828,13 +831,7 @@ commit_matches_component() {
 yaml_revision_for_commit() {
   local commit="$1"
 
-  if git -C "${ROCM_REPO}" merge-base --is-ancestor 9a9953849d8 "${commit}"; then
-    echo "${HEAD_YAML_REVISION}"
-  elif git -C "${ROCM_REPO}" merge-base --is-ancestor f2a6c23df523 "${commit}"; then
-    echo "c394e5b"
-  else
-    echo "2065321"
-  fi
+  echo "${commit}"
 }
 
 prepare_no_validation_yaml() {
@@ -894,10 +891,12 @@ destination = Path(sys.argv[2])
 settings = {
     "bbs_tn_maf.yaml": {"NumWarmups": 100, "EnqueuesPerSync": 1000},
     "f8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "f8_tn_maf_henry.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "f8_tn_maf_finetune.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "f8_tn_maf_finetune_k128k.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "mxf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
     "mxf8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "mxf8_tn_maf_henry.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "mxf8_tn_maf_finetune.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
+    "mxf8_tn_maf_finetune_k128k.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
     "nvf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
 }
 replacement_values = settings.get(source.name)
@@ -942,13 +941,13 @@ warn_if_head_yaml_dirty() {
   local diff_status=0
   local head_short=""
 
-  git -C "${PROJECT_DIR}" diff --quiet "${HEAD_YAML_REVISION}" -- "${yaml}" || diff_status=$?
+  git -C "${ROCM_REPO}" diff --quiet "${HEAD_YAML_REVISION}" -- "${yaml}" || diff_status=$?
   if [[ ${diff_status} -gt 1 ]]; then
     echo "Could not compare ${yaml} with HEAD ${HEAD_YAML_REVISION}." >&2
     return 1
   fi
   if [[ ${diff_status} -eq 1 ]]; then
-    head_short="$(git -C "${PROJECT_DIR}" rev-parse --short=12 "${HEAD_YAML_REVISION}")"
+    head_short="$(git -C "${ROCM_REPO}" rev-parse --short=12 "${HEAD_YAML_REVISION}")"
     echo "Warning: ${yaml} differs from HEAD ${head_short}; ${action}." >&2
   fi
 }
@@ -962,7 +961,7 @@ prepare_yamls() {
   local temporary
 
   for yaml in "${TEST_YAMLS[@]}"; do
-    destination="${OUTPUT_DIR}/yamls/${revision}/${yaml#examples/jichang/}"
+    destination="${OUTPUT_DIR}/yamls/${revision}/${yaml#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
     if [[ "${revision}" == "${HEAD_YAML_REVISION}" ]]; then
       if [[ -f "${destination}" ]]; then
         if ! warn_if_head_yaml_dirty "${yaml}" "reusing extracted copy ${destination}"; then
@@ -974,13 +973,13 @@ prepare_yamls() {
         fi
         mkdir -p "$(dirname -- "${destination}")"
         temporary="${destination}.tmp"
-        cp -f -- "${PROJECT_DIR}/${yaml}" "${temporary}"
+        cp -f -- "${ROCM_REPO}/${yaml}" "${temporary}"
         mv -- "${temporary}" "${destination}"
       fi
     elif [[ ! -f "${destination}" ]]; then
       mkdir -p "$(dirname -- "${destination}")"
       temporary="${destination}.tmp"
-      if ! git -C "${PROJECT_DIR}" show "${revision}:${yaml}" > "${temporary}"; then
+      if ! git -C "${ROCM_REPO}" show "${revision}:${yaml}" > "${temporary}"; then
         rm -f -- "${temporary}"
         echo "Could not load ${yaml} from benchmark revision ${revision}." >&2
         return 1
@@ -988,7 +987,7 @@ prepare_yamls() {
       mv -- "${temporary}" "${destination}"
     fi
     run_destination="${destination}"
-    if [[ ${PM_LOG_MAF} -eq 1 && "${yaml}" == examples/jichang/maf/* ]]; then
+    if [[ ${PM_LOG_MAF} -eq 1 && "${yaml}" == projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/* ]]; then
       run_destination="${destination%.yaml}.pm-log-maf.yaml"
       if ! prepare_pm_maf_yaml "${destination}" "${run_destination}"; then
         return 1
@@ -1237,7 +1236,7 @@ for commit in "${COMMITS[@]}"; do
   yaml_revision="$(yaml_revision_for_commit "${commit}")"
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
-    test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
+    test_category="${TEST_YAMLS[${index}]#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
     test_category="${test_category%%/*}"
     if [[ "${test_category}" == "mab" ]]; then
       score_metric="gbps-bandwidth"
@@ -1291,8 +1290,8 @@ yaml_for_test() {
   local revision="$1"
   local catalog="$2"
   local drop_validation="$3"
-  local category="${catalog#examples/jichang/}"
-  local path="${OUTPUT_DIR}/yamls/${revision}/${catalog#examples/jichang/}"
+  local category="${catalog#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
+  local path="${OUTPUT_DIR}/yamls/${revision}/${catalog#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
   category="${category%%/*}"
   if [[ ${PM_LOG_MAF} -eq 1 && "${category}" == "maf" ]]; then
     path="${path%.yaml}.pm-log-maf.yaml"
@@ -1713,7 +1712,7 @@ run_grouped_commits() {
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
     catalog="${TEST_YAMLS[${index}]}"
-    if [[ "${catalog#examples/jichang/}" == mab/* ]]; then
+    if [[ "${catalog#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}" == mab/* ]]; then
       score_metric="gbps-bandwidth"
       score_unit="GB/s"
     else
@@ -1849,8 +1848,8 @@ for commit_index in "${!COMMITS[@]}"; do
 
   for index in "${!TEST_NAMES[@]}"; do
     test_name="${TEST_NAMES[${index}]}"
-    yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#examples/jichang/}"
-    test_category="${TEST_YAMLS[${index}]#examples/jichang/}"
+    yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
+    test_category="${TEST_YAMLS[${index}]#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
     test_category="${test_category%%/*}"
     if [[ ${PM_LOG_MAF} -eq 1 && "${test_category}" == "maf" ]]; then
       yaml="${yaml%.yaml}.pm-log-maf.yaml"
