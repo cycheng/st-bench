@@ -316,7 +316,7 @@ if [[ ! -f "${YAML_FILE}" ]]; then
   exit 1
 fi
 
-TENSILE_PATH="${BUILD_DIR}/Tensile.sh"
+TENSILE_PATH="${BUILD_DIR}/tensilelite/Tensile.sh"
 if [[ ! -x "${TENSILE_PATH}" ]]; then
   echo "Tensile.sh is missing or not executable: ${TENSILE_PATH}" >&2
   exit 1
