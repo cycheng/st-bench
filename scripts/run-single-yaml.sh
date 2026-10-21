@@ -363,7 +363,7 @@ runtime_sh() {
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     docker exec -w "${WORKDIR}" "${CONTAINER_NAME}" bash -lc "$1"
   else
-    (cd "${WORKDIR}" && /bin/bash -lc "$1")
+    (cd "${WORKDIR}" && /bin/bash -c "$1")
   fi
 }
 
@@ -476,7 +476,7 @@ run_tensile() {
     echo "Execution mode: ${EXECUTION_MODE}"
     echo "Workdir: ${RUN_DIR}"
     echo
-    (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -lc "${TENSILE_ARGS}")
+    (cd "${RUN_DIR}" && env "${RUNTIME_ENV_VARS[@]}" /bin/bash -c "${TENSILE_ARGS}")
   fi
 }
 
