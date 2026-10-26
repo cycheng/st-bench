@@ -4,7 +4,7 @@ description: >-
   Sets up and runs Jichang silicon benchmarks with
   scripts/benchmark-jichang-commits.sh. Use when a developer asks to benchmark
   stinkytofu or hipblaslt commits, create or fill test-silicon-rel.cfg, clone
-  rocm-libraries, report whether st-codegen-test and rocm-libraries are
+  rocm-libraries, report whether st-bench and rocm-libraries are
   behind origin, build the tensilelite gfx1250 release, rebuild it in a clean
   venv when the system rocisa hook blocks imports, install python3-joblib and
   python3-msgpack, choose a GPU, run MAF, MAB, or medium YAMLs, enable PM
@@ -14,7 +14,7 @@ description: >-
 # Benchmark Jichang commits
 
 Drive this as an interactive setup, then run
-`scripts/benchmark-jichang-commits.sh` from the `st-codegen-test` checkout.
+`scripts/benchmark-jichang-commits.sh` from the `st-bench` checkout.
 Do not clone, build, or start a benchmark until the user confirms that step.
 
 ## Progress
@@ -22,7 +22,7 @@ Do not clone, build, or start a benchmark until the user confirms that step.
 Copy and update this checklist:
 
 ```
-- [ ] 1. Locate st-codegen-test; ask before fetch, then ask before update
+- [ ] 1. Locate benchmark checkout; ask before fetch, then ask before update
 - [ ] 2. Write test-silicon-rel.cfg
 - [ ] 3. rocm-libraries present; ask before fetch, then ask before update (clone only if the user says yes)
 - [ ] 4. Release build present (build only if the user says yes); venv rebuild if the system rocisa hook is active; libomp.so loads
@@ -32,7 +32,7 @@ Copy and update this checklist:
 - [ ] 8. Dump summary.txt
 ```
 
-## 1. Locate st-codegen-test
+## 1. Locate benchmark checkout
 
 Find the directory that contains `scripts/benchmark-jichang-commits.sh`.
 Run the benchmark from that directory. `workdir` in the config is this same checkout.
@@ -68,7 +68,7 @@ These three paths have to be right:
 | --- | --- |
 | `rocm_libraries_path` | rocm-libraries checkout the benchmark checks commits out in |
 | `build_dir` | Release tensilelite build. Default: `<rocm_libraries_path>/projects/hipblaslt/tensilelite/new_rel_build_mi450` |
-| `workdir` | st-codegen-test checkout used as the benchmark working directory |
+| `workdir` | benchmark checkout used as the benchmark working directory |
 
 Ask for any path you cannot infer. Use absolute paths.
 
@@ -239,7 +239,7 @@ Do not start the benchmark until the import succeeds on the interpreter `Tensile
 
 ## 6. Smoke-test examples/1024vgpr.yaml
 
-After the build, `libomp.so`, and Python imports are ready, run this from the st-codegen-test root. Use the config written in step 2. Do not `source` the venv.
+After the build, `libomp.so`, and Python imports are ready, run this from the benchmark checkout root. Use the config written in step 2. Do not `source` the venv.
 
 ```
 ./scripts/run-single-yaml.sh ./examples/test-silicon-rel.cfg ./examples/1024vgpr.yaml
@@ -258,26 +258,26 @@ Ask in one turn. Use these defaults when the user does not care:
 | GPU index | ask; do not assume | `--gpu <n>`. Required. |
 | commits | current checkout; do not change it | repeat `--commit <sha>`, or `--start` with `--end`. Never mix `--commit` with `--start`/`--end`. |
 | repeat | 1 | `--repeat <n>` |
-| category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. |
-| yaml | all catalog YAMLs | Repeat `--yaml <path>` under `examples/jichang`. A file that is not in the mab/maf/medium catalog is accepted. Order is the order of the flags. |
-| pm-log-maf | no | `--pm-log-maf`. Logs only `examples/jichang/maf/*` and rewrites those warmup counts. |
+| category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. This option is single-valued; `--category mab --category maf` runs only the last category. |
+| yaml | all catalog YAMLs | Repeat `--yaml <path>` under `projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250`. Catalog names such as `maf/f8_tn_maf.yaml` are accepted. Order is the order of the flags. |
+| pm-log-maf | no | `--pm-log-maf`. Logs only catalog `maf/*` YAMLs and rewrites those warmup counts. Passing it with `--category mab` is only a resume-metadata compatibility trick; it does not PM-log MAB. |
 | force-pm-log | no | `--force-pm-log`. Logs every selected YAML and leaves warmup counts unchanged. |
 | keep raw PM CSV | no | `--keep-pm-log`. Requires `--pm-log-maf` or `--force-pm-log`. |
 | validation | validate every run | `--validate-first-only` is the usual choice when repeat is greater than 1. `--no-validate` disables validation. |
 | output-dir | `benchmark-results/<YYYYMMDD-HHMMSS>` | `--output-dir <dir>` |
 
-`--pm-log-maf`, `--force-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--force-pm-log` is the flag for a YAML outside `examples/jichang/maf/`.
+`--pm-log-maf`, `--force-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--force-pm-log` is the flag for a YAML outside the catalog `maf/` directory.
 
 Ask which physical GPU to use, for example `0` or `1`. Before running:
 
 - Set or replace `env=HIP_VISIBLE_DEVICES=<n>` in the config. GPU `1` is `env=HIP_VISIBLE_DEVICES=1`.
 - Pass `--gpu <n>`.
 
-`--gpu <n>` runs the workload on that GPU and, with `--pm-log-maf`, monitors it. `agt_internal -i=0` is GPU 0. For GPU n the script passes `-i=5n` (`-i=5` for GPU 1, `-i=10` for GPU 2). Do not pass `-i` yourself.
+`--gpu <n>` runs the workload on that GPU and, with `--pm-log-maf`, monitors it. `agt_internal -i=0` is GPU 0. For GPU n the script passes `-i=5n` (`-i=5` for GPU 1, `-i=10` for GPU 2, `-i=15` for GPU 3). Do not pass `-i` yourself.
 
 `--pm-log-maf` and `--force-pm-log` need `/opt/amd-apps/agt_internal/agt_internal` and passwordless `sudo`. Check both before adding either flag. If either is missing, say so and run without PM logging unless the user fixes it. `--gpu` is still required.
 
-Show the full command, then run it from the st-codegen-test root. Always pass `--config` and `--repo`.
+Show the full command, then run it from the benchmark checkout root. Always pass `--config` and `--repo`.
 
 ```
 ./scripts/benchmark-jichang-commits.sh --repeat 3 \
@@ -296,9 +296,34 @@ Before starting, tell the user that the script stashes tracked local changes in 
 
 The run can take a long time. Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
 
+The output directory stores resume metadata. A later resume must keep the same
+config path, rocm-libraries path, repeat count, validation mode, and
+`--pm-log-maf` setting. If the first run used `--pm-log-maf`, later category
+resumes in that same output directory also need `--pm-log-maf`, even for
+`--category mab`; that does not start PM logging for MAB because
+`--pm-log-maf` only logs `maf/*` YAMLs.
+
+To run only MAB and MAF in one output directory, either:
+
+- run two commands with the same `--output-dir`, one for `--category maf` and
+  one for `--category mab`, keeping compatible resume metadata as described
+  above; or
+- run one command without `--category` and exclude every medium YAML with
+  repeated `--exclude-yaml medium/<name>.yaml`.
+
+For unstable silicon where the user wants a quick pass, prefer
+`--repeat 1 --no-validate`. Still tell the user that the run does not validate
+the numerical result.
+
 ## 8. Dump the summary
 
-When the process exits, print the full contents of `<output-dir>/summary.txt` in the reply. The script writes `summary.txt`, not `summary.log`.
+When the process exits, print the full contents of `<output-dir>/summary.txt` in the reply. The script writes `summary.txt`, not `summary.log`. If the user asks for a compact view, run:
+
+```
+python3 scripts/rotate-summary.py <output-dir>/summary.txt
+```
+
+and show that rotated output.
 
 Also give the absolute paths of:
 
@@ -306,6 +331,7 @@ Also give the absolute paths of:
 - `time-summary.txt`
 - `results.csv`
 - `failures.csv`, when it has any failure rows
+- `pm-summary.csv`, when PM logging was enabled
 
 How to read the table:
 
@@ -313,5 +339,13 @@ How to read the table:
 - A trailing `*` means that sample failed validation.
 - A trailing `=` means the generated ASM matches the previous chronological commit.
 - `0.00` means that YAML produced no finite score.
+
+When PM logging is enabled, `summary.txt` includes a `PM Post Deep Sleep Freq
+minimum` section. For MAF reports, pair each MAF score with its frequency from
+that section, and mention the `PM annotation` if present. A warning such as
+`active interval was too short or incomplete` means the frequency was captured
+but should be treated as a weak sanity check rather than a robust clock
+measurement. `pm-summary.csv` contains the per-test `sample-count`,
+`interval-sample-count`, `used-sample-count`, and `all-xcd-min` values.
 
 If the process fails before writing a summary, show the error and the log path under `<output-dir>/logs/`. Do not invent scores. If the error is `libomp.so: cannot open shared object file`, add the `env=LD_LIBRARY_PATH=` line from step 4 and stop. If the error is `editable_rebuild.lock` with `PermissionError`, rebuild with the venv from step 4 and stop. Do not report scores from that run.
