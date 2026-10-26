@@ -39,6 +39,10 @@ Options:
                          agt_internal/agt_internal).
   --skip-identical-asm   Build and compare ASM with the previous selected
                          commit; reuse its score when the ASM is identical.
+  --per-commit           With multiple commits, use the single-commit flow:
+                         check out one commit and run its YAMLs before moving
+                         to the next commit. This avoids codebases/<sha>
+                         worktree copies and kernel replay across commits.
   --output-dir <dir>     Result directory (default: benchmark-results/<time>).
   --category <name>      Only run mab, maf, or medium.
   --yaml <file>          Only run this YAML under projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250. Repeat
@@ -62,15 +66,16 @@ selected, asm-same reports whether each commit's complete generated st ASM
 matches the previous chronological commit. Local tracked changes are stashed
 once. When supplied, --patch is applied to each tested commit.
 
-With two or more commits, each commit is copied to codebases/<sha> (a git
-worktree) and every selected YAML is built before any measured run. Kernel
-generation checks that commit out in the main repository, because Tensile.sh
-compiles against it; the copy and the kernels/<sha>/<test> directory keep
-that commit's results. The script then runs one YAML across all commits
-before the next YAML, replaying the saved run.sh. With --repeat, each
-repetition of that YAML runs on every commit before the next repetition
-starts (A, B, C, then A, B, C again). A single commit still builds and
-measures each YAML before the next one.
+With two or more commits, the default grouped mode copies each commit to
+codebases/<sha> (a git worktree) and builds every selected YAML before any
+measured run. Kernel generation checks that commit out in the main repository,
+because Tensile.sh compiles against it; the copy and the kernels/<sha>/<test>
+directory keep that commit's results. The script then runs one YAML across all
+commits before the next YAML, replaying the saved run.sh. With --repeat, each
+repetition of that YAML runs on every commit before the next repetition starts
+(A, B, C, then A, B, C again). Use --per-commit to use the single-commit flow
+for multiple commits instead. A single commit always builds and measures each
+YAML before the next one.
 
 YAML compatibility is selected automatically for each rocm-libraries commit:
   before f2a6c23df523:  st-codegen-test revision 2065321
@@ -153,6 +158,7 @@ PM_DEVICE_SELECTOR=0
 YAML_GPU_ARGS=()
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
+PER_COMMIT_MODE=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
 END_COMMIT=""
@@ -241,6 +247,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --skip-identical-asm)
       SKIP_IDENTICAL_ASM=1
+      shift
+      ;;
+    --per-commit)
+      PER_COMMIT_MODE=1
       shift
       ;;
     --output-dir)
@@ -1187,6 +1197,11 @@ if [[ -n "${START_COMMIT}" || ${#SELECTED_COMMITS[@]} -gt 0 ]]; then
     fi
   fi
 
+  if [[ ${#COMMITS[@]} -gt 3 && ${PER_COMMIT_MODE} -eq 0 ]]; then
+    echo "WARNING: ${#COMMITS[@]} commits selected; grouped multi-commit mode will copy codebases and replay kernels." >&2
+    echo "Consider --per-commit to use the simpler one-commit checkout/run flow." >&2
+  fi
+
   if [[ ! -f "${OUTPUT_DIR}/git-session.json" ]]; then
     session_set --original-commit "${ORIGINAL_COMMIT}" --original-branch "${ORIGINAL_BRANCH}"
   fi
@@ -1777,7 +1792,7 @@ run_grouped_commits() {
   done
 }
 
-if [[ ${#COMMITS[@]} -gt 1 ]]; then
+if [[ ${#COMMITS[@]} -gt 1 && ${PER_COMMIT_MODE} -eq 0 ]]; then
   run_grouped_commits
 else
 for commit_index in "${!COMMITS[@]}"; do
