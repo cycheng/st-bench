@@ -1,8 +1,8 @@
 diff --git a/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py b/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
-index 970845a6d9e..a86563f7498 100644
+index 3025ad2e2eb..5bba7cbbe20 100644
 --- a/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
 +++ b/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
-@@ -697,10 +697,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+@@ -909,10 +909,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
      Raises:
          Exception if no source could detect an ISA.
      """
@@ -15,7 +15,7 @@ index 970845a6d9e..a86563f7498 100644
  
  def detectHostGfxArchs() -> List[str]:
 diff --git a/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
-index 2128e1d73fb..f2ecf35e87f 100644
+index 68cc1b3713d..8470ebcf2f3 100644
 --- a/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
 +++ b/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
 @@ -120,7 +120,7 @@ globalParameters["ExitOnFails"] = (
@@ -28,76 +28,25 @@ index 2128e1d73fb..f2ecf35e87f 100644
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
 diff --git a/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py b/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
-index 0a1a294ec69..88dd1dc41ea 100644
+index 8d532da43bf..07cf29bbbb8 100644
 --- a/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
 +++ b/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
-@@ -7280,7 +7280,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
-                                            signature=fs,
-                                            options=stinky_module_options)
-       t1a_end = time.perf_counter()
--      print2(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
-+      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
- 
-       # The allocation dump goes to a directory per kernel, named like the
-       # kernel's own files, under StinkyTofuCostOutputDir when that is set.
-@@ -7294,7 +7294,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
-       t1b_start = time.perf_counter()
-       stModule.runOptimizationPipeline()
-       t1b_end = time.perf_counter()
--      print2(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
-+      print(f"StinkyTofu (1b) pipeline: {t1b_end - t1b_start:.4f}s")
- 
-     error = self.states.overflowedResources
-     print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
-@@ -7307,7 +7307,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
-       # Refresh errors after assembly post-processing.
-       error = self.states.overflowedResources
-       t2_end = time.perf_counter()
--      print2(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
-+      print(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s", flush=True)
- 
-       # Tensile's own assembly, for the comparison ENABLE_DEBUG_STINKYTOFU_ASM
-       # writes below. Taken before the budget is re-judged, because that sets
-@@ -7315,10 +7315,11 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
-       # would leave both files declaring the same registers.
-       debugAsm = os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None
-       if debugAsm:
--        t_str_start = time.perf_counter()
--        orig_asm_str = str(moduleKernelBody)
--        t_str_end = time.perf_counter()
--        print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
-+        # t_str_start = time.perf_counter()
-+        # orig_asm_str = str(moduleKernelBody)
-+        # t_str_end = time.perf_counter()
-+        # print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
-+        pass
- 
-       # Pay off the deferral, and realign the recorded counts and the occupancy
-       # with them: both now come from what the emitted code declares, not from
-@@ -7354,8 +7355,8 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
+@@ -7608,8 +7608,13 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
            st_path = f"cmpasm/st/{base_name}_{suffix}.s"
            suffix += 1
  
 -        with open(orig_path, "w") as f:
 -          f.write(orig_asm_str)
++        # t_str_start = time.perf_counter()
++        # orig_asm_str = str(moduleKernelBody)
++        # t_str_end = time.perf_counter()
++        # print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
++
 +        # with open(orig_path, "w") as f:
 +        #   f.write(orig_asm_str)
          with open(st_path, "w") as f:
            f.write(st_asm)
  
-@@ -7366,10 +7367,10 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
-           fcntl.flock(f, fcntl.LOCK_UN)
- 
-         t3_end = time.perf_counter()
--        print2(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s")
-+        print(f"StinkyTofu (3) debug file write: {t3_end - t3_start:.4f}s", flush=True)
- 
-       t0_end = time.perf_counter()
--      print2(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s")
-+      print(f"StinkyTofu (0) total: {t0_end - t0_start:.4f}s", flush=True)
- 
-       print2(f"Using StinkyTofu Assembly")
-       return (error, st_asm)
 diff --git a/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h
 index 08b5957638e..3258d3cf1cb 100644
 --- a/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h

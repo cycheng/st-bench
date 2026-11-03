@@ -1,0 +1,127 @@
+diff --git a/projects/hipblaslt/tasks.py b/projects/hipblaslt/tasks.py
+index 4cf510627d9..e99454a7344 100644
+--- a/projects/hipblaslt/tasks.py
++++ b/projects/hipblaslt/tasks.py
+@@ -382,11 +382,50 @@ def _fortran_on_path(name: str):
+     return _fortran_file_if_present(Path(which))
+ 
+ 
++def _gfortran_static_blas_blocks_flang() -> bool:
++    """True when FindBLAS will select a gfortran static libblas that flang cannot link.
++
++    CMake searches /usr/local/lib before the distro lib directories and, with
++    no libblas.so beside it, picks libblas.a. A netlib archive built by
++    gfortran references _gfortran_*, which LLVM Flang does not provide, so
++    find_package(LAPACK) fails.
++    """
++    archive = Path("/usr/local/lib/libblas.a")
++    if not archive.is_file() or (archive.parent / "libblas.so").is_file():
++        return False
++    try:
++        probed = subprocess.run(
++            ["nm", "-g", str(archive)],
++            check=False,
++            capture_output=True,
++            text=True,
++            timeout=60,
++        )
++    except (OSError, subprocess.TimeoutExpired):
++        return False
++    return probed.returncode == 0 and "_gfortran_" in probed.stdout
++
++
++def _compiler_for_static_blas(flang: str, why: str):
++    """Use gfortran when the auto-detected flang cannot link the static BLAS."""
++    gfortran = _fortran_on_path("gfortran")
++    if gfortran and _gfortran_static_blas_blocks_flang():
++        print(
++            "LLVM Flang cannot link /usr/local/lib/libblas.a (it was built with "
++            "gfortran). Using gfortran for the client LAPACK check. "
++            "Pass --fortran-compiler to override."
++        )
++        return _absolute_fortran(gfortran), "gfortran (static BLAS needs libgfortran)"
++    return flang, why
++
++
+ def _resolve_fortran_compiler(explicit, rocm: Path):
+     """Pick CMAKE_Fortran_COMPILER when --clients is set.
+ 
+     Order: --fortran-compiler, FC, CMAKE_Fortran_COMPILER, ROCm flang, PATH
+-    flang, then a detected gfortran. Exit if none of those exist.
++    flang, then a detected gfortran. An auto-detected flang is replaced by
++    gfortran when /usr/local/lib/libblas.a was built with gfortran. Exit if
++    none of those exist.
+     """
+     if explicit and str(explicit).strip():
+         return _expand_fortran_spec(str(explicit)), "--fortran-compiler"
+@@ -398,10 +437,10 @@ def _resolve_fortran_compiler(explicit, rocm: Path):
+         return _expand_fortran_spec(cmake_fc), "CMAKE_Fortran_COMPILER"
+     found = _autodetect_rocm_flang(rocm)
+     if found:
+-        return _absolute_fortran(found), "auto-detected ROCm flang"
++        return _compiler_for_static_blas(_absolute_fortran(found), "auto-detected ROCm flang")
+     found = _fortran_on_path("flang")
+     if found:
+-        return _absolute_fortran(found), "auto-detected flang on PATH"
++        return _compiler_for_static_blas(_absolute_fortran(found), "auto-detected flang on PATH")
+     found = _fortran_on_path("gfortran")
+     if found:
+         return _absolute_fortran(found), "fallback gfortran"
+diff --git a/shared/stinkytofu/python_module/src/python_bindings.cpp b/shared/stinkytofu/python_module/src/python_bindings.cpp
+index 4db56aeb5d3..7800f57b51a 100644
+--- a/shared/stinkytofu/python_module/src/python_bindings.cpp
++++ b/shared/stinkytofu/python_module/src/python_bindings.cpp
+@@ -178,12 +178,18 @@ NB_MODULE(_stinkytofu, m) {
+             nb::arg("extensionPoint"), nb::arg("passName"),
+             "Register a named C++ pass at a pipeline extension point");
+ 
+-    // Pipeline extension point enum
+-    nb::enum_<PipelineExtensionPoint>(m, "PipelineExtensionPoint")
+-        .value("BeforeRegionPasses", PipelineExtensionPoint::BeforeRegionPasses)
+-        .value("InnerRegionBegin", PipelineExtensionPoint::InnerRegionBegin)
+-        .value("InnerRegionEnd", PipelineExtensionPoint::InnerRegionEnd)
+-        .value("AfterRegionPasses", PipelineExtensionPoint::AfterRegionPasses);
++    // rocisa and stinkytofu each bind this C++ enum. Nanobind keeps one
++    // type object; adding the same names again aborts the process.
++    nb::handle existingEnum = nb::type<PipelineExtensionPoint>();
++    if (existingEnum) {
++        m.attr("PipelineExtensionPoint") = nb::borrow<nb::object>(existingEnum);
++    } else {
++        nb::enum_<PipelineExtensionPoint>(m, "PipelineExtensionPoint")
++            .value("BeforeRegionPasses", PipelineExtensionPoint::BeforeRegionPasses)
++            .value("InnerRegionBegin", PipelineExtensionPoint::InnerRegionBegin)
++            .value("InnerRegionEnd", PipelineExtensionPoint::InnerRegionEnd)
++            .value("AfterRegionPasses", PipelineExtensionPoint::AfterRegionPasses);
++    }
+ 
+     // ------------------------------------------------------------------------
+     // Bind CloneSpec so Python can construct entries for ModuleOptions::CloneList.
+diff --git a/shared/stinkytofu/src/conversion/rocisa/ToStinkyTofuUtils.cpp b/shared/stinkytofu/src/conversion/rocisa/ToStinkyTofuUtils.cpp
+index d8cf85b1572..00fb163765a 100644
+--- a/shared/stinkytofu/src/conversion/rocisa/ToStinkyTofuUtils.cpp
++++ b/shared/stinkytofu/src/conversion/rocisa/ToStinkyTofuUtils.cpp
+@@ -1407,12 +1407,18 @@ void init_stinkytofu(nb::module_ m) {  // NOLINT(misc-use-internal-linkage)
+             " is loaded at runtime — rebuild rocisa against a matching stinkytofu.");
+     }
+ 
+-    // Pipeline extension point enum
+-    nb::enum_<PipelineExtensionPoint>(m, "PipelineExtensionPoint")
+-        .value("BeforeRegionPasses", PipelineExtensionPoint::BeforeRegionPasses)
+-        .value("InnerRegionBegin", PipelineExtensionPoint::InnerRegionBegin)
+-        .value("InnerRegionEnd", PipelineExtensionPoint::InnerRegionEnd)
+-        .value("AfterRegionPasses", PipelineExtensionPoint::AfterRegionPasses);
++    // rocisa and stinkytofu each bind this C++ enum. Nanobind keeps one
++    // type object; adding the same names again aborts the process.
++    nb::handle existingEnum = nb::type<PipelineExtensionPoint>();
++    if (existingEnum) {
++        m.attr("PipelineExtensionPoint") = nb::borrow<nb::object>(existingEnum);
++    } else {
++        nb::enum_<PipelineExtensionPoint>(m, "PipelineExtensionPoint")
++            .value("BeforeRegionPasses", PipelineExtensionPoint::BeforeRegionPasses)
++            .value("InnerRegionBegin", PipelineExtensionPoint::InnerRegionBegin)
++            .value("InnerRegionEnd", PipelineExtensionPoint::InnerRegionEnd)
++            .value("AfterRegionPasses", PipelineExtensionPoint::AfterRegionPasses);
++    }
+ 
+     m.def("loadPlugin", &PassBuilder::loadPlugin, nb::arg("path"),
+           "Load a plugin shared library (.so/.dll) that exports registerPlugin()");
