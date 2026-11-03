@@ -8,7 +8,8 @@ description: >-
   behind origin, build the tensilelite gfx1250 release, rebuild it in a clean
   venv when the system rocisa hook blocks imports, install python3-joblib and
   python3-msgpack, choose a GPU, run MAF, MAB, or medium YAMLs, enable PM
-  logging, or report the benchmark summary.
+  logging, report the benchmark summary, or run one YAML on the current
+  checkout with scripts/run-single-yaml.sh and examples/test-silicon-rel.cfg.
 ---
 
 # Benchmark Jichang commits
@@ -249,6 +250,27 @@ After the build, `libomp.so`, and Python imports are ready, run this from the be
 
 If it fails with `libomp.so: cannot open shared object file` or `editable_rebuild.lock` / `PermissionError`, apply the matching fix from step 4 and run this smoke test again. For any other failure, show the error and stop. Do not start the commit benchmark, and do not say the initial test succeeded.
 
+## Run one YAML on the current checkout
+
+Use this when the user wants one YAML on the checkout already at `rocm_libraries_path`. That includes a tuning sweep. Do not use `benchmark-jichang-commits.sh` for it. That script checks out commits and stashes the tree.
+
+From the benchmark checkout root, pass the config and the YAML. Do not repeat `build_dir`, `workdir`, `execution_mode`, `HIP_VISIBLE_DEVICES`, or `build_only` as flags. The config already sets them.
+
+```
+./scripts/run-single-yaml.sh ./examples/test-silicon-rel.cfg <yaml>
+```
+
+`<yaml>` is a real file path. This script does not resolve catalog names such as `maf/f8_tn_maf.yaml`. An absolute path is fine.
+
+With the config from step 2, output lands in the benchmark checkout:
+
+- log: `asm/<yaml-base>/<yaml-base>.log`
+- Tensile directory: `<yaml-base>.out` in `workdir`
+
+`Tensile.sh` runs `cmake --build` before the YAML, so a stale release build is refreshed by the run.
+
+Launch a long YAML in tmux and tee the command to a console log. Tell the user `tmux attach -t <session>` and both log paths immediately. After one short startup check, wait on a completion marker such as `__WORK_DONE__` in that log. Do not poll on a timer.
+
 ## 7. Ask what to benchmark
 
 Ask in one turn. Use these defaults when the user does not care:
@@ -294,7 +316,9 @@ Show the full command, then run it from the benchmark checkout root. Always pass
 
 Before starting, tell the user that the script stashes tracked local changes in `rocm_libraries_path` and checks out each commit there. Do not start if that checkout has unrelated work the user did not agree to stash.
 
-The run can take a long time. Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
+The run can take a long time. Prefer launching long runs in `tmux` with a stable session name and teeing output to a console log. Immediately tell the user the `tmux attach -t <session>` command and the log path so they can watch live. If the user wants to watch output in the shared Cursor terminal instead, launch a foreground/background SSH command that streams the remote log rather than relying only on tmux. Avoid "check again in 5 minutes" style monitoring. After launch, do one short startup sanity check to catch immediate failures, then prefer an event marker or watcher that blocks until completion, such as a final `benchmark-exit.txt` file or a unique `__WORK_DONE__` line in the log. Do not repeatedly poll every 10 seconds just for status; use short waits around 10 seconds only while actively debugging a suspected hang or fresh failure.
+
+Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
 
 The output directory stores resume metadata. A later resume must keep the same
 config path, rocm-libraries path, repeat count, validation mode, and

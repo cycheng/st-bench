@@ -1,10 +1,10 @@
-diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-index da06f12cd7..c0b65faf49 100644
---- a/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/Common/Architectures.py
-@@ -361,10 +361,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
+diff --git a/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py b/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
+index 970845a6d9e..a86563f7498 100644
+--- a/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
++++ b/projects/hipblaslt/tensilelite/tensilelite/Common/Architectures.py
+@@ -697,10 +697,7 @@ def detectGlobalCurrentISA(deviceId: int, enumerator: str):
      Raises:
-         Exception if both tools fail to detect ISA.
+         Exception if no source could detect an ISA.
      """
 -    result = _detectGlobalCurrentISA(enumerator, deviceId)
 -    if not isinstance(result, IsaVersion):
@@ -14,11 +14,11 @@ index da06f12cd7..c0b65faf49 100644
  
  
  def detectHostGfxArchs() -> List[str]:
-diff --git a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-index 5456caa762..5e256b1de7 100644
---- a/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/Common/GlobalParameters.py
-@@ -119,7 +119,7 @@ globalParameters["ExitOnFails"] = (
+diff --git a/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py b/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
+index 2128e1d73fb..f2ecf35e87f 100644
+--- a/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
++++ b/projects/hipblaslt/tensilelite/tensilelite/Common/GlobalParameters.py
+@@ -120,7 +120,7 @@ globalParameters["ExitOnFails"] = (
      1  # 1: Exit after benchmark run if failures detected.  2: Exit during benchmark run.
  )
  globalParameters["CpuThreads"] = (
@@ -27,18 +27,20 @@ index 5456caa762..5e256b1de7 100644
  )  # How many CPU threads to use for kernel generation.  0=no threading, -1 == nproc, N=min(nproc,N).  TODO - 0 sometimes fails with a kernel name error?  0 does not check error codes correctly
  # If True: after each kernel is assembled, verify that StinkyTofu's total instruction encoding
  # size (sum of each instruction's encoded byte length from the Stinky pass pipeline) matches the
-diff --git a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-index e74b2dcb95..399bf3f6a0 100644
---- a/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-+++ b/projects/hipblaslt/tensilelite/Tensile/KernelWriter.py
-@@ -7418,13 +7418,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
+diff --git a/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py b/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
+index 0a1a294ec69..88dd1dc41ea 100644
+--- a/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
++++ b/projects/hipblaslt/tensilelite/tensilelite/KernelWriter.py
+@@ -7280,7 +7280,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
                                             signature=fs,
                                             options=stinky_module_options)
        t1a_end = time.perf_counter()
 -      print2(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
 +      print(f"StinkyTofu (1a) toStinkyTofuModule: {t1a_end - t1a_start:.4f}s")
-       # Run pipeline — builder handles O0 internally (skips optimization,
-       # still runs required passes like InsertVgprMsb)
+ 
+       # The allocation dump goes to a directory per kernel, named like the
+       # kernel's own files, under StinkyTofuCostOutputDir when that is set.
+@@ -7294,7 +7294,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
        t1b_start = time.perf_counter()
        stModule.runOptimizationPipeline()
        t1b_end = time.perf_counter()
@@ -47,19 +49,19 @@ index e74b2dcb95..399bf3f6a0 100644
  
      error = self.states.overflowedResources
      print2(f"  found error code {error} with overflowed resources set to {self.states.overflowedResources}")
-@@ -7434,7 +7434,7 @@ class KernelWriter(metaclass=abc.ABCMeta):
-       t2_start = time.perf_counter()
-       st_asm = stModule.emitAssembly()
+@@ -7307,7 +7307,7 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
+       # Refresh errors after assembly post-processing.
+       error = self.states.overflowedResources
        t2_end = time.perf_counter()
 -      print2(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s")
 +      print(f"StinkyTofu (2) emitAssembly: {t2_end - t2_start:.4f}s", flush=True)
  
-       if os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None:
-         t3_start = time.perf_counter()
-@@ -7454,13 +7454,13 @@ class KernelWriter(metaclass=abc.ABCMeta):
-           st_path = f"cmpasm/st/{base_name}_{suffix}.s"
-           suffix += 1
- 
+       # Tensile's own assembly, for the comparison ENABLE_DEBUG_STINKYTOFU_ASM
+       # writes below. Taken before the budget is re-judged, because that sets
+@@ -7315,10 +7315,11 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
+       # would leave both files declaring the same registers.
+       debugAsm = os.environ.get("ENABLE_DEBUG_STINKYTOFU_ASM") is not None
+       if debugAsm:
 -        t_str_start = time.perf_counter()
 -        orig_asm_str = str(moduleKernelBody)
 -        t_str_end = time.perf_counter()
@@ -68,6 +70,13 @@ index e74b2dcb95..399bf3f6a0 100644
 +        # orig_asm_str = str(moduleKernelBody)
 +        # t_str_end = time.perf_counter()
 +        # print2(f"Rocisa::str(moduleKernelBody): {t_str_end - t_str_start:.4f}s")
++        pass
+ 
+       # Pay off the deferral, and realign the recorded counts and the occupancy
+       # with them: both now come from what the emitted code declares, not from
+@@ -7354,8 +7355,8 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
+           st_path = f"cmpasm/st/{base_name}_{suffix}.s"
+           suffix += 1
  
 -        with open(orig_path, "w") as f:
 -          f.write(orig_asm_str)
@@ -76,7 +85,7 @@ index e74b2dcb95..399bf3f6a0 100644
          with open(st_path, "w") as f:
            f.write(st_asm)
  
-@@ -7471,10 +7471,10 @@ class KernelWriter(metaclass=abc.ABCMeta):
+@@ -7366,10 +7367,10 @@ class KernelWriter(PersistentKernelState, StreamKKernelState, metaclass=abc.ABCM
            fcntl.flock(f, fcntl.LOCK_UN)
  
          t3_end = time.perf_counter()
@@ -89,11 +98,11 @@ index e74b2dcb95..399bf3f6a0 100644
  
        print2(f"Using StinkyTofu Assembly")
        return (error, st_asm)
-diff --git a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-index beeb90043b..dcbf4d87d1 100644
---- a/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-+++ b/projects/hipblaslt/tensilelite/Tensile/Source/memory_gfx.h
-@@ -170,35 +170,35 @@ __device__ char
+diff --git a/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h b/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h
+index 08b5957638e..3258d3cf1cb 100644
+--- a/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h
++++ b/projects/hipblaslt/tensilelite/tensilelite/Source/memory_gfx.h
+@@ -171,35 +171,35 @@ __device__ char
      llvm_amdgcn_raw_buffer_load_i8(int32x4_t buffer_resource,
                                     uint32_t  voffset,
                                     uint32_t  soffset,
@@ -134,7 +143,7 @@ index beeb90043b..dcbf4d87d1 100644
  
  // 4 bytes
  __device__ int32_t
-@@ -228,7 +228,7 @@ __device__ void
+@@ -229,7 +229,7 @@ __device__ void
                                      int32x4_t buffer_resource,
                                      uint32_t  voffset,
                                      uint32_t  soffset,
@@ -143,7 +152,7 @@ index beeb90043b..dcbf4d87d1 100644
  
  // 2 bytes
  __device__ void
-@@ -236,7 +236,7 @@ __device__ void
+@@ -237,7 +237,7 @@ __device__ void
                                       int32x4_t buffer_resource,
                                       uint32_t  voffset,
                                       uint32_t  soffset,
@@ -152,7 +161,7 @@ index beeb90043b..dcbf4d87d1 100644
  
  // 4 bytes
  __device__ void
-@@ -244,7 +244,7 @@ __device__ void
+@@ -245,7 +245,7 @@ __device__ void
                                       int32x4_t buffer_resource,
                                       uint32_t  voffset,
                                       uint32_t  soffset,
@@ -161,7 +170,7 @@ index beeb90043b..dcbf4d87d1 100644
  
  // 8 bytes
  __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
-@@ -252,7 +252,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
+@@ -253,7 +253,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x2(
      int32x4_t   buffer_resource,
      uint32_t    voffset,
      uint32_t    soffset,
@@ -170,7 +179,7 @@ index beeb90043b..dcbf4d87d1 100644
  
  // 16 bytes
  __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
-@@ -260,7 +260,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
+@@ -261,7 +261,7 @@ __device__ void llvm_amdgcn_raw_buffer_store_f32x4(
      int32x4_t   buffer_resource,
      uint32_t    voffset,
      uint32_t    soffset,
