@@ -533,6 +533,41 @@ fi
 cp "${ABS_YAML}" "${HOST_OUTPUT_DIR}/"
 fi
 
+# Tensile writes one 00_Final.csv per benchmark problem and flushes it only
+# when that problem finishes. The file lives under <yaml>.out, which is
+# removed below unless --keep-container-out is set.
+copy_final_scores() {
+  local scores_dir="${HOST_OUTPUT_DIR}/scores"
+  local csv problem copied=0
+  copy_one() {
+    problem="$(basename "$(dirname "$(dirname "$1")")")"
+    mkdir -p "${scores_dir}/${problem}"
+    if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+      docker cp "${CONTAINER_NAME}:${RUN_DIR}/$1" "${scores_dir}/${problem}/00_Final.csv"
+    else
+      cp -a "$1" "${scores_dir}/${problem}/00_Final.csv"
+    fi
+    copied=1
+  }
+  if [[ "${EXECUTION_MODE}" == "docker" ]]; then
+    while IFS= read -r csv; do
+      [[ -n "${csv}" ]] || continue
+      copy_one "${csv}"
+    done < <(docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc \
+      "find '${BASE_NAME}.out/1_BenchmarkProblems' -path '*/Data/00_Final.csv' 2>/dev/null" || true)
+  elif [[ -d "${RUN_DIR}/${BASE_NAME}.out/1_BenchmarkProblems" ]]; then
+    while IFS= read -r csv; do
+      [[ -n "${csv}" ]] || continue
+      copy_one "${csv}"
+    done < <(find "${RUN_DIR}/${BASE_NAME}.out/1_BenchmarkProblems" -path '*/Data/00_Final.csv' || true)
+  fi
+  if [[ ${copied} -eq 1 ]]; then
+    echo "Saved final scores to ${scores_dir}"
+  fi
+}
+
+copy_final_scores
+
 if [[ ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     docker exec -w "${RUN_DIR}" "${CONTAINER_NAME}" bash -lc "rm -rf '${BASE_NAME}.out'"
