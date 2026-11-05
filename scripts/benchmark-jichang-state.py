@@ -30,6 +30,7 @@ PM_FIELDS = [
 ]
 DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
+RERUN_FAILED_STATUSES = {"validation-failed", "execution-failed", "no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
 # Keep in sync with prepare_pm_maf_yaml in benchmark-jichang-commits.sh.
 PM_MAF_SETTINGS = {
@@ -455,6 +456,47 @@ def list_tests(args: argparse.Namespace) -> None:
         if row["test"] not in seen:
             seen.add(row["test"])
             print(row["test"])
+
+
+def reopen_failed(args: argparse.Namespace) -> None:
+    selected_commits = set(args.commit)
+    selected_tests = set(args.test)
+    rows = read_rows(args.state)
+    reopened: list[dict[str, str]] = []
+    for row in rows:
+        if selected_commits and row["commit"] not in selected_commits:
+            continue
+        if selected_tests and row["test"] not in selected_tests:
+            continue
+        if row["status"] not in RERUN_FAILED_STATUSES:
+            continue
+        row.update(status="missing", score="", message="")
+        reopened.append(row)
+    if not reopened:
+        print("reopen failed: none")
+        return
+    write_rows(args.state, rows)
+    reopened_keys = {(row["commit"], row["test"]) for row in reopened}
+    sample_path = samples_path(args.state)
+    write_samples(
+        sample_path,
+        [
+            sample for sample in read_samples(sample_path)
+            if (sample["commit"], sample["test"]) not in reopened_keys
+        ],
+    )
+    pm_path = args.state.parent / "pm-summary.csv"
+    reopened_pm = {(row["short_commit"], row["test"]) for row in reopened}
+    if pm_path.exists():
+        write_pm_rows(
+            pm_path,
+            [
+                pm_row for pm_row in read_pm_rows(pm_path)
+                if (pm_row["commit-id"], pm_row["test"]) not in reopened_pm
+            ],
+        )
+    for row in reopened:
+        print(f"reopen failed: {row['short_commit']} {row['test']}")
 
 
 def has_pending(args: argparse.Namespace) -> None:
@@ -1310,6 +1352,11 @@ def parse_args() -> argparse.Namespace:
     tests_parser = commands.add_parser("tests")
     tests_parser.add_argument("--state", type=Path, required=True)
     tests_parser.set_defaults(handler=list_tests)
+    reopen_parser = commands.add_parser("reopen-failed")
+    reopen_parser.add_argument("--state", type=Path, required=True)
+    reopen_parser.add_argument("--commit", action="append", default=[])
+    reopen_parser.add_argument("--test", action="append", default=[])
+    reopen_parser.set_defaults(handler=reopen_failed)
     pending_parser = commands.add_parser("pending")
     pending_parser.add_argument("--state", type=Path, required=True)
     pending_parser.add_argument("--commit", required=True)

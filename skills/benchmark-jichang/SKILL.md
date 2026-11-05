@@ -287,6 +287,7 @@ Ask in one turn. Use these defaults when the user does not care:
 | keep raw PM CSV | no | `--keep-pm-log`. Requires `--pm-log-maf` or `--force-pm-log`. |
 | validation | validate every run | `--validate-first-only` is the usual choice when repeat is greater than 1. `--no-validate` disables validation. |
 | output-dir | `benchmark-results/<YYYYMMDD-HHMMSS>` | `--output-dir <dir>` |
+| rerun failed | no | `--rerun-failed`. On resume, run selected YAMLs again when their saved status is `execution-failed`, `validation-failed`, or `no-score`. Passed and `asm-skipped` YAMLs stay skipped. |
 
 `--pm-log-maf`, `--force-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--force-pm-log` is the flag for a YAML outside the catalog `maf/` directory.
 
@@ -318,7 +319,7 @@ Before starting, tell the user that the script stashes tracked local changes in 
 
 The run can take a long time. Prefer launching long runs in `tmux` with a stable session name and teeing output to a console log. Immediately tell the user the `tmux attach -t <session>` command and the log path so they can watch live. If the user wants to watch output in the shared Cursor terminal instead, launch a foreground/background SSH command that streams the remote log rather than relying only on tmux. Avoid "check again in 5 minutes" style monitoring. After launch, do one short startup sanity check to catch immediate failures, then prefer an event marker or watcher that blocks until completion, such as a final `benchmark-exit.txt` file or a unique `__WORK_DONE__` line in the log. Do not repeatedly poll every 10 seconds just for status; use short waits around 10 seconds only while actively debugging a suspected hang or fresh failure.
 
-Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
+Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. Pass `--rerun-failed` with that same output directory to run the failed selected YAMLs again. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
 
 The output directory stores resume metadata. A later resume must keep the same
 config path, rocm-libraries path, repeat count, validation mode, and

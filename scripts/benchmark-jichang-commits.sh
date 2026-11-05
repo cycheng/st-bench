@@ -51,6 +51,9 @@ Options:
                          any other file under projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250.
   --exclude-yaml <file>  Skip one YAML, relative to projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250. Repeat
                          this option to skip multiple YAMLs.
+  --rerun-failed         On resume, run selected YAMLs again when their saved
+                         status is execution-failed, validation-failed, or
+                         no-score. Passed and asm-skipped YAMLs stay skipped.
   --component <name>     Range commits from stinkytofu, hipblaslt, or either
                          (default: either).
   -h, --help             Show this help.
@@ -112,6 +115,9 @@ Output:
 
 Reusing --output-dir resumes that run. Completed YAMLs, including failures,
 are skipped; interrupted running YAMLs receive a new attempt log.
+--rerun-failed reopens selected YAMLs whose saved status is execution-failed,
+validation-failed, or no-score, then runs them as a new attempt. Passed and
+asm-skipped YAMLs stay skipped.
 After an unexpected interruption, manually restore the rocm-libraries worktree
 before resuming; the script does not validate the recovered Git state.
 SIGINT, SIGTERM, SIGHUP, and SIGTSTP cancel the active YAML and leave it
@@ -158,6 +164,7 @@ PM_DEVICE_SELECTOR=0
 YAML_GPU_ARGS=()
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
 SKIP_IDENTICAL_ASM=0
+RERUN_FAILED=0
 PER_COMMIT_MODE=0
 OUTPUT_DIR="${PROJECT_DIR}/benchmark-results/$(date +%Y%m%d-%H%M%S)"
 START_COMMIT=""
@@ -272,6 +279,10 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "Missing value for --exclude-yaml" >&2; exit 2; }
       EXCLUDED_YAMLS+=("$2")
       shift 2
+      ;;
+    --rerun-failed)
+      RERUN_FAILED=1
+      shift
       ;;
     --component)
       [[ $# -ge 2 ]] || { echo "Missing value for --component" >&2; exit 2; }
@@ -1267,6 +1278,16 @@ for commit in "${COMMITS[@]}"; do
       exit 1
   done
 done
+if [[ ${RERUN_FAILED} -eq 1 ]]; then
+  reopen_args=(--state "${RUN_STATE}")
+  for commit in "${COMMITS[@]}"; do
+    reopen_args+=(--commit "${commit}")
+  done
+  for test_name in "${TEST_NAMES[@]}"; do
+    reopen_args+=(--test "${test_name}")
+  done
+  python3 "${STATE_HELPER}" reopen-failed "${reopen_args[@]}" || exit 1
+fi
 regenerate_reports
 python3 "${STATE_HELPER}" compare-asm --output "${OUTPUT_DIR}" || exit 1
 regenerate_reports
