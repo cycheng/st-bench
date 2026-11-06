@@ -28,6 +28,7 @@ Optional:
   --no-build-only        Disable --build-only (default: --build-only is enabled).
   --reuse-build          Skip Tensile and re-run the run.sh scripts already
                          generated under <yaml-base>.out in the run directory.
+                         If <yaml-base>.out is missing, generate it and keep it.
   --no-start             Do not auto-start container.
   --run-dir <dir>        Generate <yaml-base>.out in this directory instead of
                          the workdir. The directory is kept.
@@ -379,6 +380,14 @@ fi
 if [[ ${ISOLATE_RUN_DIR} -eq 1 && ${KEEP_CONTAINER_OUT} -eq 0 ]]; then
   # Also clean up when Tensile fails and set -e aborts the script.
   trap remove_run_dir EXIT
+fi
+
+if [[ ${REUSE_BUILD} -eq 1 ]]; then
+  if ! runtime_sh "test -d '${RUN_DIR}/${BASE_NAME}.out'"; then
+    echo "No reusable build found in ${RUN_DIR}/${BASE_NAME}.out; generating and keeping it for reuse."
+    REUSE_BUILD=0
+    KEEP_CONTAINER_OUT=1
+  fi
 fi
 
 RUNTIME_ENV_VARS=()
