@@ -26,6 +26,8 @@ Optional:
   --env-file <file>      File with KEY=VALUE env lines (repeatable).
   --build-only           Generate and compile kernels without benchmarking.
   --no-build-only        Disable --build-only (default: --build-only is enabled).
+  --no-validate          Force NumElementsToValidate=0 for this run.
+                         Alias: --no-validation.
   --reuse-build          Skip Tensile and re-run the run.sh scripts already
                          generated under <yaml-base>.out in the run directory.
                          If <yaml-base>.out is missing, generate it and keep it.
@@ -62,6 +64,7 @@ OUTPUT_ROOT="$(pwd)/artifacts"
 AUTO_START=1
 BUILD_ONLY=1
 BUILD_ONLY_OVERRIDE=""
+NO_VALIDATE=0
 REUSE_BUILD=0
 KEEP_CONTAINER_OUT=0
 KEEP_CONTAINER_OUT_OVERRIDE=""
@@ -243,6 +246,10 @@ while [[ $# -gt 0 ]]; do
       BUILD_ONLY_OVERRIDE=0
       shift
       ;;
+    --no-validate|--no-validation)
+      NO_VALIDATE=1
+      shift
+      ;;
     --reuse-build)
       REUSE_BUILD=1
       shift
@@ -368,6 +375,24 @@ runtime_sh() {
   fi
 }
 
+reuse_build_validates() {
+  runtime_sh "python3 - '${RUN_DIR}/${BASE_NAME}.out' <<'PY'
+from pathlib import Path
+import sys
+
+out_dir = Path(sys.argv[1])
+configs = list(out_dir.glob('1_BenchmarkProblems/*/*/caches/*/source/ClientParameters*.ini'))
+for config in configs:
+    for line in config.read_text(errors='replace').splitlines():
+        if line.startswith('num-elements-to-validate='):
+            value = line.split('=', 1)[1].strip()
+            if value != '0':
+                raise SystemExit(0)
+            break
+raise SystemExit(1)
+PY"
+}
+
 remove_run_dir() {
   [[ ${ISOLATE_RUN_DIR} -eq 1 && -n "${RUN_DIR}" ]] || return 0
   runtime_sh "rm -rf '${RUN_DIR}'" >/dev/null 2>&1 || true
@@ -385,6 +410,10 @@ fi
 if [[ ${REUSE_BUILD} -eq 1 ]]; then
   if ! runtime_sh "test -d '${RUN_DIR}/${BASE_NAME}.out'"; then
     echo "No reusable build found in ${RUN_DIR}/${BASE_NAME}.out; generating and keeping it for reuse."
+    REUSE_BUILD=0
+    KEEP_CONTAINER_OUT=1
+  elif [[ ${NO_VALIDATE} -eq 1 ]] && reuse_build_validates; then
+    echo "Reusable build in ${RUN_DIR}/${BASE_NAME}.out has validation enabled; regenerating with --no-validate."
     REUSE_BUILD=0
     KEEP_CONTAINER_OUT=1
   fi
@@ -458,6 +487,9 @@ else
   if [[ ${BUILD_ONLY} -eq 1 ]]; then
     TENSILE_ARGS+=" --build-only"
   fi
+  if [[ ${NO_VALIDATE} -eq 1 ]]; then
+    TENSILE_ARGS+=" --global-parameters NumElementsToValidate=0 NumElementsToValidateWinner=0"
+  fi
   TENSILE_ARGS+=" --prebuilt-client='${CLIENT_PATH}'"
 fi
 
@@ -474,6 +506,9 @@ run_tensile() {
   if [[ "${EXECUTION_MODE}" == "docker" ]]; then
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
+    if [[ ${NO_VALIDATE} -eq 1 ]]; then
+      echo "Validation: disabled"
+    fi
     echo "Execution mode: ${EXECUTION_MODE}"
     echo "Container: ${CONTAINER_NAME}"
     echo
@@ -482,6 +517,9 @@ run_tensile() {
   else
     echo "Git commit: ${GIT_COMMIT_ID}"
     echo "YAML: ${ABS_YAML}"
+    if [[ ${NO_VALIDATE} -eq 1 ]]; then
+      echo "Validation: disabled"
+    fi
     echo "Execution mode: ${EXECUTION_MODE}"
     echo "Workdir: ${RUN_DIR}"
     echo
