@@ -17,6 +17,7 @@ description: >-
 Drive this as an interactive setup, then run
 `scripts/benchmark-jichang-commits.sh` from the `st-bench` checkout.
 Do not clone, build, or start a benchmark until the user confirms that step.
+If the user says "run" after a command has already been prepared, run it directly. Do not add a smoke test or extra preflight unless required information is missing.
 
 ## Progress
 
@@ -320,6 +321,8 @@ Before starting, tell the user that the script stashes tracked local changes in 
 
 The run can take a long time. Prefer launching long runs in `tmux` with a stable session name and teeing output to a console log. Immediately tell the user the `tmux attach -t <session>` command and the log path so they can watch live. If the user wants to watch output in the shared Cursor terminal instead, launch a foreground/background SSH command that streams the remote log rather than relying only on tmux. Avoid "check again in 5 minutes" style monitoring. After launch, do one short startup sanity check to catch immediate failures, then prefer an event marker or watcher that blocks until completion, such as a final `benchmark-exit.txt` file or a unique `__WORK_DONE__` line in the log. Do not repeatedly poll every 10 seconds just for status; use short waits around 10 seconds only while actively debugging a suspected hang or fresh failure.
 
+If the user has just said "run" and previously complained not to smoke test, skip the startup sanity check and only report the PID/session and log path. Check status later only when asked or when a watcher/completion marker fires.
+
 Wait until the process exits. Reusing the same `--output-dir` resumes; completed YAMLs are skipped. Pass `--rerun-failed` with that same output directory to run the failed selected YAMLs again. After an unexpected interruption, restore the rocm-libraries worktree manually before resuming.
 
 The output directory stores resume metadata. A later resume must keep the same
@@ -382,5 +385,41 @@ that section, and mention the `PM annotation` if present. A warning such as
 but should be treated as a weak sanity check rather than a robust clock
 measurement. `pm-summary.csv` contains the per-test `sample-count`,
 `interval-sample-count`, `used-sample-count`, and `all-xcd-min` values.
+
+For compact MAF/MAB reporting:
+
+- Use ASCII tables.
+- Convert MAF raw scores to PF/s if needed, and convert MAB GB/s to TB/s.
+- Include BKC and commit in summary tables when comparing systems or when the user asks for a summary table. Read BKC from `PLDM_BUNDLE` on the BMC using the `pldm-update` skill.
+- Known active BKC values from 2026-11-12: a07-2 `1.7.26.13.28`; g04-2 `1.7.26.14.50`.
+- When comparing hosts and the user names a base host, put the base host column before the compared host column.
+- Express comparison as signed `perf diff` (`+/- x.xx%`) relative to the base score. If the user asks for "without avg, without us", use best-only score tables and omit timing.
+
+Preferred summary comparison format, with the base host first:
+
+```text
++--------+----------------+----------------+
+| item   | <base-host>    | <other-host>   |
++--------+----------------+----------------+
+| BKC    | <base-bkc>     | <other-bkc>    |
+| commit | <base-commit>  | <other-commit> |
++--------+----------------+----------------+
+
+MAF best PF/s, <base-host> as base
++--------------------------+-------------+--------------+-----------+
+| test                     | <base-host> | <other-host> | perf diff |
++--------------------------+-------------+--------------+-----------+
+| maf-bf16                 | ...         | ...          | +/-x.xx%  |
+...
++--------------------------+-------------+--------------+-----------+
+
+MAB best TB/s, <base-host> as base
++--------------+-------------+--------------+-----------+
+| test         | <base-host> | <other-host> | perf diff |
++--------------+-------------+--------------+-----------+
+| mab-bf16     | ...         | ...          | +/-x.xx%  |
+...
++--------------+-------------+--------------+-----------+
+```
 
 If the process fails before writing a summary, show the error and the log path under `<output-dir>/logs/`. Do not invent scores. If the error is `libomp.so: cannot open shared object file`, add the `env=LD_LIBRARY_PATH=` line from step 4 and stop. If the error is `editable_rebuild.lock` with `PermissionError`, rebuild with the venv from step 4 and stop. Do not report scores from that run.
