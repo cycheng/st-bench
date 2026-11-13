@@ -44,6 +44,8 @@ PM_MAF_SETTINGS = {
     "mxf4_tn_maf.yaml": (200, 2000),
     "nvf4_tn_maf.yaml": (200, 2000),
 }
+PM_ACTIVE_BUSY_THRESHOLD = 50.0
+PM_MIN_ACTIVE_SAMPLES = 3
 
 
 def task_done(row: dict[str, str]) -> bool:
@@ -279,6 +281,13 @@ def pm_freq_columns(gpu_index: int) -> list[str]:
     ]
 
 
+def pm_busy_columns(gpu_index: int) -> list[str]:
+    return [
+        f"GPU{gpu_index} XCD XCD{index} Busy"
+        for index in range(8)
+    ]
+
+
 def gpu_indexes_in_pm_log(fieldnames: list[str] | None) -> list[int]:
     if not fieldnames:
         return []
@@ -308,73 +317,104 @@ def select_pm_columns(fieldnames: list[str] | None, gpu_index: int) -> list[str]
     return preferred
 
 
+def longest_active_interval(
+    activity: list[float | None],
+    threshold: float = PM_ACTIVE_BUSY_THRESHOLD,
+) -> tuple[int, int] | None:
+    """Return the longest contiguous interval at or above the busy threshold."""
+    best: tuple[int, int, float] | None = None
+    start: int | None = None
+    total = 0.0
+
+    for index, value in enumerate([*activity, None]):
+        if value is not None and value >= threshold:
+            if start is None:
+                start = index
+                total = 0.0
+            total += value
+            continue
+        if start is None:
+            continue
+        candidate = (start, index, total)
+        if best is None or (index - start, total) > (
+            best[1] - best[0], best[2]
+        ):
+            best = candidate
+        start = None
+
+    return (best[0], best[1]) if best is not None else None
+
+
 def record_pm(args: argparse.Namespace) -> None:
     output = args.output.resolve()
     log_path = args.log.resolve()
     if not log_path.is_file():
         raise SystemExit(f"PM log does not exist: {log_path}")
 
-    samples: list[list[float | None]] = []
+    frequency_samples: list[list[float | None]] = []
+    activity: list[float | None] = []
     sample_count = 0
     with log_path.open(encoding="utf-8", errors="replace", newline="") as stream:
         reader = csv.DictReader(stream)
-        required_columns = select_pm_columns(reader.fieldnames, args.gpu)
+        frequency_columns = select_pm_columns(reader.fieldnames, args.gpu)
         if reader.fieldnames is None or any(
-            column not in reader.fieldnames for column in required_columns
+            column not in reader.fieldnames for column in frequency_columns
         ):
             raise SystemExit(
                 f"PM log is missing one or more GPU{args.gpu} "
                 f"Post Deep Sleep Freq columns: {log_path}"
             )
+        selected_gpu = int(re.match(r"GPU(\d+)", frequency_columns[0]).group(1))
+        busy_columns = pm_busy_columns(selected_gpu)
+        if any(column not in reader.fieldnames for column in busy_columns):
+            raise SystemExit(
+                f"PM log is missing one or more GPU{args.gpu} XCD Busy "
+                f"columns: {log_path}"
+            )
         for row in reader:
             sample_count += 1
-            sample: list[float | None] = []
-            for index, column in enumerate(required_columns):
+            frequency_sample: list[float | None] = []
+            for column in frequency_columns:
                 try:
                     value = float(row[column])
                 except (TypeError, ValueError):
                     value = math.nan
-                sample.append(value if math.isfinite(value) else None)
-            samples.append(sample)
+                frequency_sample.append(value if math.isfinite(value) else None)
+            frequency_samples.append(frequency_sample)
 
-    row_averages: list[float | None] = []
-    for sample in samples:
-        numeric_values = [value for value in sample if value is not None]
-        row_averages.append(
-            sum(numeric_values) / len(numeric_values)
-            if numeric_values else None
-        )
-    if not any(value is not None for value in row_averages):
+            busy_values: list[float] = []
+            for column in busy_columns:
+                try:
+                    value = float(row[column])
+                except (TypeError, ValueError):
+                    continue
+                if math.isfinite(value):
+                    busy_values.append(value)
+            activity.append(
+                sum(busy_values) / len(busy_values)
+                if len(busy_values) == len(busy_columns) else None
+            )
+
+    if not any(
+        value is not None
+        for sample in frequency_samples
+        for value in sample
+    ):
         raise SystemExit(f"PM log has no numeric Post Deep Sleep Freq data: {log_path}")
 
     warning = ""
-    begin = next(
-        (
-            index for index, value in enumerate(row_averages)
-            if value is not None and value < 2000
-        ),
-        None,
-    )
-    if begin is None:
-        begin = 0
-        end = len(row_averages) - 1
-        warning = "no row-average transition below 2000"
-    else:
-        end = next(
-            (
-                index for index in range(begin + 1, len(row_averages))
-                if row_averages[index] is not None
-                and row_averages[index] > 2000
-            ),
-            None,
+    interval = longest_active_interval(activity)
+    if interval is None:
+        selected_samples: list[list[float | None]] = []
+        warning = (
+            "no active interval with average XCD busy "
+            f">= {PM_ACTIVE_BUSY_THRESHOLD:g}%"
         )
-        if end is None:
-            end = len(row_averages) - 1
-            warning = "no row-average transition back above 2000"
-
-    interval_sample_count = end - begin + 1
-    selected_samples = samples[begin:end + 1]
-    if interval_sample_count < 3:
+    else:
+        begin, end = interval
+        selected_samples = frequency_samples[begin:end]
+    interval_sample_count = len(selected_samples)
+    if selected_samples and interval_sample_count < PM_MIN_ACTIVE_SAMPLES:
         warning = (
             f"active interval has only {interval_sample_count} row(s)"
             + (f"; {warning}" if warning else "")
@@ -388,9 +428,7 @@ def record_pm(args: argparse.Namespace) -> None:
         for value in sample
         if value is not None
     ]
-    if not selected_values:
-        raise SystemExit(f"PM log has no usable active-interval rows: {log_path}")
-    all_xcd_min = min(selected_values)
+    all_xcd_min = f"{min(selected_values):.9g}" if selected_values else ""
 
     relative_log = log_path.relative_to(output)
     log_name = relative_log.name.removesuffix("_pm.csv")
@@ -410,7 +448,7 @@ def record_pm(args: argparse.Namespace) -> None:
         "sample-count": str(sample_count),
         "interval-sample-count": str(interval_sample_count),
         "used-sample-count": str(len(selected_samples)),
-        "all-xcd-min": f"{all_xcd_min:.9g}",
+        "all-xcd-min": all_xcd_min,
         "warning": warning,
     }
 
@@ -421,7 +459,7 @@ def record_pm(args: argparse.Namespace) -> None:
     ]
     rows.append(row)
     write_pm_rows(summary_path, rows)
-    if not args.keep_log:
+    if not args.keep_log and selected_values:
         log_path.unlink()
 
 
