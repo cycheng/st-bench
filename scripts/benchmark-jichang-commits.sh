@@ -428,6 +428,10 @@ if ! command -v setsid >/dev/null 2>&1 ||
   exit 2
 fi
 if [[ ${PM_LOG_MAF} -eq 1 || ${FORCE_PM_LOG} -eq 1 ]]; then
+  if ! command -v pgrep >/dev/null 2>&1; then
+    echo "PM logging requires pgrep." >&2
+    exit 2
+  fi
   if ! command -v sudo >/dev/null 2>&1; then
     echo "PM logging requires sudo." >&2
     exit 2
@@ -438,6 +442,12 @@ if [[ ${PM_LOG_MAF} -eq 1 || ${FORCE_PM_LOG} -eq 1 ]]; then
   fi
   if ! sudo -n true >/dev/null 2>&1; then
     echo "PM logging requires passwordless sudo or an existing sudo credential." >&2
+    exit 2
+  fi
+  existing_agt_pids="$(pgrep -x -- "$(basename -- "${AGT_INTERNAL}")" || true)"
+  if [[ -n "${existing_agt_pids}" ]]; then
+    echo "Refusing to start PM logging while agt_internal is already running:" >&2
+    pgrep -a -x -- "$(basename -- "${AGT_INTERNAL}")" >&2 || true
     exit 2
   fi
 fi
@@ -671,6 +681,7 @@ cache_generated_asm() {
 ACTIVE_PM_PID=""
 ACTIVE_PM_CSV=""
 ACTIVE_PM_RUNTIME_LOG=""
+PM_LOGGER_STUCK_STATUS=70
 
 pm_logger_alive() {
   local pm_pid="$1"
@@ -678,39 +689,56 @@ pm_logger_alive() {
     sudo -n kill -0 -- "${pm_pid}" 2>/dev/null
 }
 
-stop_pm_logging() {
-  local pm_pid="${ACTIVE_PM_PID}"
-  local stop_status=0
-
-  [[ -n "${pm_pid}" ]] || return 0
-  # Clear first so a nested interrupt cannot stop this logger twice.
+clear_pm_logging_state() {
   ACTIVE_PM_PID=""
   ACTIVE_PM_CSV=""
   ACTIVE_PM_RUNTIME_LOG=""
+}
+
+stop_pm_logging() {
+  local pm_pid="${ACTIVE_PM_PID}"
+
+  [[ -n "${pm_pid}" ]] || return 0
 
   # setsid makes this pid the session leader. Signal that process group so
   # both sudo and agt_internal receive SIGTERM. Never SIGKILL agt_internal:
   # an uncatchable kill leaves the SMU PM interface dead until reboot.
   sudo -n kill -TERM -- "-${pm_pid}" 2>/dev/null ||
     sudo -n kill -TERM "${pm_pid}" 2>/dev/null || true
-  for _ in {1..100}; do
+  for _ in {1..300}; do
     pm_logger_alive "${pm_pid}" || break
     sleep 0.1
   done
   if pm_logger_alive "${pm_pid}"; then
     echo "agt_internal pid ${pm_pid} is still running after SIGTERM." >&2
     echo "Do not SIGKILL it. That leaves the PM interface dead until reboot." >&2
-    stop_status=1
-  else
-    wait "${pm_pid}" 2>/dev/null || true
+    echo "Aborting without starting another PM logger." >&2
+    return 1
   fi
-  return "${stop_status}"
+  wait "${pm_pid}" 2>/dev/null || true
+  clear_pm_logging_state
 }
 
 start_pm_logging() {
   local workload_log="$1"
   local pm_csv="${workload_log%.log}_pm.csv"
   local pm_runtime_log="${workload_log%.log}.pm.log"
+  local existing_agt_pids=""
+
+  if [[ -n "${ACTIVE_PM_PID}" ]]; then
+    if pm_logger_alive "${ACTIVE_PM_PID}"; then
+      echo "Refusing to start another PM logger while pid ${ACTIVE_PM_PID} is alive." >&2
+      return "${PM_LOGGER_STUCK_STATUS}"
+    fi
+    wait "${ACTIVE_PM_PID}" 2>/dev/null || true
+    clear_pm_logging_state
+  fi
+  existing_agt_pids="$(pgrep -x -- "$(basename -- "${AGT_INTERNAL}")" || true)"
+  if [[ -n "${existing_agt_pids}" ]]; then
+    echo "Refusing to start PM logging while another agt_internal is running:" >&2
+    pgrep -a -x -- "$(basename -- "${AGT_INTERNAL}")" >&2 || true
+    return "${PM_LOGGER_STUCK_STATUS}"
+  fi
 
   mkdir -p -- "$(dirname -- "${pm_csv}")"
   echo "--- PM logging: ${pm_csv} (-i=${PM_DEVICE_SELECTOR})"
@@ -730,14 +758,16 @@ start_pm_logging() {
     if ! pm_logger_alive "${ACTIVE_PM_PID}"; then
       echo "agt_internal exited before PM logging started." >&2
       wait "${ACTIVE_PM_PID}" 2>/dev/null || true
-      ACTIVE_PM_PID=""
+      clear_pm_logging_state
       return 1
     fi
     sleep 0.1
   done
 
   echo "Timed out waiting for agt_internal to start PM logging." >&2
-  stop_pm_logging || true
+  if ! stop_pm_logging; then
+    return "${PM_LOGGER_STUCK_STATUS}"
+  fi
   return 1
 }
 
@@ -752,6 +782,7 @@ run_yaml() {
   local pm_record_args=()
   local pm_started=0
   local measured=0
+  local start_status=0
 
   case "${mode}" in
     build-only)
@@ -775,8 +806,9 @@ run_yaml() {
 
   if [[ ${measured} -eq 1 && ( ${FORCE_PM_LOG} -eq 1 ||
         ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ) ]]; then
-    if ! start_pm_logging "${log_file}"; then
-      return 1
+    start_pm_logging "${log_file}" || start_status=$?
+    if [[ ${start_status} -ne 0 ]]; then
+      return "${start_status}"
     fi
     pm_started=1
   fi
@@ -810,7 +842,9 @@ run_yaml() {
   fi
   if [[ ${pm_started} -eq 1 ]]; then
     pm_csv_path="${ACTIVE_PM_CSV}"
-    stop_pm_logging || true
+    if ! stop_pm_logging; then
+      return "${PM_LOGGER_STUCK_STATUS}"
+    fi
     if [[ -f "${pm_csv_path}" ]]; then
       pm_record_args=(
         --output "${OUTPUT_DIR}"
@@ -1054,6 +1088,7 @@ RESTORED=0
 ACTIVE_RUN_PID=""
 ACTIVE_TAIL_PID=""
 SIGNAL_CLEANUP=0
+EXIT_CLEANUP=0
 
 # Git checkout may invoke credential, SSH, or LFS helpers. Unattended runs must
 # fail instead of stopping to read from a terminal.
@@ -1158,6 +1193,23 @@ restore_repository() {
   python3 "${STATE_HELPER}" session --output "${OUTPUT_DIR}" clear
 }
 
+handle_exit() {
+  local status=$?
+  local restore_status=0
+
+  trap - EXIT
+  [[ ${EXIT_CLEANUP} -eq 0 ]] || exit "${status}"
+  EXIT_CLEANUP=1
+  terminate_active_run
+  if [[ ${RANGE_MODE} -eq 1 ]]; then
+    restore_repository || restore_status=$?
+  fi
+  if [[ ${status} -eq 0 && ${restore_status} -ne 0 ]]; then
+    status="${restore_status}"
+  fi
+  exit "${status}"
+}
+
 COMMITS=()
 if [[ -n "${START_COMMIT}" || ${#SELECTED_COMMITS[@]} -gt 0 ]]; then
   RANGE_MODE=1
@@ -1251,7 +1303,6 @@ if [[ -n "${START_COMMIT}" || ${#SELECTED_COMMITS[@]} -gt 0 ]]; then
     session_set --stash-oid "${STASH_OID}"
   fi
 
-  trap restore_repository EXIT
 else
   if [[ -f "${OUTPUT_DIR}/git-session.json" ]]; then
     echo "This output directory has an interrupted managed Git session." >&2
@@ -1261,6 +1312,7 @@ else
   COMMITS=("$(git -C "${ROCM_REPO}" rev-parse HEAD)")
 fi
 
+trap handle_exit EXIT
 trap 'handle_signal 129' HUP
 trap 'handle_signal 130' INT
 trap 'handle_signal 143' TERM
@@ -1316,6 +1368,10 @@ regenerate_reports
 die_if_interrupted() {
   local status="$1"
   local test_name="$2"
+  if [[ ${status} -eq ${PM_LOGGER_STUCK_STATUS} ]]; then
+    echo "${test_name}: PM logger did not stop; aborting benchmark." >&2
+    exit "${status}"
+  fi
   if [[ ${status} -eq 124 || ${status} -eq 137 || ${status} -eq 129 ||
         ${status} -eq 130 || ${status} -eq 143 || ${status} -eq 148 ]]; then
     echo "${test_name}: interrupted or timed out; task remains pending" >&2
@@ -1984,12 +2040,7 @@ for commit_index in "${!COMMITS[@]}"; do
       echo "--- ${test_name}: checking generated ASM against ${previous_short_commit}"
       preflight_status=0
       run_yaml "${yaml}" "${preflight_log}" build-only || preflight_status=$?
-      if [[ ${preflight_status} -eq 124 || ${preflight_status} -eq 137 ||
-            ${preflight_status} -eq 129 || ${preflight_status} -eq 130 ||
-            ${preflight_status} -eq 143 || ${preflight_status} -eq 148 ]]; then
-        echo "${test_name}: ASM check interrupted or timed out; task remains pending" >&2
-        exit "${preflight_status}"
-      fi
+      die_if_interrupted "${preflight_status}" "${test_name}"
 
       preflight_asm_dir="${commit_asm_dir}/${test_name}/st"
       if [[ ${preflight_status} -eq 0 ]] &&
@@ -2034,13 +2085,7 @@ for commit_index in "${!COMMITS[@]}"; do
       echo "--- ${test_name}: run ${run_index}/${REPEAT_RUNS}"
       run_status=0
       run_yaml "${run_yaml_file}" "${log_file}" config "${run_args[@]}" || run_status=$?
-
-      if [[ ${run_status} -eq 124 || ${run_status} -eq 137 ||
-            ${run_status} -eq 129 || ${run_status} -eq 130 ||
-            ${run_status} -eq 143 || ${run_status} -eq 148 ]]; then
-        echo "${test_name}: interrupted or timed out; task remains pending" >&2
-        exit "${run_status}"
-      fi
+      die_if_interrupted "${run_status}" "${test_name}"
 
       if cache_generated_asm "${log_file}" "${commit_asm_dir}/${test_name}/st"; then
         asm_status="cached"

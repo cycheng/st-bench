@@ -173,6 +173,7 @@ parse_config_file() {
       build_only) BUILD_ONLY="$(parse_bool "${value}")" ;;
       keep_container_out) KEEP_CONTAINER_OUT="$(parse_bool "${value}")" ;;
       live_output) LIVE_OUTPUT="$(parse_bool "${value}")" ;;
+      agt_internal) : ;;  # accepted for benchmark-jichang PM logging config
       jobs) : ;;  # accepted for shared config compatibility
       hipblaslt_repo_path) : ;;      # accepted for shared config compatibility
       hipblaslt_install_flags) : ;;  # accepted for shared config compatibility
