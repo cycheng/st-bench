@@ -39,7 +39,8 @@ Options:
                          the same key in the config. PM logging monitors GPU n
                          with agt_internal -i=5n (-i=0 for GPU 0).
   --agt-internal <file>  agt_internal executable (default: /opt/amd-apps/
-                         agt_internal/agt_internal).
+                         agt_internal/agt_internal). Can also be set in the
+                         config file with agt_internal=<file>; this flag wins.
   --skip-identical-asm   Build and compare ASM with the previous selected
                          commit; reuse its score when the ASM is identical.
   --per-commit           With multiple commits, use the single-commit flow:
@@ -167,6 +168,7 @@ GPU_INDEX=0
 PM_DEVICE_SELECTOR=0
 YAML_GPU_ARGS=()
 AGT_INTERNAL="/opt/amd-apps/agt_internal/agt_internal"
+AGT_INTERNAL_EXPLICIT=0
 SKIP_IDENTICAL_ASM=0
 RERUN_FAILED=0
 PER_COMMIT_MODE=0
@@ -258,6 +260,7 @@ while [[ $# -gt 0 ]]; do
     --agt-internal)
       [[ $# -ge 2 ]] || { echo "Missing value for --agt-internal" >&2; exit 2; }
       AGT_INTERNAL="$2"
+      AGT_INTERNAL_EXPLICIT=1
       shift 2
       ;;
     --skip-identical-asm)
@@ -356,7 +359,6 @@ ROCM_REPO="$(readlink -f -- "${ROCM_REPO}")"
 if [[ -n "${PATCH_FILE}" ]]; then
   PATCH_FILE="$(readlink -f -- "${PATCH_FILE}")"
 fi
-AGT_INTERNAL="$(readlink -f -- "${AGT_INTERNAL}")"
 OUTPUT_DIR="$(readlink -m -- "${OUTPUT_DIR}")"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
@@ -377,16 +379,25 @@ while IFS= read -r config_line || [[ -n "${config_line}" ]]; do
   if [[ "${config_key}" == "env" && "${config_value}" == HIP_VISIBLE_DEVICES=* ]]; then
     CONFIG_GPU="${config_value#HIP_VISIBLE_DEVICES=}"
   fi
-  [[ "${config_key}" == "live_output" ]] || continue
-  case "${config_value,,}" in
-    1|true|yes|on) LIVE_OUTPUT=1 ;;
-    0|false|no|off) ;;
-    *)
-      echo "Invalid live_output value in ${CONFIG_FILE}: ${config_value}" >&2
-      exit 2
+  case "${config_key}" in
+    live_output)
+      case "${config_value,,}" in
+        1|true|yes|on) LIVE_OUTPUT=1 ;;
+        0|false|no|off) ;;
+        *)
+          echo "Invalid live_output value in ${CONFIG_FILE}: ${config_value}" >&2
+          exit 2
+          ;;
+      esac
+      ;;
+    agt_internal)
+      if [[ ${AGT_INTERNAL_EXPLICIT} -eq 0 ]]; then
+        AGT_INTERNAL="${config_value}"
+      fi
       ;;
   esac
 done < "${CONFIG_FILE}"
+AGT_INTERNAL="$(readlink -f -- "${AGT_INTERNAL}")"
 if [[ -n "${CONFIG_GPU}" && ! "${CONFIG_GPU}" =~ ^[0-9]+$ ]]; then
   echo "Invalid HIP_VISIBLE_DEVICES in ${CONFIG_FILE}: ${CONFIG_GPU}" >&2
   exit 2
