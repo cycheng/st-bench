@@ -30,10 +30,11 @@ Options:
   --live-output          Stream YAML output (or set live_output=true in config).
   --pm-log-maf           Run agt_internal PM logging during MAF workload runs
                          using longer MAF warmup/enqueue settings.
+  --pm-log-mab           Run agt_internal PM logging during MAB workload runs.
   --force-pm-log         Run agt_internal PM logging for every selected YAML.
                          Does not rewrite warmup or enqueue counts.
   --keep-pm-log          Keep raw PM CSV files after extracting their summary.
-                         Requires --pm-log-maf or --force-pm-log.
+                         Requires --pm-log-maf, --pm-log-mab, or --force-pm-log.
   --gpu <index>          Physical GPU index (default: 0). Sets
                          HIP_VISIBLE_DEVICES for every YAML run, overriding
                          the same key in the config. PM logging monitors GPU n
@@ -161,6 +162,7 @@ VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
 PM_LOG_MAF=0
+PM_LOG_MAB=0
 FORCE_PM_LOG=0
 KEEP_PM_LOG=0
 GPU_EXPLICIT=0
@@ -241,6 +243,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --pm-log-maf)
       PM_LOG_MAF=1
+      shift
+      ;;
+    --pm-log-mab)
+      PM_LOG_MAB=1
       shift
       ;;
     --force-pm-log)
@@ -338,8 +344,8 @@ if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
   echo "--no-validate and --validate-first-only cannot be combined." >&2
   exit 2
 fi
-if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 && ${FORCE_PM_LOG} -eq 0 ]]; then
-  echo "--keep-pm-log requires --pm-log-maf or --force-pm-log." >&2
+if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 && ${PM_LOG_MAB} -eq 0 && ${FORCE_PM_LOG} -eq 0 ]]; then
+  echo "--keep-pm-log requires --pm-log-maf, --pm-log-mab, or --force-pm-log." >&2
   exit 2
 fi
 if [[ ${NO_VALIDATE} -eq 1 ]]; then
@@ -624,6 +630,9 @@ init_args=(
 if [[ ${PM_LOG_MAF} -eq 1 ]]; then
   init_args+=(--pm-log-maf)
 fi
+if [[ ${PM_LOG_MAB} -eq 1 ]]; then
+  init_args+=(--pm-log-mab)
+fi
 if ! python3 "${STATE_HELPER}" init "${init_args[@]}"; then
   exit 1
 fi
@@ -805,7 +814,8 @@ run_yaml() {
   esac
 
   if [[ ${measured} -eq 1 && ( ${FORCE_PM_LOG} -eq 1 ||
-        ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ) ]]; then
+        ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ||
+        ( ${PM_LOG_MAB} -eq 1 && "${yaml_file}" == */mab/* ) ) ]]; then
     start_pm_logging "${log_file}" || start_status=$?
     if [[ ${start_status} -ne 0 ]]; then
       return "${start_status}"

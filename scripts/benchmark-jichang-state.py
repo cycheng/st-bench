@@ -180,6 +180,7 @@ def initialize(args: argparse.Namespace) -> None:
         "repeat_runs": args.repeat,
         "validation_mode": args.validation_mode,
         "pm_log_maf": bool(args.pm_log_maf),
+        "pm_log_mab": bool(args.pm_log_mab),
     }
     if output.exists() and not state.exists() and any(
         (output / name).exists() for name in ("results.csv", "summary.txt", "failures.csv")
@@ -197,12 +198,15 @@ def initialize(args: argparse.Namespace) -> None:
         adopted_pm_log_maf = "pm_log_maf" not in previous
         if adopted_pm_log_maf:
             previous["pm_log_maf"] = bool(args.pm_log_maf)
+        adopted_pm_log_mab = "pm_log_mab" not in previous
+        if adopted_pm_log_mab:
+            previous["pm_log_mab"] = bool(args.pm_log_mab)
         if previous != metadata:
             raise SystemExit(
                 "Resume metadata mismatch: config, repository, repeat count, "
-                "validation mode, or --pm-log-maf changed"
+                "validation mode, --pm-log-maf, or --pm-log-mab changed"
             )
-        if adopted_pm_log_maf:
+        if adopted_pm_log_maf or adopted_pm_log_mab:
             write_json(metadata_path, metadata)
     else:
         write_json(metadata_path, metadata)
@@ -1056,9 +1060,14 @@ def best_sample_run(sample_rows: list[dict[str, str]]) -> str | None:
 def pm_table_tests(
     tests: list[str],
     latest_pm_rows: dict[tuple[str, str], list[dict[str, str]]],
+    pm_log_mab: bool = False,
 ) -> list[str]:
     present = {test for _, test in latest_pm_rows}
-    return [test for test in tests if test.startswith("maf-") or test in present]
+    return [
+        test for test in tests
+        if test.startswith("maf-") or (pm_log_mab and test.startswith("mab-"))
+        or test in present
+    ]
 
 
 def pm_maf_yaml_names(
@@ -1129,6 +1138,9 @@ def reports(args: argparse.Namespace) -> None:
     time_minimum_rows: list[list[str]] = []
     time_average_rows: list[list[str]] = []
     pm_minimum_rows: list[list[str]] = []
+    pm_tests = pm_table_tests(
+        tests, latest_pm_rows, bool(metadata.get("pm_log_mab")),
+    )
     statistics_rows = [[
         "commit-id", "source", "test", "unit", "count",
         "average", "best", "worst", "standard-deviation",
@@ -1229,7 +1241,7 @@ def reports(args: argparse.Namespace) -> None:
         ])
         pm_values_for_commit = []
         has_pm_value = False
-        for test in pm_table_tests(tests, latest_pm_rows):
+        for test in pm_tests:
             pm_rows = latest_pm_rows.get((first["short_commit"], test), [])
             best_run = best_sample_run(sample_map.get((commit, test), []))
             if best_run is None and by_key.get((commit, test)):
@@ -1256,7 +1268,7 @@ def reports(args: argparse.Namespace) -> None:
                 first["short_commit"], first["source"], *pm_values_for_commit,
             ])
     header = ["commit-id", "source", *tests]
-    pm_header = ["commit-id", "source", *pm_table_tests(tests, latest_pm_rows)]
+    pm_header = ["commit-id", "source", *pm_tests]
     atomic_write(
         output / "results.csv",
         lambda stream: csv.writer(stream, lineterminator="\n").writerows([header, *commit_rows]),
@@ -1335,6 +1347,7 @@ def parse_args() -> argparse.Namespace:
         default="all",
     )
     init.add_argument("--pm-log-maf", action="store_true")
+    init.add_argument("--pm-log-mab", action="store_true")
     init.set_defaults(handler=initialize)
     ensure_parser = commands.add_parser("ensure")
     add_common_task(ensure_parser)
