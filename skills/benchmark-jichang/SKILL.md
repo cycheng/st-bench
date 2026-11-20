@@ -281,12 +281,12 @@ Ask in one turn. Use these defaults when the user does not care:
 | GPU index | ask; do not assume | `--gpu <n>`. Required. |
 | commits | current checkout; do not change it | repeat `--commit <sha>`, or `--start` with `--end`. Never mix `--commit` with `--start`/`--end`. |
 | repeat | 1 | `--repeat <n>` |
-| reuse build | yes for repeated timing | Prefer `--reuse-build` with `--repeat 3 --validate-first-only` so generated kernels are reused and only the first repeat validates. |
+| build artifacts | cleanup by default | `benchmark-jichang-commits.sh` rebuilds each selected YAML once per invocation, reuses that fresh artifact for repeats, then removes it. Use `--keep-build-artifacts` only for debugging. |
 | category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. This option is single-valued; `--category mab --category maf` runs only the last category. |
 | yaml | all catalog YAMLs | Repeat `--yaml <path>` under `projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250`. Catalog names such as `maf/f8_tn_maf.yaml` are accepted. Order is the order of the flags. |
 | PM logging | no | `--enable-pm-log`. Logs every selected YAML and leaves warmup/enqueue counts unchanged. Old `--pm-log-maf`, `--pm-log-mab`, and `--force-pm-log` flags are aliases. |
 | keep raw PM CSV | no | `--keep-pm-log`. Requires `--enable-pm-log`. |
-| validation | first repeat only for repeated timing | Prefer `--validate-first-only` with `--repeat 3 --reuse-build`. For faster perf-only sweeps, use `--no-validate --reuse-build`. |
+| validation | first repeat only for repeated timing | Prefer `--validate-first-only` with `--repeat 3`. For faster perf-only sweeps, use `--no-validate`. |
 | output-dir | `benchmark-results/<YYYYMMDD-HHMMSS>` | `--output-dir <dir>` |
 | rerun failed | no | `--rerun-failed`. On resume, run selected YAMLs again when their saved status is `execution-failed`, `validation-failed`, or `no-score`. Passed and `asm-skipped` YAMLs stay skipped. |
 
@@ -304,7 +304,7 @@ Ask which physical GPU to use, for example `0` or `1`. Before running:
 Show the full command, then run it from the benchmark checkout root. Always pass `--config` and `--repo`.
 
 ```
-./scripts/benchmark-jichang-commits.sh --repeat 3 --reuse-build --validate-first-only \
+./scripts/benchmark-jichang-commits.sh --repeat 3 --validate-first-only \
   --config ./examples/test-silicon-rel.cfg \
   --repo <rocm_libraries_path> \
   --output-dir ./benchmark-results/20261001-maf \
@@ -340,14 +340,14 @@ To run only MAB and MAF in one output directory, either:
 For performance-first runs where validation cost dominates, prefer:
 
 ```
-./scripts/benchmark-jichang-commits.sh --repeat 3 --no-validate --reuse-build ...
+./scripts/benchmark-jichang-commits.sh --repeat 3 --no-validate ...
 ```
 
 Tell the user that this does not validate the numerical result. If they want
 validation coverage plus faster repeated timing, prefer:
 
 ```
-./scripts/benchmark-jichang-commits.sh --repeat 3 --reuse-build --validate-first-only ...
+./scripts/benchmark-jichang-commits.sh --repeat 3 --validate-first-only ...
 ```
 
 ## 8. Dump the summary
