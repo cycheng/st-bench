@@ -32,18 +32,6 @@ DONE = {"passed", "validation-failed", "execution-failed", "asm-skipped"}
 LEGACY_DONE = {"no-score"}
 RERUN_FAILED_STATUSES = {"validation-failed", "execution-failed", "no-score"}
 RETRYABLE_MESSAGES = {"git checkout failed", "git stash apply failed"}
-# Keep in sync with prepare_pm_maf_yaml in benchmark-jichang-commits.sh.
-PM_MAF_SETTINGS = {
-    "bbs_tn_maf.yaml": (100, 1000),
-    "f8_tn_maf.yaml": (160, 1600),
-    "f8_tn_maf_finetune.yaml": (160, 1600),
-    "f8_tn_maf_finetune_k128k.yaml": (160, 1600),
-    "mxf8_tn_maf.yaml": (160, 1600),
-    "mxf8_tn_maf_finetune.yaml": (160, 1600),
-    "mxf8_tn_maf_finetune_k128k.yaml": (160, 1600),
-    "mxf4_tn_maf.yaml": (200, 2000),
-    "nvf4_tn_maf.yaml": (200, 2000),
-}
 PM_ACTIVE_BUSY_THRESHOLD = 50.0
 PM_MIN_ACTIVE_SAMPLES = 3
 
@@ -173,14 +161,14 @@ def initialize(args: argparse.Namespace) -> None:
     state = output / "run-state.csv"
     metadata_path = output / "run-metadata.json"
     config_hash = hashlib.sha256(args.config.read_bytes()).hexdigest()
+    enable_pm_log = bool(args.enable_pm_log or args.pm_log_maf or args.pm_log_mab)
     metadata = {
         "version": 1,
         "config_sha256": config_hash,
         "rocm_repo": str(args.repo.resolve()),
         "repeat_runs": args.repeat,
         "validation_mode": args.validation_mode,
-        "pm_log_maf": bool(args.pm_log_maf),
-        "pm_log_mab": bool(args.pm_log_mab),
+        "enable_pm_log": enable_pm_log,
     }
     if output.exists() and not state.exists() and any(
         (output / name).exists() for name in ("results.csv", "summary.txt", "failures.csv")
@@ -191,22 +179,26 @@ def initialize(args: argparse.Namespace) -> None:
     output.mkdir(parents=True, exist_ok=True)
     if metadata_path.exists():
         previous = json.loads(metadata_path.read_text(encoding="utf-8"))
+        previous_changed = False
         if "repeat_runs" not in previous:
             previous["repeat_runs"] = 1
+            previous_changed = True
         if "validation_mode" not in previous:
             previous["validation_mode"] = "all"
-        adopted_pm_log_maf = "pm_log_maf" not in previous
-        if adopted_pm_log_maf:
-            previous["pm_log_maf"] = bool(args.pm_log_maf)
-        adopted_pm_log_mab = "pm_log_mab" not in previous
-        if adopted_pm_log_mab:
-            previous["pm_log_mab"] = bool(args.pm_log_mab)
+            previous_changed = True
+        legacy_pm_log_maf = bool(previous.pop("pm_log_maf", False))
+        legacy_pm_log_mab = bool(previous.pop("pm_log_mab", False))
+        if legacy_pm_log_maf or legacy_pm_log_mab:
+            previous_changed = True
+        if "enable_pm_log" not in previous:
+            previous["enable_pm_log"] = enable_pm_log or legacy_pm_log_maf or legacy_pm_log_mab
+            previous_changed = True
         if previous != metadata:
             raise SystemExit(
                 "Resume metadata mismatch: config, repository, repeat count, "
-                "validation mode, --pm-log-maf, or --pm-log-mab changed"
+                "validation mode, or --enable-pm-log changed"
             )
-        if adopted_pm_log_maf or adopted_pm_log_mab:
+        if previous_changed:
             write_json(metadata_path, metadata)
     else:
         write_json(metadata_path, metadata)
@@ -958,29 +950,6 @@ def format_table(header: list[str], rows: list[list[str]]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def format_pm_maf_settings(yaml_names: list[str]) -> str:
-    header = ["YAML", "NumWarmups", "EnqueuesPerSync"]
-    rows = [
-        [name, str(warmups), str(enqueues)]
-        for name, (warmups, enqueues) in (
-            (name, PM_MAF_SETTINGS[name]) for name in yaml_names
-        )
-    ]
-    widths = [
-        max(len(header[index]), *(len(row[index]) for row in rows))
-        for index in range(len(header))
-    ]
-    lines = []
-    for row in [header, *rows]:
-        fields = [row[0].ljust(widths[0])]
-        fields.extend(row[index].rjust(widths[index]) for index in range(1, len(row)))
-        lines.append("  ".join(fields))
-    return "\n".join([
-        "--pm-log-maf changed MAF warmup and enqueue counts to these larger values:",
-        *lines,
-    ])
-
-
 def format_summary(
     best_header: list[str],
     best_rows: list[list[str]],
@@ -988,7 +957,6 @@ def format_summary(
     average_rows: list[list[str]],
     pm_header: list[str],
     pm_minimum_rows: list[list[str]],
-    pm_maf_yaml_names: list[str] | None = None,
 ) -> str:
     sections = [
         "Best",
@@ -1008,8 +976,6 @@ def format_summary(
         "",
         "Annotations: = ASM matches previous chronological commit; * validation failed",
     ])
-    if pm_maf_yaml_names:
-        sections.extend(["", format_pm_maf_settings(pm_maf_yaml_names)])
     return "\n".join(sections) + "\n"
 
 
@@ -1060,25 +1026,12 @@ def best_sample_run(sample_rows: list[dict[str, str]]) -> str | None:
 def pm_table_tests(
     tests: list[str],
     latest_pm_rows: dict[tuple[str, str], list[dict[str, str]]],
-    pm_log_mab: bool = False,
 ) -> list[str]:
     present = {test for _, test in latest_pm_rows}
     return [
         test for test in tests
-        if test.startswith("maf-") or (pm_log_mab and test.startswith("mab-"))
-        or test in present
+        if test.startswith("maf-") or test in present
     ]
-
-
-def pm_maf_yaml_names(
-    rows: list[dict[str, str]],
-    pm_log_maf: bool,
-    has_pm_rows: bool,
-) -> list[str]:
-    if not pm_log_maf and not has_pm_rows:
-        return []
-    present = {Path(row["yaml"]).name for row in rows}
-    return [name for name in PM_MAF_SETTINGS if name in present]
 
 
 def reports(args: argparse.Namespace) -> None:
@@ -1138,9 +1091,7 @@ def reports(args: argparse.Namespace) -> None:
     time_minimum_rows: list[list[str]] = []
     time_average_rows: list[list[str]] = []
     pm_minimum_rows: list[list[str]] = []
-    pm_tests = pm_table_tests(
-        tests, latest_pm_rows, bool(metadata.get("pm_log_mab")),
-    )
+    pm_tests = pm_table_tests(tests, latest_pm_rows)
     statistics_rows = [[
         "commit-id", "source", "test", "unit", "count",
         "average", "best", "worst", "standard-deviation",
@@ -1279,7 +1230,6 @@ def reports(args: argparse.Namespace) -> None:
             format_summary(
                 header, commit_rows, header, average_rows,
                 pm_header, pm_minimum_rows,
-                pm_maf_yaml_names(rows, bool(metadata.get("pm_log_maf")), bool(latest_pm_rows)),
             )
         ),
     )
@@ -1346,8 +1296,9 @@ def parse_args() -> argparse.Namespace:
         choices=("all", "none", "first-repeat"),
         default="all",
     )
-    init.add_argument("--pm-log-maf", action="store_true")
-    init.add_argument("--pm-log-mab", action="store_true")
+    init.add_argument("--enable-pm-log", action="store_true")
+    init.add_argument("--pm-log-maf", action="store_true", help=argparse.SUPPRESS)
+    init.add_argument("--pm-log-mab", action="store_true", help=argparse.SUPPRESS)
     init.set_defaults(handler=initialize)
     ensure_parser = commands.add_parser("ensure")
     add_common_task(ensure_parser)

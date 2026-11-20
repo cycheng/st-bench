@@ -28,13 +28,14 @@ Options:
   --validate-first-only  With --repeat, validate only the first run for each
                          commit/YAML and disable validation for later runs.
   --live-output          Stream YAML output (or set live_output=true in config).
-  --pm-log-maf           Run agt_internal PM logging during MAF workload runs
-                         using longer MAF warmup/enqueue settings.
-  --pm-log-mab           Run agt_internal PM logging during MAB workload runs.
-  --force-pm-log         Run agt_internal PM logging for every selected YAML.
+  --enable-pm-log        Run agt_internal PM logging for every selected YAML.
+                         Does not rewrite warmup or enqueue counts.
+  --pm-log-maf           Deprecated alias for --enable-pm-log.
+  --pm-log-mab           Deprecated alias for --enable-pm-log.
+  --force-pm-log         Deprecated alias for --enable-pm-log.
                          Does not rewrite warmup or enqueue counts.
   --keep-pm-log          Keep raw PM CSV files after extracting their summary.
-                         Requires --pm-log-maf, --pm-log-mab, or --force-pm-log.
+                         Requires --enable-pm-log.
   --gpu <index>          Physical GPU index (default: 0). Sets
                          HIP_VISIBLE_DEVICES for every YAML run, overriding
                          the same key in the config. PM logging monitors GPU n
@@ -161,9 +162,7 @@ NO_VALIDATE=0
 VALIDATE_FIRST_ONLY=0
 VALIDATION_MODE="all"
 LIVE_OUTPUT=0
-PM_LOG_MAF=0
-PM_LOG_MAB=0
-FORCE_PM_LOG=0
+ENABLE_PM_LOG=0
 KEEP_PM_LOG=0
 GPU_EXPLICIT=0
 GPU_INDEX=0
@@ -241,16 +240,8 @@ while [[ $# -gt 0 ]]; do
       LIVE_OUTPUT=1
       shift
       ;;
-    --pm-log-maf)
-      PM_LOG_MAF=1
-      shift
-      ;;
-    --pm-log-mab)
-      PM_LOG_MAB=1
-      shift
-      ;;
-    --force-pm-log)
-      FORCE_PM_LOG=1
+    --enable-pm-log|--pm-log-maf|--pm-log-mab|--force-pm-log)
+      ENABLE_PM_LOG=1
       shift
       ;;
     --keep-pm-log)
@@ -344,8 +335,8 @@ if [[ ${NO_VALIDATE} -eq 1 && ${VALIDATE_FIRST_ONLY} -eq 1 ]]; then
   echo "--no-validate and --validate-first-only cannot be combined." >&2
   exit 2
 fi
-if [[ ${KEEP_PM_LOG} -eq 1 && ${PM_LOG_MAF} -eq 0 && ${PM_LOG_MAB} -eq 0 && ${FORCE_PM_LOG} -eq 0 ]]; then
-  echo "--keep-pm-log requires --pm-log-maf, --pm-log-mab, or --force-pm-log." >&2
+if [[ ${KEEP_PM_LOG} -eq 1 && ${ENABLE_PM_LOG} -eq 0 ]]; then
+  echo "--keep-pm-log requires --enable-pm-log." >&2
   exit 2
 fi
 if [[ ${NO_VALIDATE} -eq 1 ]]; then
@@ -433,7 +424,7 @@ if ! command -v setsid >/dev/null 2>&1 ||
   echo "This script requires the setsid, timeout, and tail commands." >&2
   exit 2
 fi
-if [[ ${PM_LOG_MAF} -eq 1 || ${FORCE_PM_LOG} -eq 1 ]]; then
+if [[ ${ENABLE_PM_LOG} -eq 1 ]]; then
   if ! command -v pgrep >/dev/null 2>&1; then
     echo "PM logging requires pgrep." >&2
     exit 2
@@ -627,11 +618,8 @@ init_args=(
   --output "${OUTPUT_DIR}" --config "${CONFIG_FILE}" --repo "${ROCM_REPO}"
   --repeat "${REPEAT_RUNS}" --validation-mode "${VALIDATION_MODE}"
 )
-if [[ ${PM_LOG_MAF} -eq 1 ]]; then
-  init_args+=(--pm-log-maf)
-fi
-if [[ ${PM_LOG_MAB} -eq 1 ]]; then
-  init_args+=(--pm-log-mab)
+if [[ ${ENABLE_PM_LOG} -eq 1 ]]; then
+  init_args+=(--enable-pm-log)
 fi
 if ! python3 "${STATE_HELPER}" init "${init_args[@]}"; then
   exit 1
@@ -813,9 +801,7 @@ run_yaml() {
       ;;
   esac
 
-  if [[ ${measured} -eq 1 && ( ${FORCE_PM_LOG} -eq 1 ||
-        ( ${PM_LOG_MAF} -eq 1 && "${yaml_file}" == */maf/* ) ||
-        ( ${PM_LOG_MAB} -eq 1 && "${yaml_file}" == */mab/* ) ) ]]; then
+  if [[ ${measured} -eq 1 && ${ENABLE_PM_LOG} -eq 1 ]]; then
     start_pm_logging "${log_file}" || start_status=$?
     if [[ ${start_status} -ne 0 ]]; then
       return "${start_status}"
@@ -961,67 +947,6 @@ PY
   mv -- "${temporary}" "${destination}"
 }
 
-prepare_pm_maf_yaml() {
-  local source="$1"
-  local destination="$2"
-  local temporary="${destination}.tmp"
-
-  mkdir -p "$(dirname -- "${destination}")"
-  if ! python3 - "${source}" "${temporary}" <<'PY'
-import re
-import sys
-from pathlib import Path
-
-source = Path(sys.argv[1])
-destination = Path(sys.argv[2])
-# Keep in sync with PM_MAF_SETTINGS in benchmark-jichang-state.py.
-settings = {
-    "bbs_tn_maf.yaml": {"NumWarmups": 100, "EnqueuesPerSync": 1000},
-    "f8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "f8_tn_maf_finetune.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "f8_tn_maf_finetune_k128k.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "mxf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
-    "mxf8_tn_maf.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "mxf8_tn_maf_finetune.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "mxf8_tn_maf_finetune_k128k.yaml": {"NumWarmups": 160, "EnqueuesPerSync": 1600},
-    "nvf4_tn_maf.yaml": {"NumWarmups": 200, "EnqueuesPerSync": 2000},
-}
-replacement_values = settings.get(source.name)
-if replacement_values is None:
-    raise SystemExit(f"No PM MAF settings for {source.name}")
-
-lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
-found = {key: 0 for key in replacement_values}
-for index, line in enumerate(lines):
-    body = line.rstrip("\r\n")
-    newline = line[len(body):]
-    for key, value in replacement_values.items():
-        match = re.match(rf"^(\s*{re.escape(key)}\s*:\s*)[^#]*(#.*)?$", body)
-        if match is None:
-            continue
-        comment = match.group(2)
-        lines[index] = (
-            match.group(1) + str(value)
-            + (f" {comment}" if comment else "") + newline
-        )
-        found[key] += 1
-        break
-
-missing_or_duplicate = [key for key, count in found.items() if count != 1]
-if missing_or_duplicate:
-    raise SystemExit(
-        f"Expected exactly one {', '.join(missing_or_duplicate)} in {source}"
-    )
-destination.write_text("".join(lines), encoding="utf-8")
-PY
-  then
-    rm -f -- "${temporary}"
-    echo "Could not prepare PM MAF YAML: ${source}" >&2
-    return 1
-  fi
-  mv -- "${temporary}" "${destination}"
-}
-
 warn_if_head_yaml_dirty() {
   local yaml="$1"
   local action="$2"
@@ -1074,12 +999,6 @@ prepare_yamls() {
       mv -- "${temporary}" "${destination}"
     fi
     run_destination="${destination}"
-    if [[ ${PM_LOG_MAF} -eq 1 && "${yaml}" == projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/maf/* ]]; then
-      run_destination="${destination%.yaml}.pm-log-maf.yaml"
-      if ! prepare_pm_maf_yaml "${destination}" "${run_destination}"; then
-        return 1
-      fi
-    fi
     if [[ ${VALIDATE_FIRST_ONLY} -eq 1 && ${REPEAT_RUNS} -gt 1 ]]; then
       no_validation_destination="${run_destination%.yaml}.no-validation.yaml"
       if ! prepare_no_validation_yaml "${run_destination}" "${no_validation_destination}"; then
@@ -1416,9 +1335,6 @@ yaml_for_test() {
   local category="${catalog#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
   local path="${OUTPUT_DIR}/yamls/${revision}/${catalog#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
   category="${category%%/*}"
-  if [[ ${PM_LOG_MAF} -eq 1 && "${category}" == "maf" ]]; then
-    path="${path%.yaml}.pm-log-maf.yaml"
-  fi
   if [[ "${drop_validation}" == "1" ]]; then
     path="${path%.yaml}.no-validation.yaml"
   fi
@@ -2026,9 +1942,6 @@ for commit_index in "${!COMMITS[@]}"; do
     yaml="${OUTPUT_DIR}/yamls/${yaml_revision}/${TEST_YAMLS[${index}]#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
     test_category="${TEST_YAMLS[${index}]#projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250/}"
     test_category="${test_category%%/*}"
-    if [[ ${PM_LOG_MAF} -eq 1 && "${test_category}" == "maf" ]]; then
-      yaml="${yaml%.yaml}.pm-log-maf.yaml"
-    fi
     if [[ "${test_category}" == "mab" ]]; then
       score_metric="gbps-bandwidth"
       score_unit="GB/s"

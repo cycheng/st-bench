@@ -21,7 +21,7 @@ sudo -n /opt/amd-apps/agt_internal/agt_internal \
   used whether AGT labels them with the physical GPU number or as the only
   GPU in the file.
 
-The benchmark script enables this collection with `--pm-log-maf`. Pass
+The benchmark script enables this collection with `--enable-pm-log`. Pass
 `--gpu <n>` to run the workload with `HIP_VISIBLE_DEVICES=<n>` and to monitor
 that physical GPU. Add `--keep-pm-log` if the raw PM CSV files should be
 retained.

@@ -284,23 +284,22 @@ Ask in one turn. Use these defaults when the user does not care:
 | reuse build | yes for repeated timing | Prefer `--reuse-build` with `--repeat 3 --validate-first-only` so generated kernels are reused and only the first repeat validates. |
 | category | all of mab, maf, and medium | `--category mab`, `--category maf`, or `--category medium`. Omit the flag for all. This option is single-valued; `--category mab --category maf` runs only the last category. |
 | yaml | all catalog YAMLs | Repeat `--yaml <path>` under `projects/hipblaslt/tensilelite/tensilelite/Utilities/tensile_generator/perf_yamls/gfx1250`. Catalog names such as `maf/f8_tn_maf.yaml` are accepted. Order is the order of the flags. |
-| pm-log-maf | no | `--pm-log-maf`. Logs only catalog `maf/*` YAMLs and rewrites those warmup counts. Passing it with `--category mab` is only a resume-metadata compatibility trick; it does not PM-log MAB. |
-| force-pm-log | no | `--force-pm-log`. Logs every selected YAML and leaves warmup counts unchanged. |
-| keep raw PM CSV | no | `--keep-pm-log`. Requires `--pm-log-maf` or `--force-pm-log`. |
+| PM logging | no | `--enable-pm-log`. Logs every selected YAML and leaves warmup/enqueue counts unchanged. Old `--pm-log-maf`, `--pm-log-mab`, and `--force-pm-log` flags are aliases. |
+| keep raw PM CSV | no | `--keep-pm-log`. Requires `--enable-pm-log`. |
 | validation | first repeat only for repeated timing | Prefer `--validate-first-only` with `--repeat 3 --reuse-build`. For faster perf-only sweeps, use `--no-validate --reuse-build`. |
 | output-dir | `benchmark-results/<YYYYMMDD-HHMMSS>` | `--output-dir <dir>` |
 | rerun failed | no | `--rerun-failed`. On resume, run selected YAMLs again when their saved status is `execution-failed`, `validation-failed`, or `no-score`. Passed and `asm-skipped` YAMLs stay skipped. |
 
-`--pm-log-maf`, `--force-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--force-pm-log` is the flag for a YAML outside the catalog `maf/` directory.
+`--enable-pm-log`, `--keep-pm-log`, `--yaml`, and `--category` are optional. `--gpu` is not. `--enable-pm-log` works for MAF, MAB, medium, and custom selected YAMLs without a whitelist.
 
 Ask which physical GPU to use, for example `0` or `1`. Before running:
 
 - Set or replace `env=HIP_VISIBLE_DEVICES=<n>` in the config. GPU `1` is `env=HIP_VISIBLE_DEVICES=1`.
 - Pass `--gpu <n>`.
 
-`--gpu <n>` runs the workload on that GPU and, with `--pm-log-maf`, monitors it. `agt_internal -i=0` is GPU 0. For GPU n the script passes `-i=5n` (`-i=5` for GPU 1, `-i=10` for GPU 2, `-i=15` for GPU 3). Do not pass `-i` yourself.
+`--gpu <n>` runs the workload on that GPU and, with `--enable-pm-log`, monitors it. `agt_internal -i=0` is GPU 0. For GPU n the script passes `-i=5n` (`-i=5` for GPU 1, `-i=10` for GPU 2, `-i=15` for GPU 3). Do not pass `-i` yourself.
 
-`--pm-log-maf` and `--force-pm-log` need `/opt/amd-apps/agt_internal/agt_internal` and passwordless `sudo`. Check both before adding either flag. If either is missing, say so and run without PM logging unless the user fixes it. `--gpu` is still required.
+`--enable-pm-log` needs `/opt/amd-apps/agt_internal/agt_internal` and passwordless `sudo`. Check both before adding the flag. If either is missing, say so and run without PM logging unless the user fixes it. `--gpu` is still required.
 
 Show the full command, then run it from the benchmark checkout root. Always pass `--config` and `--repo`.
 
@@ -314,7 +313,7 @@ Show the full command, then run it from the benchmark checkout root. Always pass
   --commit 80414d879 \
   --commit 8ef6640ab \
   --gpu 1 \
-  --pm-log-maf --keep-pm-log --category maf
+  --enable-pm-log --keep-pm-log --category maf
 ```
 
 Before starting, tell the user that the script stashes tracked local changes in `rocm_libraries_path` and checks out each commit there. Do not start if that checkout has unrelated work the user did not agree to stash.
@@ -327,10 +326,8 @@ Wait until the process exits. Reusing the same `--output-dir` resumes; completed
 
 The output directory stores resume metadata. A later resume must keep the same
 config path, rocm-libraries path, repeat count, validation mode, and
-`--pm-log-maf` setting. If the first run used `--pm-log-maf`, later category
-resumes in that same output directory also need `--pm-log-maf`, even for
-`--category mab`; that does not start PM logging for MAB because
-`--pm-log-maf` only logs `maf/*` YAMLs.
+`--enable-pm-log` setting. If the first run used `--enable-pm-log`, later
+resumes in that same output directory also need `--enable-pm-log`.
 
 To run only MAB and MAF in one output directory, either:
 
